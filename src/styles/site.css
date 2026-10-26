@@ -90,7 +90,7 @@ a { color: var(--accent); }
 .module-nav button.active { border-color: var(--accent-strong); background: var(--accent-strong); color: #fff; }
 
 .hud {
-  position: absolute; top: 4.2rem; left: 1rem; right: 1rem;
+  position: absolute; top: 5.9rem; left: 1rem; right: 1rem;
   margin: 0 auto; max-width: 60rem;
   background: color-mix(in srgb, var(--surface) 90%, transparent);
   border: 1px solid color-mix(in srgb, var(--muted) 30%, transparent);
@@ -111,17 +111,19 @@ a { color: var(--accent); }
   display: flex; flex-direction: column; justify-content: flex-end;
   background: transparent;
 }
+/* the display:flex class must not defeat the hidden attribute */
+.cinematic-overlay[hidden] { display: none; }
 .cinematic-caption {
   margin: 0; padding: 0.6rem 1rem;
-  background: rgba(0, 0, 0, 0.72);
-  color: #fff;
+  background: rgba(0, 0, 0, 0.85);
+  color: #ffffff;
   text-align: center;
   font-size: 1.05rem;
 }
 .cinematic-progress {
   margin: 0; padding: 0.3rem 1rem;
-  background: rgba(0, 0, 0, 0.55);
-  color: #cfd6de;
+  background: rgba(0, 0, 0, 0.85);
+  color: #f2f5f8;
   font-size: 0.8rem;
 }
 .cinematic-skip { position: absolute; top: 0.6rem; right: 0.6rem; }
@@ -169,3 +171,80 @@ caption { text-align: left; font-weight: 600; padding: 0.2rem 0; }
   .hud { top: 5.6rem; }
   .app-header { flex-wrap: wrap; gap: 0.4rem; }
 }
+
+/* ---------- app panels (module UI overlays above the canvas) ---------- */
+#overlays {
+  position: absolute; left: 0.8rem; right: 0.8rem; bottom: 0.6rem;
+  top: 7.6rem; z-index: 10; overflow-y: auto;
+  pointer-events: none;
+}
+#overlays > * { pointer-events: auto; }
+.panel {
+  max-width: 64rem; margin: 0 auto 0.7rem;
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
+  border: 1px solid color-mix(in srgb, var(--muted) 35%, transparent);
+  border-radius: 10px; padding: 0.8rem 1rem;
+}
+.panel h2 { margin: 0 0 0.4rem; font-size: 1.15rem; }
+.panel h3 { margin: 0.8rem 0 0.3rem; font-size: 1rem; }
+.hint { color: var(--muted); }
+.btn-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 0.6rem 0; }
+button.secondary { border-style: dashed; }
+
+/* design picker */
+.design-card { border: 1px solid color-mix(in srgb, var(--muted) 35%, transparent); border-radius: 8px; padding: 0.6rem 0.9rem; margin: 0.6rem 0; }
+.design-card.nonprobability { border-left: 4px solid var(--warn); }
+.kind-badge { font-size: 0.75rem; color: var(--muted); border: 1px solid color-mix(in srgb, var(--muted) 40%, transparent); border-radius: 999px; padding: 0.05rem 0.45rem; vertical-align: middle; }
+
+/* fieldwork */
+.fw-status { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin: 0.4rem 0; }
+.time-meter { width: 12rem; height: 0.8rem; border: 1px solid color-mix(in srgb, var(--muted) 50%, transparent); border-radius: 999px; overflow: hidden; background: var(--bg); }
+.time-fill { height: 100%; background: linear-gradient(90deg, var(--ok), var(--warn)); transition: width 0.4s; }
+.fw-layout { display: flex; gap: 0.9rem; flex-wrap: wrap; align-items: flex-start; }
+.quadrat-chips { display: flex; flex-direction: column; gap: 0.3rem; max-width: 5rem; }
+.chip { width: 2.6rem; text-align: center; }
+.chip.visited { border-color: var(--ok); color: var(--ok); }
+.counting-area { flex: 1 1 20rem; min-width: 16rem; }
+.counting-form { border: 1px solid color-mix(in srgb, var(--muted) 35%, transparent); border-radius: 8px; padding: 0.6rem 0.8rem; }
+.count-row { margin: 0.4rem 0; }
+.count-name { display: block; }
+.count-marks { color: var(--muted); font-size: 0.85rem; }
+.cover-bands label { display: inline-flex; margin-right: 0.8rem; }
+.coord-row { display: flex; gap: 0.6rem; align-items: end; flex-wrap: wrap; margin: 0.5rem 0; }
+.coord-row input { width: 6rem; }
+
+/* meadow map */
+.meadow-map { margin: 0.4rem auto; max-width: 22rem; }
+.meadow-map svg { display: block; border-radius: 6px; }
+.meadow-map-caption { font-size: 0.78rem; color: var(--muted); text-align: center; margin-top: 0.2rem; }
+
+/* field guide */
+.field-guide .guide-callout { border-left: 3px solid var(--accent); padding-left: 0.6rem; color: var(--muted); }
+.guide-card { border: 1px solid color-mix(in srgb, var(--muted) 35%, transparent); border-radius: 8px; padding: 0.7rem 0.9rem; margin: 0.6rem 0; overflow: hidden; }
+.guide-portrait { float: right; margin: 0 0 0.4rem 0.6rem; border-radius: 6px; }
+.guide-marks { margin: 0.4rem 0; padding-left: 1.1rem; }
+.guide-warning { color: var(--warn); font-size: 0.9rem; }
+.guide-record { font-size: 0.9rem; color: var(--muted); }
+.dialog-close { float: right; }
+
+/* data sheet + reveal + simulator */
+.data-sheet-block h3, .reveal-table-block h3 { margin-top: 0.8rem; }
+.error-sources details { margin: 0.3rem 0; }
+.sim-controls { display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: end; margin: 0.5rem 0; }
+.sim-controls label { display: flex; flex-direction: column; gap: 0.15rem; }
+.sim-progress { font-size: 0.9rem; color: var(--muted); }
+.sim-results .chart-block { border-top: 1px dashed color-mix(in srgb, var(--muted) 40%, transparent); padding-top: 0.5rem; margin-top: 0.5rem; }
+.chart-summary { color: var(--muted); font-size: 0.92rem; }
+
+/* report */
+.report-section { display: block; margin: 0.7rem 0; }
+.report-guidance { color: var(--muted); }
+.report-section textarea { width: 100%; margin-top: 0.25rem; background: var(--bg); color: var(--text); border: 1px solid color-mix(in srgb, var(--muted) 50%, transparent); border-radius: 6px; padding: 0.4rem; font: inherit; }
+
+/* text-mode 20x20 grid map */
+.grid-map { display: block; overflow-x: auto; font-size: 0.72rem; }
+.grid-map th, .grid-map td { padding: 0.12rem 0.18rem; text-align: center; }
+.grid-map .cell { padding: 0.1rem 0.2rem; min-width: 1.6rem; border-radius: 4px; }
+.grid-map .cell.selected { border-color: var(--focus); background: color-mix(in srgb, var(--focus) 25%, transparent); }
+.grid-map .cell.sampled { border-color: var(--ok); color: var(--ok); }
+.tm-group { display: block; }

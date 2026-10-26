@@ -190,23 +190,24 @@ export class VegetationRenderer {
         const isNear = dist2 < this.nearDist * this.nearDist;
         for (let k = 0; k < count; k++) {
           const instIdx = start + k;
-          // Preset density thinning (deterministic per instance).
-          if (frac(instIdx * 7 + 3) >= this.densityFactor) continue;
           const m = matrices[instIdx];
           const px = m.elements[12], pz = m.elements[14];
+          // Inside the active quadrat nothing is thinned: preset density must
+          // never remove a plant the learner is counting (counts must match
+          // the true population on every preset).
+          const focusDist = focus ? Math.hypot(px - focus.x, pz - focus.z) : Infinity;
+          const inFocus = focus != null && focusDist < focus.r;
+          if (!inFocus && frac(instIdx * 7 + 3) >= this.densityFactor) continue;
           if (isNear) {
             if (nearCount >= nearMesh.instanceMatrix.count) break;
-            if (focus && sp.id && focus.species.has(sp.id)) {
-              const d = Math.hypot(px - focus.x, pz - focus.z);
-              if (d < focus.r) {
-                this._mat4.copy(m);
-                const s = focus.scale + (1 - focus.scale) * (d / focus.r);
-                this._mat4.elements[0] = m.elements[0] * s;
-                this._mat4.elements[5] = m.elements[5] * s;
-                this._mat4.elements[10] = m.elements[10] * s;
-                nearMesh.setMatrixAt(nearCount++, this._mat4);
-                continue;
-              }
+            if (inFocus && focus.species.has(sp.id)) {
+              const s = focus.scale + (1 - focus.scale) * (focusDist / focus.r);
+              this._mat4.copy(m);
+              this._mat4.elements[0] = m.elements[0] * s;
+              this._mat4.elements[5] = m.elements[5] * s;
+              this._mat4.elements[10] = m.elements[10] * s;
+              nearMesh.setMatrixAt(nearCount++, this._mat4);
+              continue;
             }
             nearMesh.setMatrixAt(nearCount++, m);
           } else {

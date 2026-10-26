@@ -16,6 +16,28 @@ import { QUADRAT_SIZE } from '../systems/population-model.js';
 
 const BASE = import.meta.env.BASE_URL || './';
 
+/** Canvas-generated soil/grass speckle: greys multiplied against vertex colours. */
+function makeSpeckleTexture(size = 256) {
+  const cnv = document.createElement('canvas');
+  cnv.width = cnv.height = size;
+  const ctx = cnv.getContext('2d');
+  ctx.fillStyle = '#e4e4e4';
+  ctx.fillRect(0, 0, size, size);
+  let seed = 1234567;
+  const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+  for (let i = 0; i < 2400; i++) {
+    const g = 190 + Math.floor(rnd() * 56);
+    const r = rnd() * 2.2 + 0.5;
+    ctx.fillStyle = `rgb(${g},${g - Math.floor(rnd() * 12)},${g - Math.floor(rnd() * 16)})`;
+    ctx.beginPath();
+    ctx.ellipse(rnd() * size, rnd() * size, r, r * (0.4 + rnd() * 1.2), rnd() * Math.PI, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  const tex = new THREE.CanvasTexture(cnv);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 export class MeadowScene {
   /**
    * @param {import('../core/engine.js').Engine} engine
@@ -58,7 +80,7 @@ export class MeadowScene {
     this.orbit = new OrbitController(engine.camera, engine.renderer.domElement, new THREE.Vector3(50, 1.2, 20));
     this.orbit.spherical.radius = 8;
     this.orbit.minRadius = 1.2;
-    this.orbit.maxRadius = 40;
+    this.orbit.maxRadius = 160; // the reveal pulls back to an overhead "map" view
 
     engine.onUpdate((dt, t) => this._update(dt, t));
     engine.quality.onChange((def, name) => {
@@ -105,12 +127,19 @@ export class MeadowScene {
       const m = moisture(x, z);
       c.lerpColors(dry, lush, Math.min(1, m * 1.15));
       // per-vertex variation so the ground does not band
-      const n = 0.92 + 0.16 * Math.abs(Math.sin(x * 12.9898 + z * 78.233) % 1);
+      const n = 0.9 + 0.2 * Math.abs(Math.sin(x * 12.9898 + z * 78.233) % 1);
       colors[i * 3] = c.r * n; colors[i * 3 + 1] = c.g * n; colors[i * 3 + 2] = c.b * n;
     }
     geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     geo.computeVertexNormals();
-    const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95, metalness: 0 });
+    // Procedural speckle map (canvas-generated here, no asset): breaks the flat
+    // vertex-coloured ground into soil/grass mottle at any distance.
+    const speckle = makeSpeckleTexture();
+    speckle.repeat.set(46, 46);
+    speckle.wrapS = speckle.wrapT = THREE.RepeatWrapping;
+    const mat = new THREE.MeshStandardMaterial({
+      vertexColors: true, map: speckle, roughness: 0.95, metalness: 0,
+    });
     this.terrain = new THREE.Mesh(geo, mat);
     this.terrain.position.set(FIELD_SIZE / 2, 0, FIELD_SIZE / 2);
     this.terrain.receiveShadow = true;
@@ -191,10 +220,12 @@ export class MeadowScene {
       (tex) => {
         if (this._disposed) return;
         tex.mapping = THREE.EquirectangularReflectionMapping;
-        tex.colorSpace = THREE.SRGBColorSpace;
+        // HDR data stays linear (RGBELoader output); setting an sRGB colorspace
+        // here would double-darken the sky.
         this.scene.environment = tex;
         this.scene.background = tex;
         this.scene.backgroundBlurriness = 0.12;
+        this.scene.environmentIntensity = 1.0;
         this.skyTex = tex;
         this.onReady?.();
       },
@@ -246,31 +277,40 @@ export class MeadowScene {
   }
 
   /**
-   * Quadrat overlays: white outlines for placed quadrats; the active one yellow.
+   * Quadrat overlays: white box-frame outlines for placed quadrats (thick
+   * enough to read in the top-down counting view); the active one yellow.
    * @param {Array<{x:number,z:number}>} points
    */
   setQuadrats(points) {
-    for (const g of this.quadratGroups) this.scene.remove(g);
+    for (const g of this.quadratGroups) {
+      this.scene.remove(g);
+      g.traverse((o) => { o.geometry?.dispose(); o.material?.dispose?.(); });
+    }
     this.quadratGroups = [];
     const half = QUADRAT_SIZE / 2;
     for (const p of points) {
-      const shape = new THREE.BufferGeometry().setFromPoints([
-        new THREE.Vector3(-half, 0, -half), new THREE.Vector3(half, 0, -half),
-        new THREE.Vector3(half, 0, half), new THREE.Vector3(-half, 0, half),
-        new THREE.Vector3(-half, 0, -half),
-      ]);
-      const line = new THREE.Line(shape, new THREE.LineBasicMaterial({ color: 0xffffff }));
       const g = new THREE.Group();
-      g.position.set(p.x, terrainHeight(p.x, p.z) + 0.06, p.z);
-      g.add(line);
+      // frame: four thin boxes lying on the ground (readable from above)
+      const frameMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      const barH = 0.035;
+      for (const [w, d, ox, oz] of [
+        [QUADRAT_SIZE, 0.035, 0, -half],
+        [QUADRAT_SIZE, 0.035, 0, half],
+        [0.035, QUADRAT_SIZE, -half, 0],
+        [0.035, QUADRAT_SIZE, half, 0],
+      ]) {
+        const bar = new THREE.Mesh(new THREE.BoxGeometry(w, barH, d), frameMat);
+        bar.position.set(ox, 0.02, oz);
+        g.add(bar);
+      }
       // corner posts give depth reading from ground level
-      const postGeo = new THREE.CylinderGeometry(0.015, 0.015, 0.5, 5);
-      const postMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      const postGeo = new THREE.CylinderGeometry(0.02, 0.02, 0.5, 6);
       for (const [px, pz] of [[-half, -half], [half, -half], [half, half], [-half, half]]) {
-        const post = new THREE.Mesh(postGeo, postMat);
+        const post = new THREE.Mesh(postGeo, frameMat);
         post.position.set(px, 0.25, pz);
         g.add(post);
       }
+      g.position.set(p.x, terrainHeight(p.x, p.z) + 0.06, p.z);
       this.scene.add(g);
       this.quadratGroups.push(g);
     }
@@ -281,8 +321,8 @@ export class MeadowScene {
   setActiveQuadrat(i) {
     this.activeQuadrat = i;
     this.quadratGroups.forEach((g, j) => {
-      const mat = g.children[0].material;
-      mat.color.set(j === i ? 0xffd166 : 0xffffff);
+      const color = j === i ? 0xffd166 : 0xffffff;
+      g.traverse((o) => { if (o.material) o.material.color.set(color); });
     });
     if (i >= 0 && this.quadratGroups[i]) {
       const p = this.quadratGroups[i].position;

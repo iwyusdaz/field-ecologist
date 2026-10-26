@@ -103,7 +103,7 @@ const builders = {
     for (let i = 0; i < 9; i++) {
       const a = (i / 9) * Math.PI * 2 + 0.3;
       const h = 0.3 + 0.12 * ((i * 7919) % 100) / 100;
-      const b = blade(h, 0.007, 0.09 + 0.05 * (i % 3), 0.5);
+      const b = blade(h, 0.016, 0.11 + 0.05 * (i % 3), 0.5);
       parts.push(place(colored(b, 0x6a8f7d), { rot: [0, -a, 0] }));
     }
     parts.push(place(colored(new THREE.CylinderGeometry(0.004, 0.005, 0.34, 5), 0x7d6b3f), { pos: [0.02, 0.17, 0.03], rot: [0.12, 0, 0.1] }));
@@ -116,8 +116,8 @@ const builders = {
     for (let i = 0; i < 13; i++) {
       const a = (i / 13) * Math.PI * 2 + (i % 2) * 0.4;
       const h = 0.24 + 0.1 * ((i * 104729) % 100) / 100;
-      const b = blade(h, 0.005, 0.05 + 0.04 * (i % 3), 0.35);
-      parts.push(place(colored(b, i % 3 ? 0x8a8a4f : 0x9aa058), { rot: [0, -a, 0] }));
+      const b = blade(h, 0.012, 0.06 + 0.04 * (i % 3), 0.35);
+      parts.push(place(colored(b, i % 3 ? 0x7c8a4a : 0x8f9a55), { rot: [0, -a, 0] }));
     }
     return parts;
   },
@@ -151,10 +151,17 @@ export function buildSpeciesGeometry(speciesId) {
   const build = builders[speciesId];
   if (!build) throw new Error(`no model for species ${speciesId}`);
   const parts = build();
-  const merged = mergeGeometries(parts, false);
+  // mergeGeometries requires every geometry to share the same attribute set —
+  // polyhedron geometries (icosahedron) are non-indexed while cylinders/spheres
+  // are indexed, so normalize everything to non-indexed first.
+  const normalized = parts.map((g) => {
+    if (g.index) { const n = g.toNonIndexed(); g.dispose(); return n; }
+    return g;
+  });
+  const merged = mergeGeometries(normalized, false);
   merged.computeBoundingSphere();
   const bs = merged.boundingSphere;
-  for (const p of parts) p.dispose();
+  for (const p of normalized) p.dispose();
   return { geometry: merged, height: bs.center.y * 2 + 0.05, radius: Math.max(0.12, bs.radius) };
 }
 

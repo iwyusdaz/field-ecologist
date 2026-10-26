@@ -1,7 +1,11 @@
 import { defineConfig } from '@playwright/test';
 
+// Root-level config (Playwright only auto-discovers it from the CWD).
+// testMatch is restricted to *.spec.js so vitest's unit tests (*.test.js)
+// are never picked up by the Playwright runner.
 export default defineConfig({
-  testDir: '.',
+  testDir: 'tests',
+  testMatch: /.*\.spec\.js/,
   timeout: 60_000,
   retries: 0,
   workers: 1,
@@ -10,7 +14,9 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
   webServer: {
-    command: 'npm run preview -- --port 4173 --strictPort',
+    // --host 127.0.0.1: vite preview otherwise binds ::1 only, and the URL
+    // check below uses IPv4.
+    command: 'npm run preview -- --port 4173 --strictPort --host 127.0.0.1',
     url: 'http://127.0.0.1:4173',
     reuseExistingServer: !process.env.CI,
     timeout: 30_000,
