@@ -52,8 +52,18 @@ export class Engine {
     });
     this.resize();
 
+    // Optional post pipeline (set by the scene via setComposer) and an alternate
+    // render camera (the orthographic quadrat view bypasses the composer).
+    this.composer = null;
+    this.renderCamera = null;
+
     // Respect prefers-reduced-motion at startup; the settings toggle overrides it.
     this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  /** Provide an EffectComposer; when set, rendering goes through it. */
+  setComposer(composer) {
+    this.composer = composer;
   }
 
   resize() {
@@ -64,6 +74,7 @@ export class Engine {
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
+    if (this.composer) this.composer.setSize(w, h);
   }
 
   /** Register a per-frame update fn(dt seconds, elapsed seconds). */
@@ -81,7 +92,9 @@ export class Engine {
       const t = this.clock.elapsedTime;
       for (const fn of this._updateFns) fn(dt, t);
       this.renderer.info.reset();
-      this.renderer.render(this.scene, this.camera);
+      const cam = this.renderCamera || this.camera;
+      if (this.composer && !this.renderCamera) this.composer.render(dt);
+      else this.renderer.render(this.scene, cam);
       // Dynamic resolution: sample a 2 s window during the first 20 s after load.
       this.frames++; this._fpsFrames++;
       this._fpsT += dt;

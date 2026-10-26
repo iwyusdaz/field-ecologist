@@ -1,0 +1,16 @@
+[
+  {
+    "asset": "`public/assets/sky-meadow-1k.hdr` (Belfast Open Field, 1k HDR)",
+    "author": "Poly Haven contributors",
+    "source": "https://polyhaven.com/a/belfast_open_field",
+    "license": "CC0 1.0",
+    "changes": "Unmodified (renamed copy); used as environment/background lighting"
+  },
+  {
+    "asset": "Draco decoder + Basis/KTX2 transcoder (`public/decoders/`)",
+    "author": "Google / Binomial LLC",
+    "source": "via three.js `scripts/setup-decoders.mjs` (Apache-2.0 / Apache-2.0)",
+    "license": "Apache-2.0",
+    "changes": "Unmodified copies, self-hosted so no CDN requests"
+  }
+]
