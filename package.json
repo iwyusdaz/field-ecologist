@@ -1,0 +1,32 @@
+{
+  "name": "field-ecologist",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Design a sampling plan for a realistic meadow, place quadrats, identify and count species, then see the meadow's true population and discover how your design choices biased your estimate.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "node scripts/gen-attribution.mjs && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "test:subpath": "playwright test tests/sub-path.spec.js",
+    "check:a11y": "playwright test tests/a11y.spec.js",
+    "poster": "node scripts/render-poster.mjs",
+    "attribution": "node scripts/gen-attribution.mjs"
+  },
+  "dependencies": {
+    "n8ao": "2.0.1",
+    "postprocessing": "6.39.5",
+    "three": "0.186.1"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@playwright/test": "1.64.1",
+    "vite": "8.3.5",
+    "vitest": "5.0.5"
+  }
+}
