@@ -13,4 +13,9 @@ export default defineConfig({
     // Test hooks exposed only when building with VITE_TEST_HOOKS=1 (release builds omit them).
     '__TEST_HOOKS__': JSON.stringify(process.env.VITE_TEST_HOOKS === '1'),
   },
+  // Unit tests only: the Playwright specs (tests/*.spec.js) are run by Playwright.
+  test: {
+    include: ['tests/unit/**/*.test.js'],
+    environment: 'node',
+  },
 });

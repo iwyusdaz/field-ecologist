@@ -14,23 +14,30 @@ simulation claims — and what it does not.
 ## Moisture field (analytic, deterministic)
 ```
 streamX(z)     = 14 + 6 · sin(2π z / 40)
-moisture(x,z)  = clamp01(1.25 − (x − streamX(z)) / 55)
+moisture(x,z)  = clamp01(1.25 − (x − streamX(z)) / 38)
 ```
-Wet (moisture ≥ 0.62), mid (0.38–0.62), dry (< 0.38) — three equal-ish strata
-used by the stratified design and shown on the map.
+Soil moisture falls to ~0 about 47 m east of the stream, leaving the eastern
+rise dry. Wet / mid / dry strata are the three equal-area x-thirds
+(see `moisture-field.js#strata`), used by the stratified design and shown on
+the map.
 
 ## Terrain height (analytic)
 ```
-h(x,z) = max(0.05, 0.045 · (x − streamX(z)) + 0.35·sin(0.11x)·cos(0.09z)
-             + 0.2·sin(0.031x + 2)·sin(0.043z) + 1.2)
+h(x,z) = max(0.05, 0.03 · (x − streamX(z)) + 0.35·sin(0.11x)·cos(0.09z)
+             + 0.2·sin(0.031x + 2)·sin(0.043z) + 0.8)
 ```
-Gentle rise eastward (dry side higher), ripples for micro-relief. 1 unit = 1 m.
+Gentle rise eastward (dry side higher, ≤ ~4 m), ripples for micro-relief.
+1 unit = 1 m.
 
 ## Species and processes (seeded, reproducible)
 
-Seed: **20260517** ("meadow seed"). PRNG: mulberry32 + Box–Muller gaussians
+Seed: **20260535** ("meadow seed"). PRNG: mulberry32 + Box–Muller gaussians
 (`src/systems/rng.js`). The same seed always produces the same meadow, so the
-"truth" is stable for teaching, testing and the reveal.
+"truth" is stable for teaching, testing and the reveal. The seed was chosen by
+scanning consecutive seeds so the realized totals sit near the parameter
+expectations for every species (checked by unit tests). Realized totals for
+this seed: Butterweed 1,783 · Daisy-leaf 3,474 · Blue Sedge 3,196 ·
+Bunchgrass 8,079 · Fen Orchid 34.
 
 | Species | Process | Parameters | Expected total |
 |---|---|---|---|
