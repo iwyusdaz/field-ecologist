@@ -1,0 +1,67 @@
+{
+  "meta": {
+    "note": "Module copy: the research question, instructions, feedback and report scaffolding. Editable without touching JavaScript (standards 3.4)."
+  },
+  "researchQuestion": {
+    "text": "How abundant is Meadow Butterweed across Ashcombe Meadow?",
+    "hypothesisPrompt": "Choose your hypothesis before you sample.",
+    "studySpecies": "butterweed",
+    "meadowFacts": [
+      "The meadow is 100 m × 100 m (one hectare).",
+      "The low ground near the stream (west edge) is wet; the rise to the east is dry.",
+      "Five species dominate: Meadow Butterweed, Common Daisy-leaf, Blue Sedge, Tussock Bunchgrass and the rare Fen Orchid."
+    ]
+  },
+  "modules": {
+    "m1": {
+      "title": "The question",
+      "intro": "Dawn at Ashcombe Meadow. Your supervisor leaves one question on the station table: how abundant is Meadow Butterweed across the whole meadow? Before walking a single quadrat, look at the ground, choose a hypothesis, and check what you already know.",
+      "steps": [
+        "Watch the arrival (skippable).",
+        "Read the meadow facts and the research question.",
+        "Choose your hypothesis about how Butterweed is spread.",
+        "Take the 5-item pre-check."
+      ]
+    },
+    "m2": {
+      "title": "Know your species",
+      "intro": "You cannot count what you cannot name. Study the five species in the field guide — shape and size first, colour second — then take the identification quiz (8 items). Misidentification later will show up in the reveal as an error source, so learn the marks now.",
+      "guideCallout": "Field marks are listed shape → size → leaf → colour. The models exaggerate marks slightly so they stay readable in the counting view."
+    },
+    "m3": {
+      "title": "Fieldwork",
+      "intro": "Choose a sampling design, place your 10 quadrats within its rules, and record what is inside each one. You have a time budget: walking costs time, and the day ends when the meter runs out — there is no failing grade, only data you will defend in the reveal.",
+      "workflow": [
+        "Pick a design on the map (each is described honestly, including the biased one).",
+        "Place quadrats: the design generates or constrains the points; walking between them costs time.",
+        "In each quadrat: switch to the top-down counting view, identify species with the field guide, enter counts (and a cover band for Bunchgrass).",
+        "Review the data sheet, then submit."
+      ]
+    },
+    "m4": {
+      "title": "The reveal",
+      "intro": "The meadow's true population, your estimate beside it, and the re-sampling simulator: 1,000 virtual repeats of your fieldwork at any sample size from 5 to 40 quadrats. Read the sampling distributions, then answer the interpretation items.",
+      "simulatorBlurb": "Each virtual sample uses the same design you chose, draws n quadrats, counts the true plants inside them, and computes the density estimate the way you did. The pile of 1,000 estimates is the sampling distribution."
+    },
+    "m5": {
+      "title": "Report and transfer",
+      "intro": "Write your methods-and-results report from your own data, check it against the rubric, then carry the reasoning out of the meadow: the same logic of random, stratified and convenience sampling governs survey research.",
+      "transferIntro": "A school survey about study habits uses the same machinery as your quadrat survey: define the population, choose a fair design, report uncertainty, name the bias you could not remove."
+    }
+  },
+  "report": {
+    "sections": [
+      { "id": "design", "title": "Sampling design", "guidance": "Which design did you choose and why does it fit the question and this meadow? Name one alternative and why you rejected it." },
+      { "id": "results", "title": "Results", "guidance": "Your density estimates per species (individuals per m²) from your own data sheet, and the Bunchgrass cover estimate." },
+      { "id": "uncertainty", "title": "Uncertainty", "guidance": "Use the simulator: state the spread of estimates for your design and n (SD and a 95% interval from the percentiles), and say what it means." },
+      { "id": "limitations", "title": "Limitations", "guidance": "What did your design miss (compare with the reveal), what could you have misidentified, and what would you change?" }
+    ],
+    "note": "Free-text answers are saved to your local learning record and are never graded automatically. The rubric self-check is for you."
+  },
+  "revealErrorSources": [
+    { "id": "bias", "label": "Design bias", "text": "Quadrat placement favored some ground over other ground (visible for the 'wherever looks interesting' design and for any run of bad luck). Bias shifts the centre of the sampling distribution." },
+    { "id": "variance", "label": "Sampling variance", "text": "Even a fair design lands on different quadrats each repeat, so estimates spread around the truth. More quadrats narrow the spread." },
+    { "id": "rarity", "label": "Missed rarity", "text": "Species that are rare and clumped (Fen Orchid) are mostly invisible to small samples. '0 observed' is not '0 present'." },
+    { "id": "misid", "label": "Misidentification", "text": "Counts of the wrong species propagate into both the false species' overestimate and the true species' underestimate." }
+  ]
+}

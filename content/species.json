@@ -1,0 +1,129 @@
+{
+  "meta": {
+    "statement": "These five species are constructed for teaching purposes. They are botanically plausible but fictional: this meadow is a teaching model, not a real regional flora. Field marks are slightly exaggerated in the models so they stay readable at quadrat distance (documented in design/realism-matrix.md).",
+    "quadratSizeM": 2,
+    "fieldSizeM": 100
+  },
+  "species": [
+    {
+      "id": "butterweed",
+      "name": "Meadow Butterweed",
+      "role": "clumped, showy — the research-question target species",
+      "distribution": "clumped (Thomas cluster process)",
+      "heightCm": "40–55",
+      "flower": "one rounded button-like head per stem, 2–3 cm across, bright yellow, on a bare stalk",
+      "leaf": "alternate, lance-shaped (2–3× longer than wide, pointed tip), toothed edge",
+      "habit": "upright single stems in dense patches",
+      "fieldMarks": [
+        "shape: upright single stem with one rounded drumstick-like flower head on top",
+        "size: 40–55 cm tall (knee height); flower head 2–3 cm across",
+        "leaf: alternate lance-shaped leaves with pointed tips along the stem",
+        "colour: bright yellow head (secondary cue — confirm with shape and size)"
+      ],
+      "lookAlikeWarning": "Blue Sedge also grows in patches, but it has no yellow head and its blades arch from the base.",
+      "modelParams": {
+        "type": "thomas",
+        "parentsPerM2": 0.003,
+        "offspringMean": 60,
+        "clusterSdM": 2.2
+      },
+      "countMethod": "count individuals (stems)",
+      "coverEstimated": false
+    },
+    {
+      "id": "daisyleaf",
+      "name": "Common Daisy-leaf",
+      "role": "random, scattered — the uniform-background herb",
+      "distribution": "random (homogeneous Poisson)",
+      "heightCm": "8–15",
+      "flower": "small white button flowers 8–12 mm across, one or two per plant, held just above the leaves",
+      "leaf": "all leaves in a basal rosette, round to spoon-shaped with blunt teeth",
+      "habit": "low rosettes scattered singly",
+      "fieldMarks": [
+        "shape: flat basal rosette (all leaves radiate from one point at ground level), tiny button flowers on short stalks",
+        "size: 8–15 cm tall (hand height); flowers under 1.5 cm across",
+        "leaf: round to spoon-shaped leaves with blunt teeth, no leaves on the flower stalk",
+        "colour: white flowers (secondary cue — confirm with the rosette shape and size)"
+      ],
+      "lookAlikeWarning": "Young Bunchgrass tufts also sit low, but their blades are narrow and folded, not round with teeth.",
+      "modelParams": {
+        "type": "poisson",
+        "densityPerM2": 0.35
+      },
+      "countMethod": "count individuals (rosettes)",
+      "coverEstimated": false
+    },
+    {
+      "id": "blue-sedge",
+      "name": "Blue Sedge",
+      "role": "moisture-gradient species — follows the wet ground",
+      "distribution": "gradient (inhomogeneous Poisson, intensity rises with soil moisture)",
+      "heightCm": "30–45",
+      "flower": "no showy flowers; a small brownish spike of seed cases at the tip of some stems",
+      "leaf": "narrow arching blades rising from the base, bluish-green, edges fine-toothed",
+      "habit": "dense tufts in the wetter ground",
+      "fieldMarks": [
+        "shape: fountain-like tuft of many narrow blades arching out from the base; triangular stem base (feels edged, not round)",
+        "size: 30–45 cm tall (mid-shin height); blades 2–4 mm wide",
+        "leaf: blades all from the base, no leaves on the stem; tiny brown spike at stem tips",
+        "colour: bluish-green blades (secondary cue — confirm with the tuft shape and blade width)"
+      ],
+      "lookAlikeWarning": "Bunchgrass is also a tuft, but it is stiffer, upright, and never bluish; Blue Sedge favours the wet low ground.",
+      "modelParams": {
+        "type": "gradient",
+        "maxDensityPerM2": 0.9,
+        "moisturePower": 2.2
+      },
+      "countMethod": "count individuals (tufts)",
+      "coverEstimated": false
+    },
+    {
+      "id": "bunchgrass",
+      "name": "Tussock Bunchgrass",
+      "role": "dense random background — the percent-cover estimation species",
+      "distribution": "random (homogeneous Poisson, dense)",
+      "heightCm": "25–35",
+      "flower": "tiny straw-coloured seed heads along the tips of some stems in summer",
+      "leaf": "many thin, stiff, upright blades in a tight tussock; blades hair-like and often folded lengthwise",
+      "habit": "tight upright tussocks covering much of the meadow",
+      "fieldMarks": [
+        "shape: tight upright tussock (a mop of stiff blades from one point); never a flat rosette, never arching like a fountain",
+        "size: 25–35 cm tall; tussock 15–25 cm across; blades under 2 mm wide",
+        "leaf: blades hair-thin, stiff, often folded lengthwise, rough edges",
+        "colour: straw to dull green (secondary cue — confirm with the tussock shape and blade width)"
+      ],
+      "lookAlikeWarning": "Blue Sedge is the arching bluish tuft of the wet ground; Bunchgrass is stiff, upright, and everywhere.",
+      "modelParams": {
+        "type": "poisson",
+        "densityPerM2": 0.8
+      },
+      "countMethod": "percent cover estimated in bands (0–5%, 5–25%, 25–50%, 50–100%) — too dense to count individuals",
+      "coverEstimated": true
+    },
+    {
+      "id": "fen-orchid",
+      "name": "Fen Orchid",
+      "role": "rare and clumped — the species sampling can miss",
+      "distribution": "rare clumps (Thomas cluster process, very sparse)",
+      "heightCm": "20–30",
+      "flower": "6–12 tiny greenish flowers in a loose one-sided spike at the stem top; each flower under 5 mm",
+      "leaf": "exactly two broad oval basal leaves lying flat on the ground, shiny, parallel-veined",
+      "habit": "slender single stems in a few small colonies",
+      "fieldMarks": [
+        "shape: slender bare stem with a loose one-sided spike of tiny flowers, and exactly two flat oval leaves at the base",
+        "size: 20–30 cm tall; flowers under 5 mm; basal leaves 3–5 cm long",
+        "leaf: two (never more) shiny oval basal leaves with parallel veins, flat on the ground",
+        "colour: greenish flowers (secondary cue — the two flat oval leaves are the reliable mark)"
+      ],
+      "lookAlikeWarning": "Butterweed is also a bare stem with basal leaves, but it has one big yellow round head and many lance-shaped stem leaves; the orchid's flowers are tiny and one-sided.",
+      "modelParams": {
+        "type": "thomas",
+        "parentsPerM2": 0.0008,
+        "offspringMean": 3,
+        "clusterSdM": 3.0
+      },
+      "countMethod": "count individuals (stems)",
+      "coverEstimated": false
+    }
+  ]
+}

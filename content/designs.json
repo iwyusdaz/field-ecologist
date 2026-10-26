@@ -1,0 +1,46 @@
+{
+  "budget": { "quadrats": 10, "timeUnits": 100, "walkCostPerM": 0.12, "baseCostPerQuadrat": 1.5 },
+  "quadratSizeM": 2,
+  "designs": [
+    {
+      "id": "random",
+      "name": "Simple random",
+      "kind": "probability",
+      "definition": "Any group of quadrats is equally likely to be chosen as any other. The app draws the quadrat centres uniformly at random across the whole meadow (you may redraw once).",
+      "pros": "Unbiased for every species; simplest to justify in a report.",
+      "cons": "Can leave gaps; for species tied to a gradient, plain random samples can be unevenly spread, so estimates vary more between repeats.",
+      "learnerControls": ["redraw once before starting"],
+      "expectedBehavior": "Approximately unbiased estimate for all species; moderate spread for the gradient species."
+    },
+    {
+      "id": "systematic",
+      "name": "Systematic (even grid)",
+      "kind": "probability",
+      "definition": "Quadrats on a regular grid with a random starting offset — sample at fixed intervals from a random start.",
+      "pros": "Spreads quadrats evenly over the meadow; easy to walk; usually steadier (less spread between repeats) than simple random.",
+      "cons": "If the meadow's pattern has a matching rhythm, a grid can align with it badly; one random start only.",
+      "learnerControls": ["the grid start is randomised once"],
+      "expectedBehavior": "Approximately unbiased; usually lower spread than simple random for the clumped and gradient species."
+    },
+    {
+      "id": "stratified",
+      "name": "Stratified by moisture zone",
+      "kind": "probability",
+      "definition": "Divide the meadow into equal-area strata (wet, mid, dry thirds along the moisture gradient), then place the same number of quadrats at random within each stratum.",
+      "pros": "Guarantees the wet ground is sampled — best when you already know a gradient matters (the map shows the zones before you choose).",
+      "cons": "Requires knowing the strata in advance; slightly more walking.",
+      "learnerControls": ["zones are shown on the map"],
+      "expectedBehavior": "Approximately unbiased; lowest spread for the moisture-gradient species (Blue Sedge)."
+    },
+    {
+      "id": "convenience",
+      "name": "Wherever looks interesting",
+      "kind": "nonprobability",
+      "definition": "A non-probability design: you place each quadrat wherever looks interesting — typically right where the showy plants catch your eye. Nothing is wrong with curiosity, but this is convenience sampling, and it is not a fair sample of the meadow.",
+      "pros": "Feels efficient; you see lots of the showy species up close.",
+      "cons": "You choose where to sample, so some parts of the meadow become far more likely than others — exactly what sampling bias is.",
+      "learnerControls": ["click or keyboard-place each quadrat anywhere on the map"],
+      "expectedBehavior": "Deliberately biased upward for the showy clumped species (Butterweed) and almost blind to the rare Fen Orchid. The reveal and the re-sampling simulator make this visible."
+    }
+  ]
+}

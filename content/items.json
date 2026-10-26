@@ -1,0 +1,277 @@
+{
+  "meta": {
+    "note": "All items are constructed for teaching purposes. Every MC item carries a 'why' explanation that teaches, not just marks right/wrong (standards 3.4)."
+  },
+  "hypothesisTask": {
+    "id": "hypothesis",
+    "prompt": "Before we sample anything: you can see the meadow from the field station. What is your hypothesis about how the Butterweed — the yellow-flowered species we are studying — is spread across the ground?",
+    "options": [
+      { "id": "uniform", "text": "It grows evenly everywhere, like a wallpaper pattern." },
+      { "id": "clumped", "text": "It grows in patches, with bare ground between them." },
+      { "id": "gradient", "text": "It follows the wet low ground and avoids the dry rise." }
+    ],
+    "correct": "clumped",
+    "why": "This is a hypothesis, so any answer is a fair starting point. From the station the yellow patches are clearly clumped — and later the reveal will show the patches precisely. The design lesson: when you suspect patchiness, you already have a reason to choose a design deliberately instead of sampling wherever is easy."
+  },
+  "precheck": [
+    {
+      "id": "pre1",
+      "objective": "LO1",
+      "prompt": "Why do ecologists usually sample with quadrats instead of counting every plant in a meadow?",
+      "options": [
+        { "id": "a", "text": "Counting every individual is too slow and costly, so we count a representative part and estimate the whole." },
+        { "id": "b", "text": "Because plants are too small to see without a quadrat frame." },
+        { "id": "c", "text": "Because a census disturbs the soil and kills the plants." }
+      ],
+      "correct": "a",
+      "why": "A full count (a census) of 10,000 m² of vegetation is impractical, so we sample part of the habitat and estimate the rest — that is exactly what the quadrat method is for."
+    },
+    {
+      "id": "pre2",
+      "objective": "LO1",
+      "prompt": "What is a quadrat?",
+      "options": [
+        { "id": "a", "text": "A square frame of a known area (like 1 m² or 4 m²) laid on the ground to mark out a sample area." },
+        { "id": "b", "text": "A type of plant community." },
+        { "id": "c", "text": "A measuring tape stretched diagonally across a field." }
+      ],
+      "correct": "a",
+      "why": "A quadrat is a known-area square. Knowing the area is what lets you turn counts into density (individuals per m²)."
+    },
+    {
+      "id": "pre3",
+      "objective": "LO4",
+      "prompt": "A classmate samples for daisies only on the mown lawn beside the path, then reports the whole meadow's daisy density. What is the problem?",
+      "options": [
+        { "id": "a", "text": "Nothing — daisies are everywhere anyway." },
+        { "id": "b", "text": "The sample was chosen for convenience, so some parts of the meadow had no chance of being sampled — the estimate is likely biased." },
+        { "id": "c", "text": "The problem is only that one quadrat is too few; where it is placed does not matter." }
+      ],
+      "correct": "b",
+      "why": "Sampling bias happens when some members of the population are more likely to be sampled than others. A lawn and an unmown meadow differ, so a lawn-only sample is a convenience sample — the reveal in this module shows exactly this effect."
+    },
+    {
+      "id": "pre4",
+      "objective": "LO3",
+      "prompt": "You count 8 plants in one 4 m² quadrat. What is the estimated density?",
+      "options": [
+        { "id": "a", "text": "8 plants per m²" },
+        { "id": "b", "text": "2 plants per m²" },
+        { "id": "c", "text": "32 plants per m²" }
+      ],
+      "correct": "b",
+      "why": "Density = count ÷ area = 8 ÷ 4 = 2 plants per m². Estimating the meadow's population means scaling this up — and averaging over many quadrats, not one."
+    },
+    {
+      "id": "pre5",
+      "objective": "LO1",
+      "prompt": "Before walking out, you already know one fact about the meadow: the low ground near the stream is wetter than the rise. Why does that fact matter for your sampling plan?",
+      "options": [
+        { "id": "a", "text": "It doesn't — a good sample ignores the terrain." },
+        { "id": "b", "text": "Species that follow moisture are not evenly spread, so a design that guarantees samples in each zone (like stratifying) is worth considering." },
+        { "id": "c", "text": "It only matters if you get tired walking uphill." }
+      ],
+      "correct": "b",
+      "why": "A known gradient is a reason to design, not to wander: stratifying by moisture zone makes sure the wet ground gets sampled in proportion. This is objective 1 in action."
+    }
+  ],
+  "idQuiz": [
+    {
+      "id": "id1",
+      "kind": "species",
+      "speciesRef": "butterweed",
+      "view": "closeup",
+      "prompt": "Which species is this? (Field marks you can see: one upright stem about knee height; a single rounded drumstick-like yellow head 2–3 cm across; alternate lance-shaped leaves with pointed tips.)",
+      "why": "The single rounded yellow head on a bare-ish upright stem with lance-shaped alternate leaves is Butterweed's combination of marks. Blue Sedge has no head; Fen Orchid's spike is tiny and one-sided."
+    },
+    {
+      "id": "id2",
+      "kind": "species",
+      "speciesRef": "blue-sedge",
+      "view": "closeup",
+      "prompt": "Which species is this? (Field marks: a fountain-like tuft of narrow blades arching from the base; 30–45 cm tall; bluish-green; tiny brown seed spike at some tips.)",
+      "why": "Arching narrow blades from the base with a bluish cast and a small brown spike = Blue Sedge. Bunchgrass is stiff and upright, not arching, and never bluish."
+    },
+    {
+      "id": "id3",
+      "kind": "species",
+      "speciesRef": "daisyleaf",
+      "view": "closeup",
+      "prompt": "Which species is this? (Field marks: a flat basal rosette of round, bluntly toothed leaves; 8–15 cm tall; one or two small white button flowers on short stalks.)",
+      "why": "Everything radiating from one ground-level point with round toothed leaves and button flowers = Common Daisy-leaf. No other species here is a flat rosette."
+    },
+    {
+      "id": "id4",
+      "kind": "species",
+      "speciesRef": "bunchgrass",
+      "view": "closeup",
+      "prompt": "Which species is this? (Field marks: a tight upright mop of hair-thin stiff blades from one point; 25–35 cm tall; straw-coloured; blades often folded lengthwise.)",
+      "why": "A tight upright tussock with hair-thin folded blades = Tussock Bunchgrass. Blue Sedge arches and is bluish; Daisy-leaf is a flat rosette with round leaves."
+    },
+    {
+      "id": "id5",
+      "kind": "species",
+      "speciesRef": "fen-orchid",
+      "view": "closeup",
+      "prompt": "Which species is this? (Field marks: slender bare stem 20–30 cm; a loose ONE-SIDED spike of tiny greenish flowers under 5 mm; exactly two shiny oval basal leaves lying flat.)",
+      "why": "The two flat oval basal leaves plus a loose one-sided mini-spike = Fen Orchid. Butterweed's head is a single big yellow drumstick, not a spike of tiny flowers."
+    },
+    {
+      "id": "id6",
+      "kind": "species",
+      "speciesRef": "butterweed",
+      "view": "quadrat",
+      "prompt": "This is a top-down view of one quadrat. Which species are the four upright stems with rounded yellow heads? (The rosettes with round toothed leaves are Common Daisy-leaf.)",
+      "correct": "butterweed",
+      "options": [
+        { "id": "butterweed", "text": "Meadow Butterweed" },
+        { "id": "blue-sedge", "text": "Blue Sedge" },
+        { "id": "fen-orchid", "text": "Fen Orchid" }
+      ],
+      "why": "In the counting view you identify from above: the yellow drumstick heads read as circles from the top, and the stem bases sit in a line — upright species, not a rosette. That is Butterweed."
+    },
+    {
+      "id": "id7",
+      "kind": "concept",
+      "prompt": "Why does the field guide tell you shape and size of every field mark first, and colour last?",
+      "options": [
+        { "id": "a", "text": "Colour changes with the weather; shape does not." },
+        { "id": "b", "text": "Shape and size work for everyone including colour-blind users, and colour is only reliable as a secondary cue; identification should never depend on colour alone." },
+        { "id": "c", "text": "Tradition — botanical keys just like colour least." }
+      ],
+      "correct": "b",
+      "why": "Cues that rely on colour alone exclude colour-blind learners (about 1 in 12 men) and fail in odd light. Every mark in this guide is stated as shape + size first; colour is a secondary confirmation. That is the accessibility rule of this simulation too."
+    },
+    {
+      "id": "id8",
+      "kind": "concept",
+      "prompt": "In a 4 m² quadrat you see too many Bunchgrass tussocks to count individually. What does the method say to do?",
+      "options": [
+        { "id": "a", "text": "Skip the species entirely." },
+      { "id": "b", "text": "Estimate percent cover in bands (0–5%, 5–25%, 25–50%, 50–100%) — cover is the standard measure when counting individuals is impractical." },
+        { "id": "c", "text": "Count them one by one however long it takes." }
+      ],
+      "correct": "b",
+      "why": "Dense species are recorded as percent cover — the fraction of ground the species occupies — estimated in bands. Counts suit sparse species; cover suits dense ones. Both go on the same data sheet."
+    }
+  ],
+  "chartItems": [
+    {
+      "id": "chart1",
+      "prompt": "The re-sampling simulator drew 1,000 virtual samples with YOUR design at n = 20. The spread (standard deviation) of estimates is large for Blue Sedge with simple random sampling, and noticeably smaller with stratified sampling. Why?",
+      "options": [
+        { "id": "a", "text": "Stratified sampling changes the true density." },
+        { "id": "b", "text": "Sedge is concentrated in the wet zone; stratifying guarantees each zone is sampled in proportion, so unlucky 'all-dry' samples — which drag estimates down — can no longer happen." },
+        { "id": "c", "text": "The simulator adds less noise for stratified designs." }
+      ],
+      "correct": "b",
+      "why": "Design does not change the meadow — it changes which samples are possible. Stratification removes the worst-case samples (e.g. all quadrats landing in the dry zone), which is why its sampling distribution is narrower for a gradient species."
+    },
+    {
+      "id": "chart2",
+      "prompt": "With the 'wherever looks interesting' design, the average of 1,000 re-sampled Butterweed estimates sits far ABOVE the true density — and increasing n from 5 to 40 barely moves it. What does that show?",
+      "options": [
+        { "id": "a", "text": "The simulator is broken for that design." },
+        { "id": "b", "text": "Bias comes from HOW quadrats are chosen, not from how many you take. More quadrats narrow the spread but the whole distribution stays shifted upward." },
+        { "id": "c", "text": "Butterweed really is that dense everywhere." }
+      ],
+      "correct": "b",
+      "why": "This is the core lesson: 'more data' fixes variance, not bias. The convenience design keeps choosing cluster centres, so every sample shares the same upward slant. Only a fair (probability) design recentres the distribution."
+    },
+    {
+      "id": "chart3",
+      "prompt": "Your class sampled the Fen Orchid with 10 quadrats and found 0. The true population is about two dozen plants. What is the correct reading of '0 observed'?",
+      "options": [
+        { "id": "a", "text": "The orchid is extinct in the meadow." },
+        { "id": "b", "text": "The orchid was likely absent from YOUR sample, not from the meadow: 10 quadrats of 4 m² cover only 0.4% of the ground, and a rare clumped species mostly hides outside them." },
+        { "id": "c", "text": "Someone counted wrong." }
+      ],
+      "correct": "b",
+      "why": "Absence of evidence is not evidence of absence when the sample covers a tiny fraction of the habitat. For rare clumped species, ecologists design targeted searches instead of relying on general quadrats."
+    }
+  ],
+  "transfer": [
+    {
+      "id": "tr1",
+      "prompt": "A researcher wants to survey students at a school about study habits. The school has 800 students across three year groups. She gives the questionnaire to the 40 students in the library at lunch. What kind of sample is this?",
+      "options": [
+        { "id": "a", "text": "A simple random sample" },
+        { "id": "b", "text": "A convenience sample" },
+        { "id": "c", "text": "A stratified sample" }
+      ],
+      "correct": "b",
+      "why": "The students are 'readily available' — that is the definition of convenience sampling, and like placing quadrats 'wherever looks interesting', it can be seriously biased (library users may study more)."
+    },
+    {
+      "id": "tr2",
+      "prompt": "For the same school survey, which plan would give every group of 40 students an equal chance of being chosen?",
+      "options": [
+        { "id": "a", "text": "Number all 800 students and draw 40 names with a random number generator." },
+        { "id": "b", "text": "Ask 40 volunteers from the drama club." },
+        { "id": "c", "text": "Survey whoever is nearest the front gate at 3 pm." }
+      ],
+      "correct": "a",
+      "why": "That is simple random sampling — the survey equivalent of throwing quadrat centres uniformly at random over the meadow."
+    },
+    {
+      "id": "tr3",
+      "prompt": "Study habits are suspected to differ a lot between year groups. Which design accounts for that known structure directly?",
+      "options": [
+        { "id": "a", "text": "Stratified sampling: draw a proportionate random sample from each year group." },
+        { "id": "b", "text": "Systematic sampling of the cafeteria line." },
+        { "id": "c", "text": "A bigger convenience sample — more people fixes everything." }
+      ],
+      "correct": "a",
+      "why": "Year groups are strata, just like moisture zones in the meadow. Stratifying guarantees each stratum is represented — the same reason stratifying by moisture steadied the Sedge estimate."
+    },
+    {
+      "id": "tr4",
+      "prompt": "A student argues: 'The library sample said students study 3 hours a night. We just need to survey 400 library users instead of 40 to make it accurate.' What is the flaw?",
+      "options": [
+        { "id": "a", "text": "None — bigger samples are always more accurate." },
+        { "id": "b", "text": "More library users narrows the spread but cannot remove the bias: non-library users still have zero chance of being asked, so the estimate stays shifted." },
+        { "id": "c", "text": "Library users are known to lie." }
+      ],
+      "correct": "b",
+      "why": "This is the Butterweed lesson in survey clothes: sample size tightens the sampling distribution; only a fair design moves its centre. Bias is a design property, not a size problem."
+    }
+  ],
+  "reportRubric": [
+    {
+      "id": "justification",
+      "name": "Design justification",
+      "levels": [
+        "Names the design but not why it fits the question and the meadow's known gradient.",
+        "Names the design and one reason it fits (e.g. 'the map shows a moisture gradient, so I stratified').",
+        "Names the design, justifies it against an alternative, and connects it to the research question."
+      ]
+    },
+    {
+      "id": "accuracy",
+      "name": "Data accuracy",
+      "levels": [
+        "Estimates stated without units or without the quadrat area.",
+        "Densities stated per m² with the count and area shown.",
+        "Densities per m², counts and area shown, and any mis-identifications from the field guide acknowledged."
+      ]
+    },
+    {
+      "id": "uncertainty",
+      "name": "Uncertainty statement",
+      "levels": [
+        "No uncertainty mentioned.",
+        "Mentions spread (e.g. SD or range from the simulator) with a number.",
+        "States spread with a number AND interprets it (e.g. 'most repeats land between X and Y'), separating bias from variance."
+      ]
+    },
+    {
+      "id": "limitations",
+      "name": "Limitations",
+      "levels": [
+        "No limitations noted.",
+        "One honest limitation (e.g. missed rare species, mis-ID, or a biased design choice).",
+        "Multiple limitations tied to specific evidence in the reveal (observed vs true table)."
+      ]
+    }
+  ]
+}

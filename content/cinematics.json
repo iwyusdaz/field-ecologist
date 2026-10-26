@@ -1,0 +1,107 @@
+{
+  "meta": {
+    "policy": "Shots are data-driven (standards 3.2). Each shot carries a purpose tag, is skippable from the first frame (Skip button + Esc), is captioned, has a text description (audio-description), and a reduced-motion version (still frame + captions). Cinematics never play during an assessment. Total runtime <= 55 s (budget 90 s).",
+    "coordinateSystem": "Meadow metres: x 0..100 (stream side / wet at low x), z 0..100 (field station gate at x=50, z=-8 outside the fence). y is height above ground."
+  },
+  "cinematics": [
+    {
+      "id": "s1-dawn-arrival",
+      "title": "Dawn at the meadow",
+      "purpose": "orient + motivate",
+      "objective": "LO1",
+      "effects": "dawn lighting + lifting mist (this cinematic only); camera glide; cut to daylight for fieldwork afterwards",
+      "reducedMotion": "single still frame with caption",
+      "shots": [
+        {
+          "id": "s1a",
+          "purpose": "orient",
+          "duration": 12,
+          "easing": "easeInOut",
+          "path": [[52, 2.0, -6], [46, 1.6, 8], [38, 1.8, 20]],
+          "target": [30, 1.0, 34],
+          "captions": [
+            "5:40 am. The mist is still lifting off the low ground by the stream.",
+            "This is Ashcombe Meadow — one hectare of grass, sedges and herbs."
+          ],
+          "description": "A low dawn sun over a grassy meadow. Thin mist hangs over the wetter ground on the left. The camera glides forward through the gate toward the field station table.",
+          "lighting": { "sunElevationDeg": 6, "sunAzimuthDeg": 80, "mist": 0.55, "sunColor": "#ffd9a0", "exposure": 1.05 }
+        },
+        {
+          "id": "s1b",
+          "purpose": "motivate",
+          "duration": 8,
+          "easing": "easeOut",
+          "path": [[38, 1.8, 20], [34, 1.3, 27], [31, 1.05, 31]],
+          "target": [22, 0.6, 40],
+          "captions": [
+            "Somewhere out there is the meadow's true answer: how much Butterweed grows here?",
+            "You will never count all of it. You will sample — and design that sample well."
+          ],
+          "description": "The camera drifts lower toward a patch of yellow-flowered plants. A field notebook and quadrat frame rest on the station table.",
+          "lighting": { "sunElevationDeg": 8, "sunAzimuthDeg": 80, "mist": 0.35, "sunColor": "#ffe7c4", "exposure": 1.0 }
+        }
+      ]
+    },
+    {
+      "id": "s2-reveal",
+      "title": "The reveal — every Butterweed plant",
+      "purpose": "reveal",
+      "objective": "LO3, LO4",
+      "effects": "camera rises to near-overhead; every Butterweed instance gets a highlight tint; the learner's sampled quadrats stay outlined",
+      "reducedMotion": "static top-down map view with highlights (the same view as the reveal table, no camera flight)",
+      "shots": [
+        {
+          "id": "s2a",
+          "purpose": "reveal",
+          "duration": 14,
+          "easing": "easeInOut",
+          "path": [[50, 30, 60], [50, 90, 50], [50, 150, 50]],
+          "target": [50, 0, 50],
+          "captions": [
+            "This is every one of the N Butterweed plants in the meadow — the truth you could never see from the ground.",
+            "Your quadrats are the outlined squares. Look where they landed — and where they didn't."
+          ],
+          "description": "The camera rises straight up until the whole meadow is visible as a map. Every Butterweed plant lights up as a small yellow marker. The learner's ten quadrats are drawn as white outlines.",
+          "highlight": { "species": "butterweed", "style": "glow-marker" }
+        },
+        {
+          "id": "s2b",
+          "purpose": "reveal",
+          "duration": 6,
+          "easing": "easeOut",
+          "path": [[50, 150, 50]],
+          "target": [50, 0, 50],
+          "captions": [
+            "Now compare your estimate with the truth on the table."
+          ],
+          "description": "A static overhead view. The reveal table (true vs estimated, per species) is shown beside the map.",
+          "highlight": { "species": "butterweed", "style": "glow-marker" }
+        }
+      ]
+    },
+    {
+      "id": "s3-many-samples",
+      "title": "A thousand samples",
+      "purpose": "reveal",
+      "objective": "LO4",
+      "effects": "ghost quadrat outlines 'rain' across the meadow in step with the re-sampling simulator building its histogram",
+      "reducedMotion": "chart only (the histogram and its data table appear immediately, no rain animation)",
+      "shots": [
+        {
+          "id": "s3a",
+          "purpose": "reveal",
+          "duration": 15,
+          "easing": "linear",
+          "path": [[50, 140, 50]],
+          "target": [50, 0, 50],
+          "captions": [
+            "Imagine repeating your fieldwork a thousand times.",
+            "Each flash of a square is one virtual sample. The pile they build is the sampling distribution."
+          ],
+          "description": "Seen from above, ghost quadrat sets appear across the meadow one after another — a thousand virtual samples. Beside them, a histogram fills in, centred near the true density for fair designs.",
+          "sync": "resampler-progress"
+        }
+      ]
+    }
+  ]
+}
