@@ -11,7 +11,7 @@ editing this file).
 | Asset | Author | Source | License | Changes |
 |---|---|---|---|---|
 | `public/assets/sky-meadow-1k.hdr` (Belfast Open Field, 1k HDR) | Poly Haven contributors | https://polyhaven.com/a/belfast_open_field | CC0 1.0 | Unmodified (renamed copy); used as environment/background lighting |
-| Draco decoder + Basis/KTX2 transcoder (`public/decoders/`) | Google / Binomial LLC | via three.js `scripts/setup-decoders.mjs` (Apache-2.0 / Apache-2.0) | Apache-2.0 | Unmodified copies, self-hosted so no CDN requests |
+| Draco decoder + Basis/KTX2 transcoder (`dist/decoders/`, served by `vite-plugin-decoders.js` from the pinned three package) | Google / Binomial LLC | via three.js `examples/jsm/libs` (Apache-2.0) | Apache-2.0 | Unmodified copies, self-hosted so no CDN requests |
 
 Everything else — species models, terrain, textures, sounds-free design, charts —
 is original procedural work in this repository (MIT), constructed for teaching

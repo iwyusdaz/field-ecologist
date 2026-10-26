@@ -1,38 +1,16 @@
 /**
- * Asset loader: GLTF/GLB (+ DRACO, Meshopt, KTX2) with SELF-HOSTED decoders.
- * The build contract (08-vercel-deployment.md 5.1) forbids CDN loads: decoders are
- * copied into public/decoders/ by scripts/setup-decoders.mjs and loaded relative
- * to the page via import.meta.env.BASE_URL, so any sub-path works.
+ * Asset helpers. This project is fully procedural (three.js geometry + one
+ * Poly Haven HDRI), so it loads no GLB/KTX2 assets; the GLTF/Draco/KTX2 loader
+ * stack from the template is therefore not imported here — importing it would
+ * make Vite emit duplicate decoder copies into dist/assets (the loaders embed
+ * `new URL(..., import.meta.url)` asset references). The decoders stay
+ * self-hosted in dist/decoders/ via vite-plugin-decoders.js so any future
+ * GLTF content works without a CDN (build contract, 08 5.1).
  * @module core/assets
  */
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
-import { KTX2Loader } from 'three/addons/loaders/KTX2Loader.js';
-import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 
 const BASE = import.meta.env.BASE_URL || './';
-
-let _sharedLoader = null;
-
-/**
- * A shared GLTFLoader configured with self-hosted decoders and renderer-based KTX2 support.
- * @param {THREE.WebGLRenderer} renderer
- */
-export function getGLTFLoader(renderer) {
-  if (_sharedLoader) return _sharedLoader;
-  const loader = new GLTFLoader();
-  const draco = new DRACOLoader();
-  draco.setDecoderPath(`${BASE}decoders/draco/`);
-  loader.setDRACOLoader(draco);
-  const ktx2 = new KTX2Loader();
-  ktx2.setTranscoderPath(`${BASE}decoders/basis/`);
-  ktx2.detectSupport(renderer);
-  loader.setKTX2Loader(ktx2);
-  loader.setMeshoptDecoder(MeshoptDecoder);
-  _sharedLoader = loader;
-  return loader;
-}
 
 /** Fetch JSON relative to BASE_URL (works at any sub-path). */
 export async function loadJSON(path) {

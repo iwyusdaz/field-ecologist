@@ -14,18 +14,57 @@ import { countInQuadrat, QUADRAT_AREA } from './population-model.js';
 /**
  * Run one virtual sampling effort and return the density estimate for a species.
  * @param {object} population result of buildPopulation (positions per species)
- * @param {object} opts { design, n, seed, speciesId, clusters }
+ * @param {object} opts { design, n, seed, speciesId, clusters, index? }
  * @returns {number} density estimate (individuals per m2)
  */
 export function virtualEstimate(population, opts) {
   const { design, n, seed, speciesId, clusters } = opts;
   const quads = generateQuadrats(design, n, seed, { butterweedClusters: clusters });
   const positions = population.positions[speciesId];
+  const index = opts.index || null;
   let total = 0;
   for (const q of quads) {
-    total += countInQuadrat(positions, q.x, q.z);
+    total += index ? countInQuadratIndexed(index, q.x, q.z) : countInQuadrat(positions, q.x, q.z);
   }
   return total / (n * QUADRAT_AREA);
+}
+
+/**
+ * Uniform-grid spatial index for fast "count inside a 2x2 m quadrat" lookups
+ * (semantics identical to countInQuadrat's half-open bounds). Used by the
+ * re-sampling worker: 1,000 iterations x up to 40 quadrats over ~15k plants.
+ * @param {Array<{x:number,z:number}>} positions
+ * @param {number} [cell] grid cell size in metres (default = quadrat size)
+ * @returns {{ cell:number, buckets:Map<string,Array<{x:number,z:number}>> }}
+ */
+export function buildSpatialIndex(positions, cell = QUADRAT_SIZE) {
+  const buckets = new Map();
+  for (const p of positions) {
+    const k = `${Math.floor(p.x / cell)},${Math.floor(p.z / cell)}`;
+    let arr = buckets.get(k);
+    if (!arr) { arr = []; buckets.set(k, arr); }
+    arr.push(p);
+  }
+  return { cell, buckets };
+}
+
+/** Count plants inside a size x size quadrat at (cx,cz) using a buildSpatialIndex result. */
+export function countInQuadratIndexed(index, cx, cz, size = QUADRAT_SIZE) {
+  const h = size / 2;
+  const cell = index.cell;
+  const i0 = Math.floor((cx - h) / cell), i1 = Math.floor((cx + h - 1e-9) / cell);
+  const j0 = Math.floor((cz - h) / cell), j1 = Math.floor((cz + h - 1e-9) / cell);
+  let n = 0;
+  for (let i = i0; i <= i1; i++) {
+    for (let j = j0; j <= j1; j++) {
+      const arr = index.buckets.get(`${i},${j}`);
+      if (!arr) continue;
+      for (const p of arr) {
+        if (p.x >= cx - h && p.x < cx + h && p.z >= cz - h && p.z < cz + h) n++;
+      }
+    }
+  }
+  return n;
 }
 
 /**

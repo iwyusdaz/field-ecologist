@@ -7,9 +7,9 @@
     "changes": "Unmodified (renamed copy); used as environment/background lighting"
   },
   {
-    "asset": "Draco decoder + Basis/KTX2 transcoder (`public/decoders/`)",
+    "asset": "Draco decoder + Basis/KTX2 transcoder (`dist/decoders/`, served by `vite-plugin-decoders.js` from the pinned three package)",
     "author": "Google / Binomial LLC",
-    "source": "via three.js `scripts/setup-decoders.mjs` (Apache-2.0 / Apache-2.0)",
+    "source": "via three.js `examples/jsm/libs` (Apache-2.0)",
     "license": "Apache-2.0",
     "changes": "Unmodified copies, self-hosted so no CDN requests"
   }
