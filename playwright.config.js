@@ -6,7 +6,8 @@ import { defineConfig } from '@playwright/test';
 export default defineConfig({
   testDir: 'tests',
   testMatch: /.*\.spec\.js/,
-  timeout: 60_000,
+  // CI runners (2 vCPU) are far slower than the local M1; local runs stay well under.
+  timeout: 180_000,
   retries: 0,
   workers: 1,
   use: {
@@ -19,7 +20,7 @@ export default defineConfig({
     command: 'npm run preview -- --port 4179 --strictPort --host 127.0.0.1',
     url: 'http://127.0.0.1:4179',
     reuseExistingServer: !process.env.CI,
-    timeout: 30_000,
+    timeout: 120_000,
   },
   projects: [
     { name: 'chromium', use: { browserName: 'chromium' } },
