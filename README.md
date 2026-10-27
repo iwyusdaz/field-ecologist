@@ -59,3 +59,7 @@ Built with three.js 0.186.1 (instanced vegetation, custom wind shader, orthograp
 ## License
 
 Code MIT (`LICENSE`), content CC BY 4.0 (`LICENSE-CONTENT`), assets CC0 or original — see `ATTRIBUTION.md`.
+
+## Trailer
+
+**Trailer:** [docs/trailer.webm](docs/trailer.webm) (56 s, captioned; WebVTT sidecar at [docs/trailer.vtt](docs/trailer.vtt)). Recorded from the real app on the Mac GPU; the caption text is also in the sidecar file.

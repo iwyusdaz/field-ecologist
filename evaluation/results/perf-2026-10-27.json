@@ -1,22 +1,22 @@
 {
   "repo": "field-ecologist",
   "version": "1.0.0",
-  "measuredAt": "2026-10-27T12:40:15.262Z",
+  "measuredAt": "2026-10-27T19:44:42.395Z",
   "method": "Headed Chromium (Playwright) on the local Mac GPU; test-hooks build served locally; 3 s warm-up then 8 s of requestAnimationFrame frame times per preset; renderer.info read at the end of each sample.",
   "machine": {
     "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1, Unspecified Version)",
     "viewport": "1440x900 CSS px at deviceScaleFactor 2"
   },
-  "menuInteractiveMs": 777,
+  "menuInteractiveMs": 337,
   "startup": {
-    "menuVisibleMs": 776,
-    "menuInteractiveMs": 777,
-    "longTaskMsBeforeInteractive": 603,
+    "menuVisibleMs": 336,
+    "menuInteractiveMs": 337,
+    "longTaskMsBeforeInteractive": 299,
     "definition": "ms from navigation start until the Menu button is visible and no long task (>50 ms) is running; local server, so network time is near zero"
   },
   "network": {
     "requests": 5,
-    "bytes": 2654055
+    "bytes": 2662061
   },
   "budgets": {
     "fpsMediumMin": 55,
@@ -29,11 +29,11 @@
     {
       "preset": "low",
       "frames": 481,
-      "fpsMean": 60.1,
+      "fpsMean": 60,
       "frameMsP50": 16.7,
-      "frameMsP95": 17.6,
+      "frameMsP95": 18.4,
       "drawCalls": 32,
-      "triangles": 95880,
+      "triangles": 158016,
       "textures": 12,
       "geometries": 35,
       "resolutionScale": 0.75,
@@ -45,9 +45,9 @@
       "frames": 481,
       "fpsMean": 60.1,
       "frameMsP50": 16.7,
-      "frameMsP95": 17.5,
+      "frameMsP95": 18.6,
       "drawCalls": 35,
-      "triangles": 297931,
+      "triangles": 488635,
       "textures": 20,
       "geometries": 36,
       "resolutionScale": 1,
@@ -57,11 +57,11 @@
     {
       "preset": "high",
       "frames": 481,
-      "fpsMean": 60,
+      "fpsMean": 60.1,
       "frameMsP50": 16.7,
-      "frameMsP95": 17.6,
+      "frameMsP95": 18.6,
       "drawCalls": 32,
-      "triangles": 608976,
+      "triangles": 1037392,
       "textures": 12,
       "geometries": 35,
       "resolutionScale": 1,
@@ -73,9 +73,9 @@
       "frames": 481,
       "fpsMean": 60.1,
       "frameMsP50": 16.7,
-      "frameMsP95": 17.1,
+      "frameMsP95": 18.4,
       "drawCalls": 32,
-      "triangles": 608976,
+      "triangles": 1037392,
       "textures": 12,
       "geometries": 35,
       "resolutionScale": 1,
