@@ -1,0 +1,19 @@
+
+> field-ecologist@1.0.0 test
+> vitest run
+
+
+ RUN  v5.0.5 /Users/iwayanusada/github-portfolio-building/repos/immersive/field-ecologist
+
+ ✓ tests/unit/content.test.js (14 tests) 12ms
+ ✓ tests/unit/designs.test.js (6 tests) 7ms
+ ✓ tests/unit/data-sheet.test.js (8 tests) 4ms
+ ✓ tests/unit/fieldwork.test.js (16 tests) 30ms
+ ✓ tests/unit/population-model.test.js (18 tests) 584ms
+ ✓ tests/unit/resampler.test.js (14 tests) 1073ms
+
+ Test Files  6 passed (6)
+      Tests  76 passed (76)
+   Start at  07:51:21
+   Duration  1.42s (tests 76%, import 18%, transform 4%, worker 2%)
+

@@ -93,6 +93,8 @@ export class MeadowScene {
     // Wind level state machine: ambient 1, counting 0.12, reduced motion 0.
     this.reducedMotion = engine.reducedMotion;
     this._applyWind();
+    // Exposed for tools (poster staging) and tests.
+    this.terrainHeight = terrainHeight;
   }
 
   _buildLights() {

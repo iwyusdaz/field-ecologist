@@ -1,0 +1,156 @@
+
+Running 10 tests using 1 worker
+
+  ✘   1 [chromium] › tests/_dbg.spec.js:2:1 › view shot (10.3s)
+  ✓   2 [chromium] › tests/a11y.spec.js:9:1 › overlay UI has no critical or serious axe issues (23.3s)
+  ✘   3 [chromium] › tests/a11y.spec.js:48:1 › module panels, field guide and text-mode grid have no critical or serious issues (37.2s)
+  ✓   4 [chromium] › tests/functional.spec.js:17:1 › menu and settings open by keyboard (14.9s)
+  ✓   5 [chromium] › tests/functional.spec.js:26:1 › all module tabs are reachable and activate by keyboard (18.5s)
+{
+ "error": "no test hooks — build with VITE_TEST_HOOKS=1"
+}
+  ✘   6 [chromium] › tests/functional.spec.js:36:1 › full playthrough: question → species → fieldwork → reveal → report (14.1s)
+  ✘   7 [chromium] › tests/functional.spec.js:132:1 › reveal UI shows the truth table and the simulator chart with a data table (13.4s)
+  ✘   8 [chromium] › tests/functional.spec.js:155:1 › text mode: full parity pass over the same objectives (14.7s)
+  ✘   9 [chromium] › tests/functional.spec.js:210:1 › CSV export produces a self-describing sheet (13.4s)
+  ✓  10 [chromium] › tests/sub-path.spec.js:66:1 › sub-path /play/<slug>/ loads with no failed requests or console errors (13.9s)
+
+
+  1) [chromium] › tests/_dbg.spec.js:2:1 › view shot ───────────────────────────────────────────────
+
+    Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'scene')
+        at eval (eval at evaluate (:370:30), <anonymous>:5:7)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (eval at evaluate (:370:30), <anonymous>:5:7)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at /Users/iwayanusada/github-portfolio-building/repos/immersive/field-ecologist/tests/_dbg.spec.js:6:14
+
+    Error Context: tmp/test-results/_dbg-view-shot-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    tmp/test-results/_dbg-view-shot-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace tmp/test-results/_dbg-view-shot-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › tests/a11y.spec.js:48:1 › module panels, field guide and text-mode grid have no critical or serious issues 
+
+    Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'hooks')
+        at eval (eval at evaluate (:370:30), <anonymous>:3:7)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (eval at evaluate (:370:30), <anonymous>:3:7)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at /Users/iwayanusada/github-portfolio-building/repos/immersive/field-ecologist/tests/a11y.spec.js:89:14
+
+    Error Context: tmp/test-results/a11y-module-panels-field-g-b696d--critical-or-serious-issues-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    tmp/test-results/a11y-module-panels-field-g-b696d--critical-or-serious-issues-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace tmp/test-results/a11y-module-panels-field-g-b696d--critical-or-serious-issues-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › tests/functional.spec.js:36:1 › full playthrough: question → species → fieldwork → reveal → report 
+
+    Error: expect(received).toBeUndefined()
+
+    Received: "no test hooks — build with VITE_TEST_HOOKS=1"
+
+      125 |
+      126 |   console.log(JSON.stringify(info, null, 1));
+    > 127 |   expect(info.error).toBeUndefined();
+          |                      ^
+      128 |   for (const s of info.steps) expect(s.pass, s.name).toBe(true);
+      129 |   expect(info.eventCount).toBeGreaterThan(30);
+      130 | });
+        at /Users/iwayanusada/github-portfolio-building/repos/immersive/field-ecologist/tests/functional.spec.js:127:22
+
+    Error Context: tmp/test-results/functional-full-playthroug-11015-fieldwork-→-reveal-→-report-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    tmp/test-results/functional-full-playthroug-11015-fieldwork-→-reveal-→-report-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace tmp/test-results/functional-full-playthroug-11015-fieldwork-→-reveal-→-report-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [chromium] › tests/functional.spec.js:132:1 › reveal UI shows the truth table and the simulator chart with a data table 
+
+    Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'hooks')
+        at eval (eval at evaluate (:370:30), <anonymous>:3:7)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (eval at evaluate (:370:30), <anonymous>:3:7)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at /Users/iwayanusada/github-portfolio-building/repos/immersive/field-ecologist/tests/functional.spec.js:134:14
+
+    Error Context: tmp/test-results/functional-reveal-UI-shows-192b2-tor-chart-with-a-data-table-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    tmp/test-results/functional-reveal-UI-shows-192b2-tor-chart-with-a-data-table-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace tmp/test-results/functional-reveal-UI-shows-192b2-tor-chart-with-a-data-table-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [chromium] › tests/functional.spec.js:155:1 › text mode: full parity pass over the same objectives 
+
+    Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'record')
+        at eval (eval at evaluate (:370:30), <anonymous>:1:23)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (eval at evaluate (:370:30), <anonymous>:1:23)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at /Users/iwayanusada/github-portfolio-building/repos/immersive/field-ecologist/tests/functional.spec.js:206:29
+
+    Error Context: tmp/test-results/functional-text-mode-full--9e9f3-ss-over-the-same-objectives-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    tmp/test-results/functional-text-mode-full--9e9f3-ss-over-the-same-objectives-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace tmp/test-results/functional-text-mode-full--9e9f3-ss-over-the-same-objectives-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [chromium] › tests/functional.spec.js:210:1 › CSV export produces a self-describing sheet ─────
+
+    Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'hooks')
+        at eval (eval at evaluate (:370:30), <anonymous>:3:7)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (eval at evaluate (:370:30), <anonymous>:3:7)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at /Users/iwayanusada/github-portfolio-building/repos/immersive/field-ecologist/tests/functional.spec.js:212:26
+
+    Error Context: tmp/test-results/functional-CSV-export-produces-a-self-describing-sheet-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    tmp/test-results/functional-CSV-export-produces-a-self-describing-sheet-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace tmp/test-results/functional-CSV-export-produces-a-self-describing-sheet-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6 failed
+    [chromium] › tests/_dbg.spec.js:2:1 › view shot ────────────────────────────────────────────────
+    [chromium] › tests/a11y.spec.js:48:1 › module panels, field guide and text-mode grid have no critical or serious issues 
+    [chromium] › tests/functional.spec.js:36:1 › full playthrough: question → species → fieldwork → reveal → report 
+    [chromium] › tests/functional.spec.js:132:1 › reveal UI shows the truth table and the simulator chart with a data table 
+    [chromium] › tests/functional.spec.js:155:1 › text mode: full parity pass over the same objectives 
+    [chromium] › tests/functional.spec.js:210:1 › CSV export produces a self-describing sheet ──────
+  4 passed (3.0m)

@@ -1,0 +1,6 @@
+
+Running 1 test using 1 worker
+
+  ✓  1 [chromium] › tests/sub-path.spec.js:66:1 › sub-path /play/<slug>/ loads with no failed requests or console errors (10.0s)
+
+  1 passed (10.8s)

@@ -1,0 +1,20 @@
+{
+  "slug": "field-ecologist",
+  "version": "1.0.0",
+  "title": "Field Ecologist: Sampling the Meadow",
+  "format": "Hybrid",
+  "niche": "Biology and research methods (ecology sampling, bias and uncertainty)",
+  "audience": "Grades 9–12 biology/environmental science, first-year undergraduates in research methods or ecology labs",
+  "summary": "Design a sampling plan for a realistic 100 m × 100 m meadow, place quadrats under a time budget, identify and count five botanically plausible species, then see the meadow's true population and discover how your design choices biased your estimate — with a 1,000-sample re-sampling simulator and a survey-sampling transfer task.",
+  "playTimeMinutes": 50,
+  "features": ["text-mode", "keyboard", "reduced-motion", "captions", "mobile-supported", "csv-export", "web-worker-simulator"],
+  "contentNotes": [],
+  "permissions": [],
+  "poster": {
+    "webp": "poster-1.0.0.webp",
+    "jpg": "poster-1.0.0.jpg",
+    "alt": "Overhead view of a green meadow with a white 2 m quadrat frame in the foreground and yellow-flowered plants scattered in clumps toward a stream"
+  },
+  "repoUrl": "https://github.com/iwyusdaz/field-ecologist",
+  "license": { "content": "CC BY 4.0", "code": "MIT" }
+}

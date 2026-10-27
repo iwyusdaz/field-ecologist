@@ -1,0 +1,128 @@
+
+Running 8 tests using 1 worker
+
+  ✓  1 [chromium] › tests/a11y.spec.js:9:1 › overlay UI has no critical or serious axe issues (23.9s)
+  ✓  2 [chromium] › tests/a11y.spec.js:48:1 › module panels, field guide and text-mode grid have no critical or serious issues (40.2s)
+  ✓  3 [chromium] › tests/functional.spec.js:17:1 › menu and settings open by keyboard (16.3s)
+  ✓  4 [chromium] › tests/functional.spec.js:26:1 › all module tabs are reachable and activate by keyboard (14.9s)
+{
+ "steps": [
+  {
+   "name": "m1 complete",
+   "pass": true
+  },
+  {
+   "name": "m2 complete",
+   "pass": true
+  },
+  {
+   "name": "mis-ID recorded",
+   "pass": true
+  },
+  {
+   "name": "design chosen",
+   "pass": true
+  },
+  {
+   "name": "10 quadrats placed",
+   "pass": true
+  },
+  {
+   "name": "strata covered",
+   "pass": true
+  },
+  {
+   "name": "visit 1",
+   "pass": true
+  },
+  {
+   "name": "visit 2",
+   "pass": true
+  },
+  {
+   "name": "visit 3",
+   "pass": true
+  },
+  {
+   "name": "visit 4",
+   "pass": true
+  },
+  {
+   "name": "visit 5",
+   "pass": true
+  },
+  {
+   "name": "visit 6",
+   "pass": true
+  },
+  {
+   "name": "visit 7",
+   "pass": true
+  },
+  {
+   "name": "visit 8",
+   "pass": true
+  },
+  {
+   "name": "visit 9",
+   "pass": true
+  },
+  {
+   "name": "visit 10",
+   "pass": true
+  },
+  {
+   "name": "time charged",
+   "pass": true
+  },
+  {
+   "name": "submission",
+   "pass": true
+  },
+  {
+   "name": "estimate near truth",
+   "pass": true
+  },
+  {
+   "name": "reveal table rendered",
+   "pass": true
+  },
+  {
+   "name": "simulator ran",
+   "pass": true
+  },
+  {
+   "name": "biased sim ran",
+   "pass": true
+  },
+  {
+   "name": "m5 complete",
+   "pass": true
+  },
+  {
+   "name": "answered items >= 20",
+   "pass": true
+  },
+  {
+   "name": "experienced events >= 11",
+   "pass": true
+  },
+  {
+   "name": "completed events >= 5",
+   "pass": true
+  }
+ ],
+ "verbs": {
+  "experienced": 12,
+  "answered": 21,
+  "completed": 7,
+  "attempted": 4
+ },
+ "eventCount": 44
+}
+  ✓  5 [chromium] › tests/functional.spec.js:36:1 › full playthrough: question → species → fieldwork → reveal → report (10.2s)
+  ✓  6 [chromium] › tests/functional.spec.js:132:1 › reveal UI shows the truth table and the simulator chart with a data table (26.0s)
+  ✓  7 [chromium] › tests/functional.spec.js:155:1 › text mode: full parity pass over the same objectives (10.7s)
+  ✓  8 [chromium] › tests/functional.spec.js:210:1 › CSV export produces a self-describing sheet (12.0s)
+
+  8 passed (2.6m)
