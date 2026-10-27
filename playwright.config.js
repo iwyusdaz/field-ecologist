@@ -10,14 +10,14 @@ export default defineConfig({
   retries: 0,
   workers: 1,
   use: {
-    baseURL: 'http://127.0.0.1:4173',
+    baseURL: 'http://127.0.0.1:4179',
     trace: 'retain-on-failure',
   },
   webServer: {
     // --host 127.0.0.1: vite preview otherwise binds ::1 only, and the URL
     // check below uses IPv4.
-    command: 'npm run preview -- --port 4173 --strictPort --host 127.0.0.1',
-    url: 'http://127.0.0.1:4173',
+    command: 'npm run preview -- --port 4179 --strictPort --host 127.0.0.1',
+    url: 'http://127.0.0.1:4179',
     reuseExistingServer: !process.env.CI,
     timeout: 30_000,
   },

@@ -9,7 +9,7 @@
  * @module systems/resampler
  */
 import { generateQuadrats, showyClusters } from './designs.js';
-import { countInQuadrat, QUADRAT_AREA } from './population-model.js';
+import { countInQuadrat, QUADRAT_AREA, QUADRAT_SIZE } from './population-model.js';
 
 /**
  * Run one virtual sampling effort and return the density estimate for a species.

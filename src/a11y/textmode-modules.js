@@ -258,6 +258,8 @@ function onCellClick(app, cell, qi) {
     const r = s.visit(qi);
     if (!r.ok) { announce(r.error, { assertive: true }); app.state.tmActiveQuadrat = null; }
     else if (!r.alreadyVisited) {
+      app.record.log('experienced', { id: `quadrat-${qi}`, name: `Sampled quadrat ${qi}` },
+        { response: `x ${cell.cx.toFixed(0)}, z ${cell.cz.toFixed(0)}` });
       announce(`Quadrat ${qi}: time charged ${r.cost.toFixed(1)} units. ${Math.round(s.remainingTime())} left.`);
     }
     app.goToModule('m3');

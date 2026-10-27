@@ -491,12 +491,14 @@ export class App {
             this.state.hypothesis = choiceId;
           } else if (this.items.precheck.some((x) => x.id === itemId)) {
             this.state.precheck[itemId] = { itemId, correct, chosen: choiceId };
+            if (Object.keys(this.state.precheck).length === this.items.precheck.length) this.onModuleComplete('m1');
           } else if (this.items.idQuiz.some((x) => x.id === itemId)) {
             this.state.idQuiz[itemId] = { itemId, correct, chosen: choiceId };
             if (!correct && (item.kind === 'species')) {
               this.guideDialogMistakes = this.guideDialogMistakes || [];
               this.guideDialogMistakes.push({ item: itemId, chose: choiceId, truth: resolveCorrect(item) });
             }
+            if (Object.keys(this.state.idQuiz).length === this.items.idQuiz.length) this.onModuleComplete('m2');
           } else if (this.items.chartItems.some((x) => x.id === itemId)) {
             this.state.chartAnswers = this.state.chartAnswers || {};
             this.state.chartAnswers[itemId] = { itemId, correct, chosen: choiceId };
@@ -537,9 +539,13 @@ export class App {
           }
           return res || { ok: false };
         },
-        setCount: (i, speciesId, n) => this.session?.record(i, { counts: { [speciesId]: n } }) || { ok: false },
+        setCount: (i, speciesOrCounts, n) => {
+          const counts = typeof speciesOrCounts === 'string' ? { [speciesOrCounts]: n } : speciesOrCounts;
+          return this.session?.record(i, { counts }) || { ok: false };
+        },
         setCover: (i, bandId) => this.session?.record(i, { cover: bandId }) || { ok: false },
         finishQuadrat: (i) => this.session?.finishVisit(i) || { ok: false },
+        csvPreview: () => (this.session ? dataSheetCSV(this.session.sheet, this.species) : ''),
         submitFieldwork: () => {
           if (!this.session) return { ok: false, error: 'no session' };
           const res = this.session.submit();
@@ -555,13 +561,17 @@ export class App {
         runSimulator: async (opts = {}) => {
           const reveal = this.revealUI;
           if (!reveal) return { ok: false, error: 'no 3D reveal UI' };
-          await reveal.runSimulator({
-            design: opts.design || this.state.design || 'random',
-            n: opts.n || 10,
-            speciesId: opts.speciesId || 'butterweed',
-            allDesigns: opts.allDesigns,
-          });
-          return { ok: true };
+          try {
+            await reveal.runSimulator({
+              design: opts.design || this.state.design || 'random',
+              n: opts.n || 10,
+              speciesId: opts.speciesId || 'butterweed',
+              allDesigns: opts.allDesigns,
+            });
+            return { ok: true };
+          } catch (e) {
+            return { ok: false, error: String(e && e.message || e) };
+          }
         },
         fillReport: (sectionId, text) => {
           this.state.reportDrafts[sectionId] = text;

@@ -36,7 +36,7 @@ const MIME = {
 };
 
 let server;
-let port = 4180;
+let port = 4189; // repo-unique port (other repos may run tests concurrently)
 
 test.beforeAll(async () => {
   expect(existsSync(DIST), 'dist/ must exist — run `npm run build` first').toBe(true);

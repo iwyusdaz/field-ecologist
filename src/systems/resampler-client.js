@@ -45,7 +45,8 @@ export class ResamplerClient {
 
   /**
    * Run one or more re-sampling requests.
-   * @param {object} population buildPopulation result (cloned to the worker)
+   * @param {object} population buildPopulation result (a plain-data clone is
+   *   posted: structured clone cannot carry the population's function fields)
    * @param {Array<{design:string,n:number,speciesId:string,iterations?:number}>} requests
    * @param {(done:number,total:number)=>void} [onProgress]
    * @returns {Promise<Array<object>>} summaries (+ histogram each)
@@ -54,10 +55,15 @@ export class ResamplerClient {
     const id = ++this.seq;
     const worker = this._ensureWorker();
     if (worker) {
+      const payload = {
+        positions: population.positions,
+        trueDensity: population.trueDensity,
+        trueCover: population.trueCover,
+        fieldSize: population.fieldSize,
+      };
       return new Promise((resolve, reject) => {
         this.pending.set(id, { resolve, reject, onProgress });
-        // Structured clone of the population (~15k points) happens here.
-        worker.postMessage({ id, type: 'run', population, requests, seedBase: 1 });
+        worker.postMessage({ id, type: 'run', population: payload, requests, seedBase: 1 });
       });
     }
     return this._runOnMainThread(population, requests, onProgress);

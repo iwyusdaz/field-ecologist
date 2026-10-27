@@ -13,7 +13,7 @@
  */
 import { summarize, histogram, buildSpatialIndex } from './resampler.js';
 import { generateQuadrats, showyClusters } from './designs.js';
-import { QUADRAT_AREA } from './population-model.js';
+import { QUADRAT_AREA, QUADRAT_SIZE } from './population-model.js';
 
 self.onmessage = async (e) => {
   const msg = e.data;

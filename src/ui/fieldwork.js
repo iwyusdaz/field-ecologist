@@ -306,12 +306,16 @@ export class FieldworkUI {
       }
       const coverSel = form.querySelector(`input[name="cover-${i}"]:checked`);
       s.record(i, { counts, cover: coverSel ? coverSel.value : null });
-      const r = s.finishVisit(i);
+      s.finishVisit(i);
+      this.app.record.log('attempted', {
+        id: `quadrat-${i}-records`,
+        name: `Recorded quadrat ${i}`,
+        description: `${Object.keys(counts).length} species count(s)${coverSel ? ' + cover band' : ''}`,
+      }, { response: JSON.stringify({ counts, cover: coverSel ? coverSel.value : null }) });
       announce(`Quadrat ${i} saved. ${Object.keys(counts).length} species recorded.`);
       this.activeIndex = null;
       this.scene?.exitQuadratView();
       this.render();
-      void r;
     });
     const cancel = document.createElement('button');
     cancel.type = 'button';

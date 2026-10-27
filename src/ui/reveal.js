@@ -237,9 +237,11 @@ export class RevealUI {
         name: 'Re-sampling simulator run',
         description: `${results.map((r) => r.design).join(', ')} at n=${opts.n} for ${opts.speciesId}`,
       }, { response: `${opts.speciesId}@n=${opts.n}` });
+      return results;
     } catch (e) {
       if (prog) prog.textContent = 'The simulator failed to run: ' + e.message;
       announce('Simulator error.', { assertive: true });
+      throw e;
     }
   }
 
