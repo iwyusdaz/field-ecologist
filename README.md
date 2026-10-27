@@ -1,6 +1,6 @@
 # Field Ecologist: Sampling the Meadow
 
-> **Evaluation status:** Automated functional, accessibility and performance testing is complete. Agent-based design reviews are in progress (see `STATUS.md`). No real learners have tested this yet. No physical phone testing has been done (mobile was checked with device emulation). See `evaluation/METHODS.md`.
+> **Evaluation status:** Automated functional, accessibility and performance testing plus agent-based design reviews are complete. No real learners have tested this yet. No physical phone testing has been done (mobile was checked with device emulation). See `evaluation/METHODS.md`. *(Headed performance was measured 2026-10-27 on the pre-revision build; it is re-run after revisions.)*
 
 **Play:** https://immersive-learning-showcase.vercel.app/play/field-ecologist/ *(pending deployment)*
 
@@ -35,8 +35,9 @@ The meadow population is generated from one documented seed: a clumped (Thomas p
 
 ## Evidence & evaluation
 
-- **76 unit tests** (vitest): generated populations match their parameters; unbiased designs converge on the truth; the modelled convenience design is biased (unit test asserts > +25 %; measured +369 % on Butterweed at n = 10); stratification reduces Sedge variance; the CSV is RFC 4180-correct.
-- **6 functional tests** (Playwright, scripted via test hooks): full playthrough — modules 1→5 including fieldwork execution, reveal, simulator run, report, transfer — plus a text-mode parity pass and CSV checks.
+- **96 unit tests** (vitest): generated populations match their parameters; unbiased designs converge on the truth; the modelled convenience design is biased (unit test asserts > +25 %; measured +369 % on Butterweed at n = 10, re-measured 2026-10-27); stratification reduces Sedge variance; the true Bunchgrass cover matches the drawn tussock size; no species' identifying geometry sits below the ground; the CSV is RFC 4180-correct.
+- **6 functional tests** (Playwright, scripted via test hooks): full playthrough — modules 1→5 including fieldwork execution, reveal, simulator run, report, transfer — plus a text-mode parity pass and CSV checks; 2 a11y specs (axe scans) run alongside.
+- **Agent-based design reviews are complete** (visual, realism/cinematics, cognitive walkthrough, multimedia, accessibility, heuristics, expert style — AI reviewers, not humans; reports in `evaluation/reviews/`). Their findings are fixed in code and logged with evidence as revisions R1–R7 in `DECISIONS.md`.
 - **Accessibility**: axe scans (zero critical/serious) across the overlay, module panels, field guide dialog, settings/menu/progress dialogs and the text-mode grid; WCAG 2.1 AA targets; full keyboard operability; reduced-motion variants for every cinematic and the camera.
 - **Sub-path build test**: the built app is served at `/play/field-ecologist/` with zero failed requests and zero console errors (the re-sampling Web Worker included).
 - What testing can **not** show: learning gains, real-device performance on physical phones, and whether the fictional species read as plausible to domain experts — see `evaluation/METHODS.md` for the honest limitations.

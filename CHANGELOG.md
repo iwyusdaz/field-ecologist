@@ -44,8 +44,22 @@ teaching meadow.
   ATTRIBUTION.md, 1200×630 posters rendered from the real scene, favicon,
   sub-path build test, CI and release workflows.
 
+### Fixed (agent-review revisions, folded in before tagging)
+Seven agent design reviews ran on the release candidate (AI reviewers, not
+humans; reports in `evaluation/reviews/`). Their major findings were fixed and
+logged with evidence as R1–R7 in `DECISIONS.md`: no identifying geometry below
+ground; top-down shape cues and size-correct marks for Sedge vs Bunchgrass and
+the Orchid; true Bunchgrass cover recomputed for the drawn tussock size (2.5 %)
+and no in-quadrat shrink of counted species; the stratified estimator weighted
+by stratum area with blank counts saved as 0 (shared by the simulator);
+docked/collapsible counting form and an aspect-correct orthographic counting
+view; the menu pauses the engine and cinematics; the S2a caption states the
+real plant total and S3 now plays during the simulator run, before the graded
+chart items, with the ghost rain driven by the run's progress.
+
 ### Verification
-- 76 unit tests, 6 functional Playwright tests (full playthrough + text-mode
-  parity), 2 accessibility specs, sub-path test — all green at release.
+- 96 unit tests, 6 functional Playwright tests (full playthrough + text-mode
+  parity), 2 accessibility specs, sub-path test — all green after the
+  revisions.
 - No real learners have tested this yet (see README evaluation notice and
   evaluation/METHODS.md).
