@@ -48,6 +48,38 @@ function blade(h, w, bend, lean = 0) {
   return g;
 }
 
+/**
+ * Local height (m) of flat basal leaves above the plant origin. Flat parts are
+ * the primary field mark for Daisy-leaf and Fen Orchid, so they must clear the
+ * terrain everywhere under the leaf (terrain slope <= ~0.08 m/m over an 8 cm
+ * leaf is <= 7 mm; the mesh interpolation error is < 1 mm).
+ */
+export const ROSETTE_Y = 0.016;
+
+/**
+ * How far each species' instances are sunk into the terrain (m). Upright
+ * species are sunk 4 mm (covers the terrain mesh's interpolation error, which
+ * is < 1 mm at 0.78 m cells) so stem bases never float; species whose
+ * identifying marks lie flat on the ground are NOT sunk (agent review:
+ * visual finding 1 — the old uniform -0.02 hid both rosettes).
+ */
+export const GROUND_SINK = {
+  'butterweed': 0.004,
+  'daisyleaf': 0,
+  'blue-sedge': 0.004,
+  'bunchgrass': 0.004,
+  'fen-orchid': 0,
+};
+
+/** Burial tolerance for the base of upright marks (blade roots) in the unit test (m). */
+export const MARK_BURIAL_TOLERANCE = 0.005;
+
+/** Tag a part as an identifying field mark (checked by the above-ground unit test). */
+function mark(geo) {
+  geo.userData.fieldMark = true;
+  return geo;
+}
+
 /** A flattened oval leaf/rosette leaf. */
 function ovalLeaf(len, wid, thick = 0.004) {
   const g = new THREE.SphereGeometry(0.5, 6, 4);
@@ -65,12 +97,12 @@ const builders = {
     for (let i = 0; i < 4; i++) {
       const y = 0.12 + i * 0.09;
       const side = i % 2 ? 1 : -1;
-      const leaf = colored(new THREE.ConeGeometry(0.028, 0.13, 4), 0x557a2e);
+      const leaf = mark(colored(new THREE.ConeGeometry(0.028, 0.13, 4), 0x557a2e));
       leaf.rotateZ(Math.PI / 2); // lie sideways, tip outward
       parts.push(place(leaf, { pos: [side * 0.05, y, 0], rot: [0, 0, side * -0.35], scale: [1, 1, 0.35] }));
     }
     // rounded button head 2-3 cm across on a bare stalk top
-    const head = colored(new THREE.IcosahedronGeometry(0.017, 1), 0xf2c832);
+    const head = mark(colored(new THREE.IcosahedronGeometry(0.017, 1), 0xf2c832));
     parts.push(place(head, { pos: [0, h + 0.01, 0], scale: [1, 0.8, 1] }));
     const rim = colored(new THREE.CylinderGeometry(0.016, 0.004, 0.012, 6), 0xd9a918);
     parts.push(place(rim, { pos: [0, h - 0.004, 0] }));
@@ -78,13 +110,19 @@ const builders = {
   },
 
   // Flat basal rosette of round, bluntly toothed leaves + short stalks with small white button flowers.
+  // The rosette sits ABOVE the ground (local y >= ROSETTE_Y, no instance sink — see
+  // GROUND_SINK) and is a lighter green than the wet-zone ground so the round
+  // star of leaves reads from the top-down counting view.
   'daisyleaf': () => {
     const parts = [];
     for (let i = 0; i < 7; i++) {
       const a = (i / 7) * Math.PI * 2;
-      const leaf = colored(ovalLeaf(0.075, 0.032), 0x3f7a35);
-      parts.push(place(leaf, { pos: [Math.cos(a) * 0.035, 0.004, Math.sin(a) * 0.035], rot: [0, -a, 0] }));
+      const leaf = mark(colored(ovalLeaf(0.075, 0.034, 0.008), i % 2 ? 0x67a447 : 0x5c9a40));
+      // leaf centred 4 cm out from the crown, tilted up slightly (rosettes cup)
+      parts.push(place(leaf, { pos: [Math.cos(a) * 0.04, ROSETTE_Y, Math.sin(a) * 0.04], rot: [0, Math.PI / 2 - a, 0] }));
     }
+    // pale crown where the leaves meet (helps the eye find each rosette's centre)
+    parts.push(place(mark(colored(new THREE.CylinderGeometry(0.014, 0.016, 0.01, 8), 0xa9c98a)), { pos: [0, ROSETTE_Y + 0.004, 0] }));
     for (let i = 0; i < 2; i++) {
       const a = i * 2.4 + 0.5;
       parts.push(place(colored(new THREE.CylinderGeometry(0.003, 0.003, 0.1, 5), 0x4c7c3a), {
@@ -97,50 +135,96 @@ const builders = {
     return parts;
   },
 
-  // Fountain-like tuft of narrow arching blades, bluish-green, tiny brown spike tips.
+  // Fountain-like tuft of fewer, WIDER arching blades, bluish-green, brown spike tips.
+  // From above: an open star ~45-55 cm across with visibly wide blades and gaps
+  // between them, plus 3 dark brown seed spikes near the centre (top-down cue
+  // that does not depend on colour hue: blade width, open spread, dark dots).
   'blue-sedge': () => {
     const parts = [];
     for (let i = 0; i < 9; i++) {
       const a = (i / 9) * Math.PI * 2 + 0.3;
       const h = 0.3 + 0.12 * ((i * 7919) % 100) / 100;
-      const b = blade(h, 0.016, 0.11 + 0.05 * (i % 3), 0.5);
-      parts.push(place(colored(b, 0x6a8f7d), { rot: [0, -a, 0] }));
+      const b = mark(blade(h, 0.026, 0.13 + 0.05 * (i % 3), 0.62));
+      parts.push(place(colored(b, 0x6a8f8a), { rot: [0, -a, 0] }));
     }
-    parts.push(place(colored(new THREE.CylinderGeometry(0.004, 0.005, 0.34, 5), 0x7d6b3f), { pos: [0.02, 0.17, 0.03], rot: [0.12, 0, 0.1] }));
+    for (let k = 0; k < 3; k++) {
+      const a = k * 2.1 + 0.4;
+      const tip = [Math.cos(a) * 0.05, 0.36 + 0.03 * k, Math.sin(a) * 0.05];
+      parts.push(place(colored(new THREE.CylinderGeometry(0.003, 0.004, 0.36, 5), 0x6f7d4f), {
+        pos: [tip[0] / 2, tip[1] / 2, tip[2] / 2], rot: [Math.sin(a) * 0.14, 0, -Math.cos(a) * 0.14],
+      }));
+      // brown seed spike: elongated dark capsule, readable as a dark dot from above
+      parts.push(place(mark(colored(new THREE.SphereGeometry(0.011, 6, 4), 0x4a3820)), { pos: tip, scale: [1, 2.2, 1] }));
+    }
     return parts;
   },
 
-  // Tight upright tussock: a mop of hair-thin stiff blades from one point.
+  // Tight upright tussock: a dense mop of many hair-thin stiff blades from one point.
+  // From above: a compact, densely filled disc ~18-24 cm across (half the sedge's
+  // spread), fine-textured, with pale straw seed heads at some blade tips.
   'bunchgrass': () => {
     const parts = [];
-    for (let i = 0; i < 13; i++) {
-      const a = (i / 13) * Math.PI * 2 + (i % 2) * 0.4;
+    for (let i = 0; i < 22; i++) {
+      const a = (i / 22) * Math.PI * 2 + (i % 2) * 0.4;
       const h = 0.24 + 0.1 * ((i * 104729) % 100) / 100;
-      const b = blade(h, 0.012, 0.06 + 0.04 * (i % 3), 0.35);
-      parts.push(place(colored(b, i % 3 ? 0x7c8a4a : 0x8f9a55), { rot: [0, -a, 0] }));
+      const b = mark(blade(h, 0.007, 0.025 + 0.02 * (i % 3), 0.16 + 0.06 * (i % 2)));
+      parts.push(place(colored(b, i % 3 ? 0x7c8a4a : 0x9aa05a), { rot: [0, -a, 0] }));
+    }
+    // straw seed heads on 5 stems (pale, small, fine-grained texture from above)
+    for (let k = 0; k < 5; k++) {
+      const a = k * 1.26;
+      parts.push(place(mark(colored(new THREE.SphereGeometry(0.006, 5, 3), 0xd8c98a)), {
+        pos: [Math.cos(a) * 0.06, 0.32 + 0.01 * (k % 2), Math.sin(a) * 0.06], scale: [1, 2.5, 1],
+      }));
     }
     return parts;
   },
 
   // Slender bare stem + loose ONE-SIDED spike of tiny flowers + exactly two flat oval basal leaves.
+  // Legibility exaggeration (design/realism-matrix.md): basal leaves 7 cm long
+  // (real 3-5 cm, ~1.6x), flowers 12 mm across (real < 5 mm, ~2.5x). From above:
+  // two glossy pale ovals in a V with a cream dot cluster where they meet.
   'fen-orchid': () => {
     const parts = [];
     const h = 0.26;
     parts.push(place(colored(new THREE.CylinderGeometry(0.0035, 0.005, h, 5), 0x5d7a4a), { pos: [0, h / 2, 0] }));
     for (const side of [-1, 1]) {
-      const leaf = colored(ovalLeaf(0.045, 0.022, 0.003), 0x4f7d3e);
-      parts.push(place(leaf, { pos: [side * 0.02, 0.004, 0.008], rot: [0, side * 0.5, 0] }));
+      const leaf = mark(colored(ovalLeaf(0.07, 0.034, 0.008), 0x8cc46a));
+      // leaf centre 3.4 cm out, at +/-35 degrees from the stem axis (a "V")
+      const a = side * 0.6;
+      parts.push(place(leaf, { pos: [Math.sin(a) * 0.034, ROSETTE_Y, Math.cos(a) * 0.034], rot: [0, a, 0] }));
     }
-    // one-sided spike: 8 tiny flowers along the top third, offset to +z
-    for (let i = 0; i < 8; i++) {
-      const t = 0.68 + (i / 8) * 0.3;
-      parts.push(place(colored(new THREE.SphereGeometry(0.0038, 5, 4), 0xb9c99a), {
-        pos: [0.004, h * t, 0.006 + 0.004 * Math.sin(i * 2.1)],
+    // one-sided spike: 9 flowers along the top third, offset to +z
+    for (let i = 0; i < 9; i++) {
+      const t = 0.66 + (i / 9) * 0.32;
+      parts.push(place(mark(colored(new THREE.SphereGeometry(0.006, 6, 4), 0xeef0c8)), {
+        pos: [0.004 * Math.cos(i * 2.1), h * t, 0.009 + 0.004 * Math.sin(i * 2.1)],
       }));
     }
     return parts;
   },
 };
+
+/**
+ * Lowest local y of any identifying field-mark part of a species model
+ * (before the instance sink). Used by the above-ground unit test.
+ * @param {string} speciesId
+ * @returns {number}
+ */
+export function fieldMarkMinY(speciesId) {
+  const parts = builders[speciesId]();
+  let min = Infinity;
+  for (const g of parts) {
+    if (!g.userData.fieldMark) { g.dispose(); continue; }
+    g.computeBoundingBox();
+    min = Math.min(min, g.boundingBox.min.y);
+    g.dispose();
+  }
+  return min;
+}
+
+/** Species ids that have a model. */
+export const MODELLED_SPECIES = Object.keys(builders);
 
 /**
  * Build the merged geometry for a species.

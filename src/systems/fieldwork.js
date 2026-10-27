@@ -141,16 +141,18 @@ export class FieldworkSession {
    */
   submit() {
     this.submitted = true;
-    const est = this.sheet.estimates();
+    const counted = this.speciesList.filter((sp) => !sp.coverEstimated).map((sp) => sp.id);
+    const est = this.sheet.estimates(counted);
     const estimates = {};
-    for (const sp of this.speciesList) {
-      if (est[sp.id] !== undefined) estimates[sp.id] = est[sp.id];
-    }
+    for (const id of counted) estimates[id] = est[id];
     return {
       estimates,
       cover: this.sheet.coverEstimate(),
       quadrats: est.__quadrats,
       area: est.__area,
+      estimator: est.__estimator,
+      blanksAsZero: est.__blanks,
+      missingStrata: est.__missingStrata || [],
     };
   }
 }

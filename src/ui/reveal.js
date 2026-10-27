@@ -89,6 +89,13 @@ export class RevealUI {
     p.className = 'chart-summary';
     p.textContent = `Your sample of ${res.quadrats} quadrats covered ${(res.area).toFixed(0)} m² — ${(res.area / 10000 * 100).toFixed(1)}% of the meadow. Everything you did not sample was invisible to you; the truth was there the whole time.`;
     sec.appendChild(p);
+    const notes = estimatorNotes(res);
+    if (notes) {
+      const n = document.createElement('p');
+      n.className = 'hint estimator-note';
+      n.textContent = notes;
+      sec.appendChild(n);
+    }
     return sec;
   }
 
@@ -219,19 +226,22 @@ export class RevealUI {
     const prog = this.container.querySelector('.sim-progress');
     const firstRun = !app.state.simRan;
     app.state.simRan = true;
+    // S3 plays during the first run; the graded chart items wait until it ends.
+    this._s3Pending = app.onSimulatorStart?.(firstRun) === true;
     let learnerEstimate = null;
     const sub = app.state.submission;
     if (sub?.estimates[opts.speciesId] != null) learnerEstimate = sub.estimates[opts.speciesId];
     try {
       const results = await this.resampler.run(app.population, requests, (done, total) => {
         if (prog) prog.textContent = `Running virtual samples… ${Math.round((done / total) * 100)}%`;
+        app.onSimulatorProgress?.(done, total);
       });
       this.lastRun = results;
       if (prog) prog.textContent = `Done: ${results.length * 1000} virtual samples.`
         + (firstRun ? ' Now read the distribution before the interpretation questions.' : '');
       this._renderResults(results, { learnerEstimate, speciesId: opts.speciesId });
       app.onSimulatorRun?.(results, firstRun);
-      if (firstRun && !this._itemsShown) this._renderChartItems();
+      if (firstRun && !this._itemsShown && !this._s3Pending) this._renderChartItems();
       app.record.log('completed', {
         id: 'simulator-run',
         name: 'Re-sampling simulator run',
@@ -286,4 +296,31 @@ export class RevealUI {
   }
 
   dispose() { this.resampler.dispose(); }
+}
+
+/**
+ * Chart items render after S3 ends (played or skipped). Installed on RevealUI.
+ */
+RevealUI.prototype.onS3Done = function onS3Done() {
+  const wasPending = this._s3Pending;
+  this._s3Pending = false;
+  if (wasPending && this.app.state.simRan && !this._itemsShown && this.lastRun) this._renderChartItems();
+};
+
+/**
+ * Plain-language notes about how the estimate was computed (blank counts as 0;
+ * stratified weighting). Exported for text mode.
+ * @param {object} res FieldworkSession.submit() result
+ * @returns {string}
+ */
+export function estimatorNotes(res) {
+  const out = [];
+  if (res.estimator === 'stratified') {
+    out.push('Stratified estimate: the mean density in each moisture zone, weighted by that zone’s share of the meadow (each is one third), so the extra wet-zone quadrat does not over-weight the wet ground.');
+    if (res.missingStrata?.length) out.push(`No completed quadrat in the ${res.missingStrata.join(' and ')} zone, so that zone could not be represented.`);
+  }
+  if (res.blanksAsZero > 0) {
+    out.push(`${res.blanksAsZero} blank count${res.blanksAsZero === 1 ? ' was' : 's were'} treated as 0 (a saved quadrat with no number means none were recorded there).`);
+  }
+  return out.join(' ');
 }

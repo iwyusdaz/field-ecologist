@@ -7,6 +7,7 @@ import { describe, it, expect } from 'vitest';
 import {
   buildPopulation, generateSpecies, clumpingIndex, densityInXBand,
   countInQuadrat, MEADOW_SEED, SPECIES_PARAMS,
+  bunchgrassCover, coverInQuadrat, BUNCHGRASS_COVER_RADIUS,
 } from '../../src/systems/population-model.js';
 import { moisture, terrainHeight, FIELD_SIZE } from '../../src/systems/moisture-field.js';
 import { Rng } from '../../src/systems/rng.js';
@@ -145,5 +146,36 @@ describe('moisture field sanity', () => {
         expect(y).toBeLessThan(4);
       }
     }
+  });
+});
+
+describe('true Bunchgrass cover matches what is drawn and described (agent review: visual 6)', () => {
+  it('footprint radius is a 15–25 cm tussock (species card)', () => {
+    expect(BUNCHGRASS_COVER_RADIUS * 2).toBeGreaterThanOrEqual(0.15);
+    expect(BUNCHGRASS_COVER_RADIUS * 2).toBeLessThanOrEqual(0.25);
+  });
+
+  it('true cover is ~ lambda * pi * r^2 (sparse Poisson: 1 - exp(-lambda*pi*r^2) ~ 2.5 %)', () => {
+    const lambda = 0.8;
+    const expected = 1 - Math.exp(-lambda * Math.PI * BUNCHGRASS_COVER_RADIUS ** 2);
+    expect(pop.trueCover.bunchgrass).toBeGreaterThan(expected * 0.85);
+    expect(pop.trueCover.bunchgrass).toBeLessThan(expected * 1.15);
+    expect(pop.trueCover.bunchgrass).toBeLessThan(0.05); // the '< 5 %' band is the honest answer
+  });
+
+  it('raster cover counts overlapping tussocks once (hand example)', () => {
+    // two identical points = one disc; disc area pi*0.1^2 = 0.0314 m2 of 10,000 m2
+    const one = bunchgrassCover([{ x: 50, z: 50 }]);
+    const two = bunchgrassCover([{ x: 50, z: 50 }, { x: 50, z: 50 }]);
+    expect(two).toBe(one);
+    expect(one).toBeCloseTo((Math.PI * 0.01) / 10000, 5);
+  });
+
+  it('per-quadrat true cover agrees with the field-wide figure on average', () => {
+    let sum = 0, k = 0;
+    for (let x = 5; x < 100; x += 10) {
+      for (let z = 5; z < 100; z += 10) { sum += coverInQuadrat(pop.positions['bunchgrass'], x, z); k++; }
+    }
+    expect(Math.abs(sum / k - pop.trueCover.bunchgrass)).toBeLessThan(0.01);
   });
 });

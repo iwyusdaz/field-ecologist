@@ -248,3 +248,21 @@ button.secondary { border-style: dashed; }
 .grid-map .cell.selected { border-color: var(--focus); background: color-mix(in srgb, var(--focus) 25%, transparent); }
 .grid-map .cell.sampled { border-color: var(--ok); color: var(--ok); }
 .tm-group { display: block; }
+
+/* Counting view: the form docks to a right column (<= 30 % wide) so the 2 m
+   quadrat is never covered; the ortho camera centres the quadrat in the free
+   area (scene.setCountingInset). Agent review: visual 2, multimedia 1. */
+#overlays.counting-docked {
+  left: auto; width: min(30%, 28rem); min-width: 18rem;
+}
+#overlays.counting-docked .panel { max-width: none; margin: 0 0 0.7rem; }
+#overlays.counting-docked .fw-layout { flex-direction: column; }
+#overlays.counting-docked .quadrat-chips { flex-direction: row; flex-wrap: wrap; max-width: none; }
+#overlays.counting-docked .meadow-map { display: none; }
+#overlays.counting-collapsed { left: auto; bottom: auto; width: auto; overflow: visible; }
+.counting-collapsed-bar { display: flex; gap: 0.6rem; align-items: center; padding: 0.4rem 0.7rem; margin: 0; }
+.counting-collapsed-bar .hint { margin: 0; font-size: 0.85rem; }
+@media (max-width: 700px) {
+  /* too narrow for a side column: the form becomes a bottom sheet; "Hide form" shows the full quadrat */
+  #overlays.counting-docked { left: 0.4rem; right: 0.4rem; width: auto; min-width: 0; top: 55%; }
+}

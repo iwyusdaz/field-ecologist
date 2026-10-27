@@ -23,6 +23,8 @@ export class FieldworkUI {
     this.container = container;
     this.session = null;
     this.activeIndex = null;   // 1-based quadrat being counted
+    this.collapsed = false;    // counting form hidden to show the whole quadrat
+    this.drafts = new Map();   // quadrat index -> { counts: {id: string}, cover } typed but unsaved
     this.dialog = document.getElementById('guide-dialog');
   }
 
@@ -34,9 +36,60 @@ export class FieldworkUI {
   /** (Re)render the module panel from session state. */
   render() {
     this.container.innerHTML = '';
+    const counting = !!(this.session && this.session.placementDone() && this.activeIndex);
+    this.container.classList.toggle('counting-docked', counting && !this.collapsed);
+    this.container.classList.toggle('counting-collapsed', counting && this.collapsed);
     if (!this.session) this._renderDesignPicker();
     else if (!this.session.placementDone()) this._renderPlacement();
+    else if (counting && this.collapsed) this._renderCollapsed();
     else this._renderField();
+    this._updateInset();
+  }
+
+  /**
+   * Tell the scene how much of the canvas the docked form covers so the
+   * orthographic view centres the quadrat in the free area (agent review:
+   * visual 2, cognitive A, multimedia 1). Collapsed → the whole canvas.
+   */
+  _updateInset() {
+    if (!this.scene?.setCountingInset) return;
+    const docked = this.container.classList.contains('counting-docked');
+    const narrow = window.matchMedia?.('(max-width: 700px)').matches;
+    const px = docked && !narrow ? this.container.getBoundingClientRect().width + 16 : 0;
+    this.scene.setCountingInset(px);
+  }
+
+  /** Remove dock classes (called when leaving the module). */
+  undock() {
+    this.container.classList.remove('counting-docked', 'counting-collapsed');
+    this.scene?.setCountingInset?.(0);
+  }
+
+  /** Collapsed counting state: one bar, the quadrat fills the view; drafts are kept. */
+  _renderCollapsed() {
+    const bar = document.createElement('section');
+    bar.className = 'panel counting-collapsed-bar';
+    bar.setAttribute('aria-label', `Counting quadrat ${this.activeIndex} (form hidden)`);
+    const show = document.createElement('button');
+    show.type = 'button';
+    show.textContent = `Show counting form (quadrat ${this.activeIndex})`;
+    show.setAttribute('aria-expanded', 'false');
+    show.addEventListener('click', () => {
+      this.collapsed = false;
+      this.render();
+      this.container.querySelector('.counting-form input')?.focus();
+    });
+    const p = document.createElement('p');
+    p.className = 'hint';
+    p.textContent = 'Your typed counts are kept.';
+    bar.append(show, p);
+    this.container.appendChild(bar);
+    show.focus();
+  }
+
+  _draft(i) {
+    if (!this.drafts.has(i)) this.drafts.set(i, { counts: {}, cover: undefined });
+    return this.drafts.get(i);
   }
 
   // ---------- design picker ----------
@@ -247,6 +300,19 @@ export class FieldworkUI {
       species: this.species, portraits: this.app.portraits, trigger: guideBtn,
     }));
     form.appendChild(guideBtn);
+    const hideBtn = document.createElement('button');
+    hideBtn.type = 'button';
+    hideBtn.className = 'secondary';
+    hideBtn.textContent = 'Hide form to see the whole quadrat';
+    hideBtn.setAttribute('aria-expanded', 'true');
+    hideBtn.addEventListener('click', () => { this.collapsed = true; this.render(); announce('Counting form hidden. Your typed counts are kept.'); });
+    form.appendChild(hideBtn);
+    const draft = this._draft(i);
+
+    const blankNote = document.createElement('p');
+    blankNote.className = 'hint';
+    blankNote.textContent = 'Leave a count blank or type 0 if you find none: blanks are saved as 0.';
+    form.appendChild(blankNote);
 
     const list = document.createElement('div');
     for (const sp of this.species) {
@@ -259,7 +325,9 @@ export class FieldworkUI {
       input.type = 'number';
       input.min = 0; input.max = 999; input.step = 1;
       input.id = `count-${i}-${sp.id}`;
-      input.value = rec.counts[sp.id] !== undefined ? String(rec.counts[sp.id]) : '';
+      input.value = draft.counts[sp.id] !== undefined ? draft.counts[sp.id]
+        : rec.counts[sp.id] !== undefined ? String(rec.counts[sp.id]) : '';
+      input.addEventListener('input', () => { draft.counts[sp.id] = input.value; });
       input.setAttribute('aria-label', `Count of ${sp.name} in quadrat ${i}`);
       if (sp.coverEstimated) {
         // percent-cover bands instead of a count
@@ -275,7 +343,8 @@ export class FieldworkUI {
           radio.type = 'radio';
           radio.name = `cover-${i}`;
           radio.value = band.id;
-          radio.checked = rec.cover === band.id;
+          radio.checked = (draft.cover !== undefined ? draft.cover : rec.cover) === band.id;
+          radio.addEventListener('change', () => { if (radio.checked) draft.cover = band.id; });
           lab.append(radio, Object.assign(document.createElement('span'), { textContent: ` ${band.label}` }));
           fs.appendChild(lab);
         }
@@ -313,6 +382,8 @@ export class FieldworkUI {
         description: `${Object.keys(counts).length} species count(s)${coverSel ? ' + cover band' : ''}`,
       }, { response: JSON.stringify({ counts, cover: coverSel ? coverSel.value : null }) });
       announce(`Quadrat ${i} saved. ${Object.keys(counts).length} species recorded.`);
+      this.drafts.delete(i);
+      this.collapsed = false;
       this.activeIndex = null;
       this.scene?.exitQuadratView();
       this.render();
@@ -322,6 +393,8 @@ export class FieldworkUI {
     cancel.className = 'secondary';
     cancel.textContent = 'Close without saving';
     cancel.addEventListener('click', () => {
+      this.drafts.delete(i);
+      this.collapsed = false;
       this.activeIndex = null;
       this.scene?.exitQuadratView();
       this.render();
@@ -394,6 +467,7 @@ export class FieldworkUI {
     const res = s.visit(i);
     if (!res.ok) { announce(res.error, { assertive: true }); return; }
     this.activeIndex = i;
+    this.collapsed = false;
     if (!res.alreadyVisited) {
       announce(`Walking to quadrat ${i}. Time charged: ${res.cost.toFixed(1)} units. ${Math.round(s.remainingTime())} left.`);
     }

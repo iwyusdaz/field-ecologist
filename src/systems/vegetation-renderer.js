@@ -15,7 +15,7 @@
  * @module systems/vegetation-renderer
  */
 import * as THREE from 'three';
-import { buildSpeciesGeometry } from './species-models.js';
+import { buildSpeciesGeometry, GROUND_SINK } from './species-models.js';
 import { applyWind } from './wind.js';
 import { terrainHeight, FIELD_SIZE } from './moisture-field.js';
 
@@ -60,7 +60,7 @@ export class VegetationRenderer {
         const p = pts[i];
         const s = 0.85 + 0.3 * frac(i * 3 + 7);
         const m = new THREE.Matrix4().compose(
-          new THREE.Vector3(p.x, terrainHeight(p.x, p.z) - 0.02, p.z),
+          new THREE.Vector3(p.x, terrainHeight(p.x, p.z) - (GROUND_SINK[id] ?? 0), p.z),
           new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), frac(i * 5 + 1) * Math.PI * 2),
           new THREE.Vector3(s, s * (0.9 + 0.2 * frac(i * 11 + 3)), s),
         );
@@ -124,12 +124,15 @@ export class VegetationRenderer {
   setWindLevel(v) { this.windUniforms.uWind.value = v; }
 
   /**
-   * Reduce background-species prominence inside the active quadrat so the
-   * counted plants read clearly (a counting affordance, like parting the sward
-   * — documented in design/realism-matrix.md). Pass null to clear.
+   * Mark the active quadrat: inside it nothing is thinned by the preset density.
+   * Earlier builds also shrank Bunchgrass and Daisy-leaf here; that was removed
+   * (agent review: realism finding 4) — Daisy-leaf is a counted species whose
+   * size is a field mark, and Bunchgrass is the cover species, so shrinking it
+   * made the visible cover disagree with the true cover. `species` stays as an
+   * (empty) hook. Pass null to clear.
    */
   setQuadratFocus(cx, cz) {
-    this._focus = cx == null ? null : { x: cx, z: cz, r: 2.2, scale: 0.55, species: new Set(['bunchgrass', 'daisyleaf']) };
+    this._focus = cx == null ? null : { x: cx, z: cz, r: 2.2, scale: 1, species: new Set() };
     this.lastBuildPos.set(1e9, 0, 0); // force rebuild
   }
 

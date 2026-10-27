@@ -95,11 +95,13 @@ export function buildPopulation(seed = MEADOW_SEED, opts = {}) {
     trueDensity[id] = positions[id].length / (FIELD_SIZE * FIELD_SIZE);
   }
 
-  // True Bunchgrass cover: fraction of a 0.25 m grid whose cell centre lies within
-  // the modelled tussock footprint radius (0.55 m) of a bunchgrass plant.
-  const coverGridStep = 0.25;
-  const coverRadius = 0.55;
-  const trueCover = { bunchgrass: bunchgrassCover(positions['bunchgrass'] || [], coverGridStep, coverRadius) };
+  // True Bunchgrass cover: fraction of a fine 5 cm grid whose cell centre lies
+  // within the tussock footprint radius of a bunchgrass plant. The radius
+  // (BUNCHGRASS_COVER_RADIUS = 0.10 m, a 20 cm tussock) matches the species card
+  // ("tussock 15–25 cm across") and the rendered model (~22 cm across). Earlier
+  // builds used 0.55 m (53 % cover), which contradicted what learners see
+  // (agent review: visual finding 6, expert ecology-instructor finding 1).
+  const trueCover = { bunchgrass: bunchgrassCover(positions['bunchgrass'] || []) };
 
   return {
     seed,
@@ -112,40 +114,53 @@ export function buildPopulation(seed = MEADOW_SEED, opts = {}) {
   };
 }
 
-/** Spatial cover fraction for a point set (grid-centre method). */
-export function bunchgrassCover(points, step = 0.25, radius = 0.55) {
-  const S = FIELD_SIZE;
-  const n = Math.round(S / step);
-  // Bucket plants into a coarse hash grid of cell size = radius for fast lookup.
-  const cell = radius;
-  const buckets = new Map();
-  for (const p of points) {
-    const k = `${Math.floor(p.x / cell)},${Math.floor(p.z / cell)}`;
-    if (!buckets.has(k)) buckets.set(k, []);
-    buckets.get(k).push(p);
-  }
-  let covered = 0, total = 0;
+/** Tussock footprint radius (m) used for the true cover (species card: 15–25 cm across). */
+export const BUNCHGRASS_COVER_RADIUS = 0.10;
+/** Grid step (m) for the true-cover raster. */
+export const COVER_GRID_STEP = 0.05;
+
+/**
+ * Spatial cover fraction for a point set (grid-centre method): the share of
+ * grid cells whose centre lies within `radius` of at least one plant.
+ * Rasterises each plant's disc onto a bitmap, so overlaps are counted once.
+ */
+export function bunchgrassCover(points, step = COVER_GRID_STEP, radius = BUNCHGRASS_COVER_RADIUS) {
+  const n = Math.round(FIELD_SIZE / step);
+  const grid = new Uint8Array(n * n);
   const r2 = radius * radius;
-  for (let i = 0; i < n; i++) {
-    for (let j = 0; j < n; j++) {
-      total++;
-      const cx = (i + 0.5) * step, cz = (j + 0.5) * step;
-      const bi = Math.floor(cx / cell), bj = Math.floor(cz / cell);
-      let hit = false;
-      for (let di = -1; di <= 1 && !hit; di++) {
-        for (let dj = -1; dj <= 1 && !hit; dj++) {
-          const arr = buckets.get(`${bi + di},${bj + dj}`);
-          if (!arr) continue;
-          for (const p of arr) {
-            const dx = p.x - cx, dz = p.z - cz;
-            if (dx * dx + dz * dz <= r2) { hit = true; break; }
-          }
+  let covered = 0;
+  for (const p of points) {
+    const i0 = Math.max(0, Math.floor((p.x - radius) / step));
+    const i1 = Math.min(n - 1, Math.floor((p.x + radius) / step));
+    const j0 = Math.max(0, Math.floor((p.z - radius) / step));
+    const j1 = Math.min(n - 1, Math.floor((p.z + radius) / step));
+    for (let i = i0; i <= i1; i++) {
+      const dx = (i + 0.5) * step - p.x;
+      for (let j = j0; j <= j1; j++) {
+        const dz = (j + 0.5) * step - p.z;
+        if (dx * dx + dz * dz <= r2) {
+          const k = i * n + j;
+          if (!grid[k]) { grid[k] = 1; covered++; }
         }
       }
-      if (hit) covered++;
     }
   }
-  return covered / total;
+  return covered / (n * n);
+}
+
+/** True cover fraction inside one 2 m quadrat (same raster rule; for tests and the reveal). */
+export function coverInQuadrat(points, cx, cz, size = QUADRAT_SIZE, step = COVER_GRID_STEP, radius = BUNCHGRASS_COVER_RADIUS) {
+  const h = size / 2;
+  const near = points.filter((p) => Math.abs(p.x - cx) <= h + radius && Math.abs(p.z - cz) <= h + radius);
+  const n = Math.round(size / step);
+  let covered = 0;
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < n; j++) {
+      const x = cx - h + (i + 0.5) * step, z = cz - h + (j + 0.5) * step;
+      if (near.some((p) => (p.x - x) ** 2 + (p.z - z) ** 2 <= radius * radius)) covered++;
+    }
+  }
+  return covered / (n * n);
 }
 
 /**

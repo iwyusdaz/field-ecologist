@@ -32,8 +32,11 @@ export class ShotPlayer {
     this.shots = [];
     this.index = -1;
     this.playing = false;
+    this.paused = false;
     this._t = 0;
     this._raf = null;
+    this._stillDeadline = null;
+    this._stillRemaining = null;
     this._buildUI();
   }
 
@@ -57,7 +60,7 @@ export class ShotPlayer {
     this.root.append(this.progress, this.caption, this.desc, skip);
     this.container.appendChild(this.root);
     this.root.hidden = true;
-    this._esc = (e) => { if (e.key === 'Escape' && this.playing) this.skip(); };
+    this._esc = (e) => { if (e.key === 'Escape' && this.playing && !this.paused) this.skip(); };
     document.addEventListener('keydown', this._esc);
   }
 
@@ -71,6 +74,7 @@ export class ShotPlayer {
   play() {
     if (!this.shots.length) { this.onDone?.(); return; }
     this.playing = true;
+    this.paused = false;
     this.root.hidden = false;
     this.index = -1;
     this._nextShot();
@@ -87,12 +91,16 @@ export class ShotPlayer {
     if (this.motion.reduced) {
       // Reduced-motion version: still frame at the end of the path + captions.
       this._placeAt(shot, 1);
-      this._stillTimer = setTimeout(() => this._nextShot(), Math.max(2500, (shot.duration || 10) * 700));
+      const hold = Math.max(2500, (shot.duration || 10) * 700);
+      this._stillDeadline = performance.now() + hold;
+      this._stillTimer = setTimeout(() => this._nextShot(), hold);
     } else {
       this._start = performance.now();
+      this._stillDeadline = null; // not a still shot: pause() must not pick up a stale timer
       cancelAnimationFrame(this._raf);
       const step = () => {
         if (!this.playing) return;
+        if (this.paused) { this._raf = requestAnimationFrame(step); return; }
         const elapsed = (performance.now() - this._start) / 1000;
         const dur = shot.duration || 10;
         const t = Math.min(1, elapsed / dur);
@@ -118,8 +126,32 @@ export class ShotPlayer {
     this.camera.lookAt(target);
   }
 
+  /** Pause the current shot (camera path or reduced-motion still timer). */
+  pause() {
+    if (!this.playing || this.paused) return;
+    this.paused = true;
+    this._pausedAt = performance.now();
+    if (this._stillDeadline) {
+      clearTimeout(this._stillTimer);
+      this._stillRemaining = Math.max(0, this._stillDeadline - this._pausedAt);
+    }
+  }
+
+  resume() {
+    if (!this.paused) return;
+    this.paused = false;
+    const gap = performance.now() - this._pausedAt;
+    if (this._start) this._start += gap;
+    if (this.motion.reduced && this._stillRemaining != null) {
+      this._stillDeadline = performance.now() + this._stillRemaining;
+      this._stillTimer = setTimeout(() => this._nextShot(), this._stillRemaining);
+      this._stillRemaining = null;
+    }
+  }
+
   skip() {
     if (!this.playing) return;
+    this.paused = false;
     clearTimeout(this._stillTimer);
     cancelAnimationFrame(this._raf);
     this.playing = false;
@@ -130,6 +162,7 @@ export class ShotPlayer {
 
   _finish() {
     this.playing = false;
+    this.paused = false;
     this.root.hidden = true;
     this.onDone?.();
   }

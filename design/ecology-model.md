@@ -70,8 +70,11 @@ over an expanded window (4σ margin) so clusters near edges are not clipped.
 `buildPopulation(seed)` computes and stores, before any sampling:
 - `trueTotals[speciesId]` — exact plant counts,
 - `trueDensity[speciesId]` — total / 10,000 m²,
-- `trueCover.bunchgrass` — fraction of a 0.25 m grid whose cell centre lies
-  within 0.55 m of a bunchgrass plant (the modelled tussock footprint).
+- `trueCover.bunchgrass` — fraction of a 5 cm grid whose cell centre lies
+  within 0.10 m of a bunchgrass plant (a 20 cm tussock: matches the species
+  card's "15–25 cm across" and the rendered model, ~22 cm). For seed
+  20260535 this is 2.5 % (the "< 5 %" band). Revised from 0.55 m / 53 %
+  after the agent review (DECISIONS.md revision R3).
 
 ## Validation (unit-tested, `tests/unit/`)
 1. Totals match parameters within Poisson tolerance for the fixed seed.

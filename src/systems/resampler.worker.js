@@ -11,9 +11,9 @@
  *   { id, type: 'result', results: [summary...] }   // summaries include the histogram
  * @module systems/resampler.worker
  */
-import { summarize, histogram, buildSpatialIndex } from './resampler.js';
+import { summarize, histogram, buildSpatialIndex, designEstimate } from './resampler.js';
 import { generateQuadrats, showyClusters } from './designs.js';
-import { QUADRAT_AREA, QUADRAT_SIZE } from './population-model.js';
+import { QUADRAT_SIZE } from './population-model.js';
 
 self.onmessage = async (e) => {
   const msg = e.data;
@@ -47,9 +47,8 @@ self.onmessage = async (e) => {
         for (let i = start; i < Math.min(start + CHUNK, iterations); i++) {
           const seed = (seedBase * 1e6 + i) >>> 0;
           const quads = generateQuadrats(design, n, seed, { butterweedClusters: clusters });
-          let cnt = 0;
-          for (const q of quads) cnt += countFast(index, positions, q.x, q.z);
-          estimates[i] = cnt / (n * QUADRAT_AREA);
+          const counts = quads.map((q) => countFast(index, positions, q.x, q.z));
+          estimates[i] = designEstimate(design, quads, counts);
         }
         done += Math.min(start + CHUNK, iterations) - start;
         self.postMessage({ id, type: 'progress', done, total });

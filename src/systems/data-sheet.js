@@ -4,6 +4,7 @@
  * @module systems/data-sheet
  */
 import { QUADRAT_AREA } from './population-model.js';
+import { strata, zoneOf, FIELD_SIZE } from './moisture-field.js';
 
 export const COVER_BANDS = [
   { id: '0-5', label: '< 5%', midpoint: 2.5 },
@@ -80,21 +81,50 @@ export class DataSheet {
   }
 
   /**
-   * Density estimate per species from the completed records (individuals / m2),
-   * exactly the estimator taught in-app: total count / total sampled area.
+   * Density estimate per species from the completed records (individuals / m2).
+   *
+   * - Blank counts are treated as 0 (agent review: expert research-methods 2,
+   *   heuristics 3): a saved quadrat with no entry for a species is a quadrat
+   *   where none were recorded. `__blanks` counts how many entries were filled
+   *   this way so the UI can say so.
+   * - Simple random / systematic / convenience: total count / total sampled area.
+   * - Stratified: Σ W_h · ȳ_h, where W_h is stratum h's share of the meadow area
+   *   and ȳ_h the mean density of its sampled quadrats (agent review: expert
+   *   research-methods 1). Unequal allocation (4 wet / 3 mid / 3 dry) would
+   *   otherwise over-weight the wet stratum. If a stratum has no completed
+   *   record, the sampled strata's weights are renormalised (`__missingStrata`).
+   * @param {string[]} [speciesIds] species to estimate (blanks → 0); defaults to those recorded
    */
-  estimates() {
-    const out = {};
+  estimates(speciesIds) {
     const recs = this.completedRecords();
+    const ids = speciesIds || [...new Set(recs.flatMap((q) => Object.keys(q.counts)))];
     const area = recs.length * QUADRAT_AREA;
-    for (const q of recs) {
-      for (const [sp, n] of Object.entries(q.counts)) {
-        out[sp] = (out[sp] || 0) + n;
+    const out = {};
+    let blanks = 0;
+    for (const q of recs) for (const sp of ids) if (q.counts[sp] === undefined) blanks++;
+    const countOf = (q, sp) => q.counts[sp] ?? 0;
+
+    if (this.design === 'stratified' && recs.length) {
+      const groups = new Map();
+      for (const s of strata()) groups.set(s.id, { w: (s.xMax - s.xMin) / FIELD_SIZE, recs: [] });
+      for (const q of recs) groups.get(zoneOf(q.x))?.recs.push(q);
+      const sampled = [...groups.values()].filter((g) => g.recs.length);
+      const wSum = sampled.reduce((a, g) => a + g.w, 0);
+      for (const sp of ids) {
+        out[sp] = sampled.reduce((a, g) => {
+          const mean = g.recs.reduce((b, q) => b + countOf(q, sp), 0) / (g.recs.length * QUADRAT_AREA);
+          return a + (g.w / wSum) * mean;
+        }, 0);
       }
+      out.__estimator = 'stratified';
+      out.__missingStrata = [...groups.entries()].filter(([, g]) => !g.recs.length).map(([id]) => id);
+    } else {
+      for (const sp of ids) out[sp] = area ? recs.reduce((a, q) => a + countOf(q, sp), 0) / area : 0;
+      out.__estimator = 'pooled';
     }
-    for (const sp of Object.keys(out)) out[sp] = out[sp] / area;
     out.__area = area;
     out.__quadrats = recs.length;
+    out.__blanks = blanks;
     return out;
   }
 

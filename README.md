@@ -27,7 +27,7 @@ The meadow population is generated from one documented seed: a clumped (Thomas p
 ## Key design decisions
 
 - **A known "truth"** (seeded population model) instead of hand-placed plants — it is what makes the reveal possible. Parameters and seed in `design/ecology-model.md`.
-- **A biased design included on purpose.** Experiencing "wherever looks interesting" overestimate Butterweed teaches more than being told about bias; the reveal and simulator make it visible (+~420 % bias on 1,000 virtual samples).
+- **A biased design included on purpose.** Experiencing "wherever looks interesting" overestimate Butterweed teaches more than being told about bias; the reveal and simulator make it visible (the modelled convenience sampler is +369 % biased at n = 10 and still +365 % at n = 40, on 1,000 virtual samples).
 - **Top-down counting view with wind reduced to ~12 %** inside the quadrat (paused under reduced motion) — movement makes counting harder for no learning gain (realism matrix §6.1).
 - **Re-sampling simulator, not formulas** — the sampling distribution emerges from 1,000 repeats of the learner's own design.
 - **Survey-sampling transfer** — the last module maps quadrat logic onto school-survey sampling.
@@ -35,7 +35,7 @@ The meadow population is generated from one documented seed: a clumped (Thomas p
 
 ## Evidence & evaluation
 
-- **76 unit tests** (vitest): generated populations match their parameters; unbiased designs converge on the truth; the convenience design is biased (+~420 % on Butterweed); stratification reduces Sedge variance; the CSV is RFC 4180-correct.
+- **76 unit tests** (vitest): generated populations match their parameters; unbiased designs converge on the truth; the modelled convenience design is biased (unit test asserts > +25 %; measured +369 % on Butterweed at n = 10); stratification reduces Sedge variance; the CSV is RFC 4180-correct.
 - **6 functional tests** (Playwright, scripted via test hooks): full playthrough — modules 1→5 including fieldwork execution, reveal, simulator run, report, transfer — plus a text-mode parity pass and CSV checks.
 - **Accessibility**: axe scans (zero critical/serious) across the overlay, module panels, field guide dialog, settings/menu/progress dialogs and the text-mode grid; WCAG 2.1 AA targets; full keyboard operability; reduced-motion variants for every cinematic and the camera.
 - **Sub-path build test**: the built app is served at `/play/field-ecologist/` with zero failed requests and zero console errors (the re-sampling Web Worker included).

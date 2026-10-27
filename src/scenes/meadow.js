@@ -347,11 +347,41 @@ export class MeadowScene {
     c.position.set(p.x, p.y + 8, p.z + 0.001);
     c.up.set(0, 0, -1);
     c.lookAt(p.x, p.y, p.z);
-    const half = 1.9; // see the 2 m quadrat with a margin
-    c.left = -half; c.right = half; c.top = half; c.bottom = -half;
-    c.updateProjectionMatrix();
+    this._fitOrtho();
     this.engine.renderCamera = c; // orthographic view: no post pipeline (SMAA/AA via supersampling of the small viewport is unnecessary; direct render is crisp)
     this.setActiveQuadrat(i);
+    if (!this._orthoResize) {
+      this._orthoResize = () => { if (this.counting) this._fitOrtho(); };
+      window.addEventListener('resize', this._orthoResize);
+    }
+  }
+
+  /**
+   * Fit the orthographic frustum to the canvas aspect (agent review: visual 3 —
+   * the old ±1.9 square frustum stretched the 2 m quadrat into a rectangle) and
+   * centre the quadrat in the canvas area not covered by the docked counting
+   * form (`countingInsetRight`, CSS px; agent review: visual 2).
+   */
+  _fitOrtho() {
+    const c = this.orthoCam;
+    const el = this.engine.renderer.domElement;
+    const w = el.clientWidth || window.innerWidth;
+    const h = el.clientHeight || window.innerHeight;
+    const inset = Math.min(Math.max(0, this.countingInsetRight || 0), w * 0.6);
+    const free = Math.max(1, w - inset);
+    const span = 2.6; // 2 m quadrat + 30 cm margin each side, in the smaller free dimension
+    const s = span / Math.min(free, h); // metres per CSS pixel, same on both axes → square quadrat
+    c.left = -(free / 2) * s;
+    c.right = c.left + w * s;
+    c.top = (h / 2) * s;
+    c.bottom = -(h / 2) * s;
+    c.updateProjectionMatrix();
+  }
+
+  /** Width (CSS px) of UI docked over the right edge during counting. */
+  setCountingInset(px) {
+    this.countingInsetRight = px;
+    if (this.counting) this._fitOrtho();
   }
 
   exitQuadratView() {
@@ -442,6 +472,7 @@ export class MeadowScene {
 
   dispose() {
     this._disposed = true;
+    if (this._orthoResize) window.removeEventListener('resize', this._orthoResize);
     this.vegetation.dispose();
     this.post.dispose();
     this.skyTex?.dispose();

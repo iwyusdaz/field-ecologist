@@ -43,6 +43,47 @@ describe('data sheet', () => {
     expect(est.daisyleaf).toBeCloseTo(5 / 8, 10);
     expect(est.__quadrats).toBe(2);
     expect(est.__area).toBe(8);
+    expect(est.__estimator).toBe('pooled');
+  });
+
+  it('blank counts in a saved quadrat are treated as 0 and reported (agent review: research-methods 2)', () => {
+    const sheet = sheetWith();
+    const est = sheet.estimates(['butterweed', 'daisyleaf', 'fen-orchid']);
+    // q2 has no daisy-leaf entry; neither quadrat has an orchid entry -> 3 blanks, all 0
+    expect(est.__blanks).toBe(3);
+    expect(est['fen-orchid']).toBe(0);
+    expect(est.daisyleaf).toBeCloseTo(5 / 8, 10);
+  });
+
+  it('stratified estimate weights stratum means by stratum area (hand-computed, agent review: research-methods 1)', () => {
+    // Strata are equal-area thirds (W = 1/3 each). Allocation 4 wet / 3 mid / 3 dry.
+    const pts = [
+      { x: 5, z: 10 }, { x: 10, z: 30 }, { x: 15, z: 50 }, { x: 20, z: 70 }, // wet (x < 33.3)
+      { x: 40, z: 10 }, { x: 50, z: 40 }, { x: 60, z: 80 },                 // mid
+      { x: 70, z: 20 }, { x: 80, z: 50 }, { x: 90, z: 80 },                 // dry
+    ];
+    const counts = [8, 12, 4, 0, /* mid */ 3, 3, 0, /* dry */ 0, 0, 0];
+    const sheet = new DataSheet({ budget: BUDGET });
+    sheet.start('stratified', pts);
+    pts.forEach((p, i) => { sheet.chargeVisit(i + 1, p); sheet.setCount(i + 1, 'blue-sedge', counts[i]); });
+    // wet mean = 24 / (4*4) = 1.5 /m2; mid mean = 6 / (3*4) = 0.5; dry = 0
+    // stratified = (1.5 + 0.5 + 0) / 3 = 0.6667 /m2
+    // the old pooled estimator gave 30 / 40 = 0.75 /m2 (over-weights the wet stratum)
+    const est = sheet.estimates(['blue-sedge']);
+    expect(est.__estimator).toBe('stratified');
+    expect(est['blue-sedge']).toBeCloseTo(2 / 3, 10);
+    expect(est.__missingStrata).toEqual([]);
+  });
+
+  it('stratified estimate renormalises weights when a stratum has no completed record', () => {
+    const pts = [{ x: 5, z: 10 }, { x: 50, z: 40 }, { x: 80, z: 50 }];
+    const sheet = new DataSheet({ budget: BUDGET });
+    sheet.start('stratified', pts);
+    sheet.chargeVisit(1, pts[0]); sheet.setCount(1, 'butterweed', 4); // 1.0 /m2
+    sheet.chargeVisit(2, pts[1]); sheet.setCount(2, 'butterweed', 0); // 0 /m2
+    const est = sheet.estimates(['butterweed']);
+    expect(est.__missingStrata).toEqual(['dry']);
+    expect(est.butterweed).toBeCloseTo(0.5, 10);
   });
 
   it('cover estimate uses band midpoints', () => {

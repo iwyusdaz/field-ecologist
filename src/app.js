@@ -82,6 +82,8 @@ export class App {
       moduleLabels: MODULE_LABELS,
       onModuleChange: (i) => this.goToModule(MODULE_IDS[i]),
     });
+    this.shell.listeners.menu = () => this.pauseAll();
+    this.shell.menuDialog?.addEventListener('close', () => this.resumeAll());
 
     // WebGL fallback (after the shell exists — it owns #stage).
     if (!hasWebGL2()) {
@@ -189,6 +191,7 @@ export class App {
     if (!this.fieldworkUI) return; // no-WebGL: text mode only
     // clear the previous panel and render the module's UI
     this._overlayHost().innerHTML = '';
+    this.fieldworkUI.undock();
     if (id === 'm1') this._renderM1();
     else if (id === 'm2') this._renderM2();
     else if (id === 'm3') this._renderM3();
@@ -383,8 +386,8 @@ export class App {
     if (!this.player || !this.scene) { this._afterCinematic(id); return; }
     const def = this._cine(id);
     if (!def) return;
-    if (this.state.cinematicSeen[id] && id !== 's1-dawn-arrival') return; // reveal cinematics play once
-    this.player.load(def);
+    if (this.state.cinematicSeen[id] && id !== 's1-dawn-arrival') return false; // reveal cinematics play once
+    this.player.load(fillCaptionTokens(def, this.population));
     if (id === 's1-dawn-arrival' && def.shots[0]?.lighting) {
       this.scene.setDawn(def.shots[0].lighting);
     }
@@ -405,6 +408,7 @@ export class App {
     };
     this.player.onDone = done;
     this.player.play();
+    return true;
   }
 
   _afterCinematic(id) {
@@ -427,10 +431,20 @@ export class App {
     }
     if (id === 's3-many-samples') {
       this._stopGhostRain();
+      this.revealUI?.onS3Done?.();
     }
   }
 
+  /**
+   * S3 ghost-quadrat rain. Driven by the worker's progress callback
+   * (`onSimulatorProgress`) while the simulator runs, so the squares appear in
+   * step with the virtual samples (agent review: realism 3, multimedia 2). If no
+   * run drives it (replay), it falls back to a fixed interval.
+   */
   _startGhostRain(def) {
+    this._rainDef = def;
+    this._rainShown = 0;
+    if (this._rainDriven) return;
     const duration = def.shots[0]?.duration || 15;
     const design = this.state.design || 'random';
     const n = Math.min(40, Math.max(5, this.state.submission?.quadrats || 10));
@@ -454,9 +468,47 @@ export class App {
     if (!keep) this.scene?.clearGhostQuadrats();
   }
 
-  /* ------------------------- simulator callback ------------------------- */
-  onSimulatorRun(results, firstRun) {
-    if (firstRun) this.playCinematic('s3-many-samples');
+  /* ------------------------- simulator callbacks ------------------------- */
+  /**
+   * Called before the first simulator run starts. S3 plays DURING the run and
+   * before the graded chart items exist (standards: no cinematic during
+   * assessment; agent review: realism 2). Returns true if S3 is playing.
+   */
+  onSimulatorStart(firstRun) {
+    if (!firstRun) return false;
+    this._rainDriven = true;
+    const playing = this.playCinematic('s3-many-samples') === true && !!this.player?.playing;
+    if (!playing) this._rainDriven = false;
+    return playing;
+  }
+
+  /** Worker progress → ghost rain (24 visible sets across the run). */
+  onSimulatorProgress(done, total) {
+    if (!this._rainDriven || !this.scene || !this.player?.playing) return;
+    const k = Math.max(1, Math.round((24 * done) / Math.max(1, total)));
+    if (k <= this._rainShown) return;
+    this._rainShown = k;
+    const design = this.state.design || 'random';
+    const n = Math.min(40, Math.max(5, this.state.submission?.quadrats || 10));
+    const clusters = showyClusters(this.population.positions['butterweed'] || []);
+    const pts = [];
+    for (let i = 0; i < k; i++) pts.push(...generateQuadrats(design, n, (10_000 + i) >>> 0, { butterweedClusters: clusters }));
+    this.scene.setGhostQuadrats(pts);
+  }
+
+  onSimulatorRun() {
+    this._rainDriven = false;
+  }
+
+  /** Pause everything time-based while the menu is open (agent review: a11y 3, heuristics 7). */
+  pauseAll() {
+    this.engine?.pause();
+    this.player?.pause();
+  }
+
+  resumeAll() {
+    this.engine?.resume();
+    this.player?.resume();
   }
 
   /* ------------------------- test hooks ------------------------- */
@@ -590,4 +642,20 @@ export class App {
       },
     };
   }
+}
+
+/**
+ * Replace `{trueTotal.<speciesId>}` tokens in cinematic captions/descriptions
+ * with the real totals (agent review: realism 1 — S2a showed a literal "N").
+ * @param {object} def cinematic definition from content/cinematics.json
+ * @param {{trueTotals: Record<string, number>}} population
+ */
+export function fillCaptionTokens(def, population) {
+  const sub = (t) => (typeof t === 'string'
+    ? t.replace(/\{trueTotal\.([a-z-]+)\}/g, (m, id) => (population.trueTotals[id] ?? 0).toLocaleString('en-US'))
+    : t);
+  return {
+    ...def,
+    shots: (def.shots || []).map((sh) => ({ ...sh, captions: (sh.captions || []).map(sub), description: sub(sh.description) })),
+  };
 }

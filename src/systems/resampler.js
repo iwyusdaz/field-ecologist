@@ -10,6 +10,7 @@
  */
 import { generateQuadrats, showyClusters } from './designs.js';
 import { countInQuadrat, QUADRAT_AREA, QUADRAT_SIZE } from './population-model.js';
+import { strata, zoneOf, FIELD_SIZE } from './moisture-field.js';
 
 /**
  * Run one virtual sampling effort and return the density estimate for a species.
@@ -22,11 +23,37 @@ export function virtualEstimate(population, opts) {
   const quads = generateQuadrats(design, n, seed, { butterweedClusters: clusters });
   const positions = population.positions[speciesId];
   const index = opts.index || null;
-  let total = 0;
-  for (const q of quads) {
-    total += index ? countInQuadratIndexed(index, q.x, q.z) : countInQuadrat(positions, q.x, q.z);
+  const counts = quads.map((q) => (index ? countInQuadratIndexed(index, q.x, q.z) : countInQuadrat(positions, q.x, q.z)));
+  return designEstimate(design, quads, counts);
+}
+
+/**
+ * The learner's estimator for one sampling effort (same rule as DataSheet.estimates):
+ * stratified → Σ W_h · ȳ_h with area weights; every other design → total / area.
+ * @param {string} design
+ * @param {Array<{x:number,z:number}>} quads quadrat centres
+ * @param {number[]} counts plants counted in each quadrat
+ * @returns {number} density (per m2)
+ */
+export function designEstimate(design, quads, counts) {
+  if (!quads.length) return 0;
+  if (design !== 'stratified') {
+    return counts.reduce((a, b) => a + b, 0) / (quads.length * QUADRAT_AREA);
   }
-  return total / (n * QUADRAT_AREA);
+  const sums = new Map(), ns = new Map();
+  quads.forEach((q, i) => {
+    const z = zoneOf(q.x);
+    sums.set(z, (sums.get(z) || 0) + counts[i]);
+    ns.set(z, (ns.get(z) || 0) + 1);
+  });
+  let est = 0, wSum = 0;
+  for (const s of strata()) {
+    if (!ns.get(s.id)) continue;
+    const w = (s.xMax - s.xMin) / FIELD_SIZE;
+    wSum += w;
+    est += w * sums.get(s.id) / (ns.get(s.id) * QUADRAT_AREA);
+  }
+  return est / wSum;
 }
 
 /**

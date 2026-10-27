@@ -8,7 +8,10 @@
  */
 import { describe, it, expect } from 'vitest';
 import { buildPopulation, MEADOW_SEED } from '../../src/systems/population-model.js';
-import { runResampling, histogram, virtualEstimate } from '../../src/systems/resampler.js';
+import { runResampling, histogram, virtualEstimate, designEstimate } from '../../src/systems/resampler.js';
+import { DataSheet } from '../../src/systems/data-sheet.js';
+import { generateQuadrats } from '../../src/systems/designs.js';
+import { countInQuadrat } from '../../src/systems/population-model.js';
 import { showyClusters } from '../../src/systems/designs.js';
 
 const pop = buildPopulation(MEADOW_SEED);
@@ -99,5 +102,21 @@ describe('histogram + summary', () => {
     expect(r.p025).toBeLessThanOrEqual(r.mean);
     expect(r.p975).toBeGreaterThanOrEqual(r.mean);
     expect(r.trueDensity).toBe(pop.trueDensity['butterweed']);
+  });
+});
+
+describe('simulator uses the learner estimator', () => {
+  it('designEstimate matches DataSheet.estimates for a real stratified draw', () => {
+    const quads = generateQuadrats('stratified', 10, 4242);
+    const counts = quads.map((q) => countInQuadrat(pop.positions['blue-sedge'], q.x, q.z));
+    const sheet = new DataSheet({ budget: { quadrats: 10, timeUnits: 999, walkCostPerM: 0, baseCostPerQuadrat: 0 } });
+    sheet.start('stratified', quads);
+    quads.forEach((q, i) => { sheet.chargeVisit(i + 1, q); sheet.setCount(i + 1, 'blue-sedge', counts[i]); });
+    expect(designEstimate('stratified', quads, counts)).toBeCloseTo(sheet.estimates(['blue-sedge'])['blue-sedge'], 10);
+  });
+
+  it('area-weighted stratified estimate is unbiased for Blue Sedge (the gradient species) at n=10', () => {
+    const r = runResampling(pop, { design: 'stratified', n: 10, speciesId: 'blue-sedge', iterations: IT, clusters });
+    expect(Math.abs(r.bias) / r.trueDensity).toBeLessThan(0.05);
   });
 });

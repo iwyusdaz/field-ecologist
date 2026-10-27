@@ -58,7 +58,7 @@
           "path": [[50, 30, 60], [50, 90, 50], [50, 150, 50]],
           "target": [50, 0, 50],
           "captions": [
-            "This is every one of the N Butterweed plants in the meadow — the truth you could never see from the ground.",
+            "This is every one of the {trueTotal.butterweed} Butterweed plants in the meadow — the truth you could never see from the ground.",
             "Your quadrats are the outlined squares. Look where they landed — and where they didn't."
           ],
           "description": "The camera rises straight up until the whole meadow is visible as a map. Every Butterweed plant lights up as a small yellow marker. The learner's ten quadrats are drawn as white outlines.",
@@ -96,7 +96,7 @@
           "target": [50, 0, 50],
           "captions": [
             "Imagine repeating your fieldwork a thousand times.",
-            "Each flash of a square is one virtual sample. The pile they build is the sampling distribution."
+            "Each square that appears is one virtual sample, drawn as the simulator runs. Together they build the sampling distribution in the histogram below."
           ],
           "description": "Seen from above, ghost quadrat sets appear across the meadow one after another — a thousand virtual samples. Beside them, a histogram fills in, centred near the true density for fair designs.",
           "sync": "resampler-progress"

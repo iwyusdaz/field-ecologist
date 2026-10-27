@@ -6,9 +6,9 @@
  * @module systems/resampler-client
  */
 import { summarize, histogram } from './resampler.js';
-import { buildSpatialIndex } from './resampler.js';
+import { buildSpatialIndex, designEstimate } from './resampler.js';
 import { generateQuadrats, showyClusters } from './designs.js';
-import { QUADRAT_AREA } from './population-model.js';
+import { QUADRAT_SIZE } from './population-model.js';
 
 export class ResamplerClient {
   constructor() {
@@ -85,15 +85,16 @@ export class ResamplerClient {
       for (let i = 0; i < iterations; i++) {
         const seed = (1e6 + i) >>> 0;
         const quads = generateQuadrats(req.design, req.n, seed, { butterweedClusters: clusters });
-        let cnt = 0;
         const positions = population.positions[req.speciesId] || [];
-        for (const q of quads) {
-          const h = QUADRAT_SIZE / 2;
+        const h = QUADRAT_SIZE / 2;
+        const counts = quads.map((q) => {
+          let cnt = 0;
           for (const p of positions) {
             if (p.x >= q.x - h && p.x < q.x + h && p.z >= q.z - h && p.z < q.z + h) cnt++;
           }
-        }
-        estimates[i] = cnt / (req.n * QUADRAT_AREA);
+          return cnt;
+        });
+        estimates[i] = designEstimate(req.design, quads, counts);
         if (i % 50 === 0) {
           done++;
           onProgress?.(done, total);
