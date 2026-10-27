@@ -30,11 +30,14 @@ What was run, what it shows, and — equally important — what it cannot show.
    reveal → transfer design may still confuse; item difficulty was not
    piloted. `evaluation/human-protocol/` contains the consent and session
    templates for the first real playtests.
-2. **Real-device performance.** Headless software-GL FPS is not a valid
-   measure and no physical phone was tested (mobile was checked with device
-   emulation for layout and the Low preset path). The budgets were engineered
-   for (≤ 10 vegetation draw calls, chunk culling, preset density, dynamic
-   resolution) but the ≥ 55 fps target on Medium is UNVERIFIED on real GPUs.
+2. **Performance on other devices.** Measured headed on one machine only
+   (Apple M1, ANGLE Metal, 2026-10-27, `../_tools/perf-sample.mjs`, Module 3
+   fieldwork view, 3 s warm-up + 8 s sample per preset; raw output in
+   `results/perf-2026-10-27.json`): 60 fps on every preset; draw calls 32–35;
+   triangles 96k (Low), 298k (Medium), 609k (High/Ultra); menu interactive
+   0.78 s; 2.53 MB before first interaction. All inside the standards 4.5
+   budgets. No physical phone was tested; mobile performance is inferred from
+   the Low preset. Frame rate is capped by the 60 Hz display.
 3. **ID legibility on Low.** Checked informally with screenshots during
    development (field marks stay distinguishable; counted quadrats are never
    density-thinned), but the plan's independent expert-style legibility check

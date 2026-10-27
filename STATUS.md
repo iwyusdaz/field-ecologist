@@ -9,7 +9,7 @@ the shared standards. Statuses: **done**, done(agent review pending), **not poss
 - [x] **done** — All 4 designs playable (simple random with one redraw, systematic, stratified by moisture zone, convenience with manual placement); the biased design produces visible bias (+~420 % mean Butterweed bias across 1,000 virtual samples, unit-tested; visible in the reveal table after a convenience run).
 - [x] **done** — CSV export opens correctly in spreadsheet apps (RFC 4180 quoting, CRLF, UTF-8 BOM, self-describing columns; unit-tested).
 - [x] **done** — Text mode supports every decision (design choice, placement, quadrat sampling with field-mark descriptions, counts/cover, data sheet, CSV, reveal, simulator with data tables, report, transfer, assessment — one shared session and record).
-- [x] **done (within test limits)** — Performance budgets met on the *auto-selected* presets in headless testing; headless/software-GL FPS is not a valid measure of real devices, so the budget claim rests on the design: ≤ 10 instanced draw calls per frame, chunk culling, preset-scaled density, imposters, dynamic resolution. Low preset legibility is kept by never thinning instances inside the counted quadrat. See limitation below.
+- [x] **done** — Performance budgets met, measured headed on an Apple M1 (2026-10-27, Module 3 fieldwork view): 60 fps on every preset; Medium 35 draw calls and 298k triangles; Ultra 609k triangles; menu interactive 0.78 s; 2.53 MB before first interaction (`evaluation/results/perf-2026-10-27.json`). Low preset legibility is kept by never thinning instances inside the counted quadrat; the independent legibility review is still pending.
 - [x] **done** — Cinematics ≤ 90 s (S1+S2+S3 = 55 s), skippable from the first frame (Skip + Esc), captioned, with text descriptions and reduced-motion still versions.
 - [x] **done** — README: play link (marked pending deployment), evaluation notice at top, realism rationale in design/realism-matrix.md. *(Trailer: placeholder only — see below.)*
 
@@ -42,6 +42,6 @@ the shared standards. Statuses: **done**, done(agent review pending), **not poss
 ## Known limitations (honest)
 
 1. No real learners and no physical phone testing (see the README notice).
-2. Performance numbers quoted nowhere: headless software-GL FPS is not representative; budgets were engineered for (draw calls, instance counts, preset scaling) but not verified on real GPUs. The plan's "ID legibility check on each preset" was executed informally during development (screenshots on Medium/Low; field marks stay distinguishable; counted quadrats are never thinned) but awaits the independent expert-style review pass.
+2. Performance was measured on one machine (Apple M1); no physical phone was tested, so mobile performance is inferred from the Low preset. The plan's "ID legibility check on each preset" was executed informally during development (screenshots on Medium/Low; field marks stay distinguishable; counted quadrats are never thinned) but awaits the independent expert-style review pass.
 3. The five species are fictional teaching models (labeled in-app and in docs); no regional-flora accuracy is claimed.
-4. Agent expert reviews (ecology instructor, research-methods lecturer) are added by the orchestrator in `evaluation/reviews/`.
+4. **Pending:** agent expert reviews (ecology instructor, research-methods lecturer) and the other design reviews, to be added in `evaluation/reviews/` and labeled "Agent review".
