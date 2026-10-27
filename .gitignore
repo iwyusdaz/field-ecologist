@@ -28,3 +28,6 @@ playwright-report/
 *.swp
 .idea/
 .vscode/
+
+# Security-hook state (local only)
+.mimosa/
