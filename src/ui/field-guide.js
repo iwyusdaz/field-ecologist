@@ -8,6 +8,10 @@
  */
 import { openDialog, closeDialog } from '../a11y/focus.js';
 import { announce } from '../a11y/announcer.js';
+import speciesContent from '../../content/species.json';
+
+/** The fictional-species honesty statement shown at the top of every guide. */
+export const SPECIES_STATEMENT = speciesContent?.meta?.statement || '';
 
 /**
  * Build the guide content (a <section> with a card per species).
@@ -19,6 +23,17 @@ import { announce } from '../a11y/announcer.js';
 export function buildGuide({ species, portraits = {}, compact = false }) {
   const sec = document.createElement('section');
   sec.className = 'field-guide' + (compact ? ' compact' : '');
+  // Honesty label (content/species.json meta.statement): the species are fictional.
+  // Rendered in every guide surface: Module 2, the in-field dialog, text mode.
+  if (SPECIES_STATEMENT) {
+    const note = document.createElement('p');
+    note.className = 'guide-honesty';
+    note.setAttribute('data-testid', 'species-statement');
+    const strong = document.createElement('strong');
+    strong.textContent = 'Teaching model: ';
+    note.append(strong, SPECIES_STATEMENT);
+    sec.appendChild(note);
+  }
   const intro = document.createElement('p');
   intro.className = 'guide-callout';
   intro.textContent = 'Read the marks in order: shape → size → leaf → colour. Colour is only ever a secondary cue, so the guide works for everyone including colour-blind users.';

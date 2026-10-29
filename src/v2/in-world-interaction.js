@@ -13,6 +13,7 @@
  * @module v2/in-world-interaction
  */
 import * as THREE from 'three';
+import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 // Floating height of the hotspot diamond beacon. Raised from 0.36 m (arrival-english
 // V-3): the default cameras sit at y ~1.6 with a 55 deg FOV, so a floor-level beacon
@@ -51,8 +52,8 @@ export class InWorldInteractionManager {
     this.pickables = [];
     this.hotspotRings = [];
     this.hovered = null;
-    this.enabled = true; // see setEnabled()
     this.calmFactor = 1; // set via setCalmMode to quiet ring pulses during focused tasks
+    this.enabled = true; // set via setEnabled while inspection tools own the camera
 
     // Camera navigation state (look target + spherical/free walk)
     this.target = new THREE.Vector3(0, 1.3, 0);
@@ -96,7 +97,8 @@ export class InWorldInteractionManager {
     if (!this.canvas || typeof window === 'undefined') return;
 
     this.canvas.addEventListener('pointerdown', (e) => {
-      if (e.button !== 0 || !this.enabled) return;
+      if (e.button !== 0) return;
+      if (!this.enabled) return;
       if (document.querySelector('dialog[open]')) return;
       this._dragging = true;
       this._downPos = { x: e.clientX, y: e.clientY };
@@ -165,23 +167,6 @@ export class InWorldInteractionManager {
   }
 
   /**
-   * Enable or disable all pointer/keyboard handling (e.g. while another camera
-   * mode such as a top-down counting view or a cinematic owns the camera).
-   * Disabled managers clear hover state, held keys, drags and glides.
-   */
-  setEnabled(on) {
-    this.enabled = Boolean(on);
-    if (!this.enabled) {
-      this._setHovered(null);
-      this.keys.clear();
-      this._dragging = false;
-      this.glide = null;
-    } else {
-      this._syncAnglesFromCamera();
-    }
-  }
-
-  /**
    * Register an interactive 3D object (prop, hazard, artifact, station, NPC).
    * @param {THREE.Object3D} object3d
    * @param {object} meta
@@ -215,6 +200,24 @@ export class InWorldInteractionManager {
     return entry;
   }
 
+  /**
+   * Enable/disable all in-world interaction (pointer, keys, glide, walk).
+   * While disabled the camera and pointer belong to another system (inspection
+   * tools, cinematics, text mode); hover is cleared so no tooltip lingers.
+   */
+  setEnabled(on) {
+    this.enabled = Boolean(on);
+    if (!this.enabled) {
+      this.keys.clear();
+      this.glide = null;
+      this._dragging = false;
+      this._setHovered(null);
+    } else {
+      // Another system moved the camera while we were off; resume from where it is.
+      this._syncAnglesFromCamera();
+    }
+  }
+
   clearInteractives() {
     this._setHovered(null);
     this.items.clear();
@@ -234,33 +237,39 @@ export class InWorldInteractionManager {
     group.position.set(x, y, z);
 
     const color = opts.color ?? 0x38bdf8;
+    // Outer ring + inner disc as ONE mesh (one draw call instead of two). They
+    // share a hue but not an opacity, so alpha is baked per vertex in an RGBA
+    // colour attribute (three.js reads vertex alpha when itemSize is 4).
+    const tint = new THREE.Color(color);
+    const withAlpha = (geo, alpha, yPos) => {
+      const g = geo.toNonIndexed();
+      g.rotateX(-Math.PI / 2);
+      g.translate(0, yPos, 0);
+      const count = g.attributes.position.count;
+      const rgba = new Float32Array(count * 4);
+      for (let i = 0; i < count; i++) {
+        rgba[i * 4] = tint.r;
+        rgba[i * 4 + 1] = tint.g;
+        rgba[i * 4 + 2] = tint.b;
+        rgba[i * 4 + 3] = alpha;
+      }
+      g.setAttribute('color', new THREE.BufferAttribute(rgba, 4));
+      return g;
+    };
     const outer = new THREE.Mesh(
-      new THREE.RingGeometry(0.28, 0.38, 32),
+      BufferGeometryUtils.mergeGeometries([
+        withAlpha(new THREE.RingGeometry(0.28, 0.38, 32), 0.85, 0.02),
+        withAlpha(new THREE.CircleGeometry(0.26, 28), 0.22, 0.015),
+      ], false),
       new THREE.MeshBasicMaterial({
-        color,
+        color: 0xffffff,
+        vertexColors: true,
         side: THREE.DoubleSide,
         transparent: true,
-        opacity: 0.85,
         depthWrite: false,
       }),
     );
-    outer.rotation.x = -Math.PI / 2;
-    outer.position.y = 0.02;
     group.add(outer);
-
-    const disc = new THREE.Mesh(
-      new THREE.CircleGeometry(0.26, 28),
-      new THREE.MeshBasicMaterial({
-        color,
-        side: THREE.DoubleSide,
-        transparent: true,
-        opacity: 0.22,
-        depthWrite: false,
-      }),
-    );
-    disc.rotation.x = -Math.PI / 2;
-    disc.position.y = 0.015;
-    group.add(disc);
 
     // Floating diamond beacon above the ring
     const diamond = new THREE.Mesh(
@@ -403,7 +412,13 @@ export class InWorldInteractionManager {
   }
 
   _onHoverMove(e) {
-    if (!this.enabled || !this.canvas || e.target !== this.canvas || this.canvas.style.visibility === 'hidden') {
+    // While another tool owns the pointer (crater counter, magnifier), no hover
+    // tooltip may promise a click that won't happen.
+    if (!this.enabled) {
+      this._setHovered(null);
+      return;
+    }
+    if (!this.canvas || e.target !== this.canvas || this.canvas.style.visibility === 'hidden') {
       this._setHovered(null);
       return;
     }
@@ -437,9 +452,10 @@ export class InWorldInteractionManager {
    * Update camera glides, WASD movement, hotspot ring pulses, and projected bubbles.
    */
   update(dt = 0.016, elapsed = 0) {
-    // 1. Camera glide
+    // 1. Camera glide. While disabled another camera mode owns the camera, so
+    // glide/walk stop — but rings and bubbles below still animate and project.
     if (!this.enabled) {
-      // another camera mode owns the camera; rings still pulse below
+      // no camera movement
     } else if (this.glide) {
       this.glide.elapsed += dt;
       const u = Math.min(1, this.glide.elapsed / this.glide.duration);

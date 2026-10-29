@@ -6,6 +6,7 @@
  */
 import './styles/case-fonts.css';
 import './v2/hud-shell.css';
+import './styles/case-hud.css';
 import { App, SLUG } from './app.js';
 
 window.__SLUG__ = SLUG;

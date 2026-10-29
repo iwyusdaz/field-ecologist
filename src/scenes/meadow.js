@@ -29,6 +29,10 @@ export const MEADOW_VIEWPOINTS = [
 
 const BASE = import.meta.env.BASE_URL || './';
 
+/** Quadrat stack placement in the station's local frame (beside the table, on the ground). */
+export const STACK_OFFSET = [2.0, 0.35];
+export const STACK_GROUND_Y = 0.03;
+
 /** Canvas-generated soil/grass speckle: greys multiplied against vertex colours. */
 function makeSpeckleTexture(size = 256) {
   const cnv = document.createElement('canvas');
@@ -120,6 +124,9 @@ export class MeadowScene {
     this.life = this.lifeSystems.life;
     this.character = this.lifeSystems.character;
     this.lifeSystems.hideInCounting.push(this.character.root);
+    // The station (table, guide, quadrat stack) stands just inside the south edge;
+    // it is not part of any count, so it leaves the top-down counting view.
+    this.lifeSystems.hideInCounting.push(this.station);
     this._buildInteraction();
     this._applyWind();
     // Exposed for tools (poster staging) and tests.
@@ -193,7 +200,9 @@ export class MeadowScene {
       leg.castShadow = true;
       g.add(leg);
     }
-    // quadrat stack: three folded frames leaning against the table (v2 interactive)
+    // quadrat stack: three 2 m frames stacked flat on the turf beside the table
+    // (v2 revision V4: they used to hover at table height; I1: their hit proxy
+    // swallowed the field guide on the table top).
     const frameMat = new THREE.MeshStandardMaterial({ color: 0xdad4c4, roughness: 0.6, emissive: 0x000000 });
     const stack = new THREE.Group();
     stack.name = 'quadrat-stack';
@@ -205,14 +214,15 @@ export class MeadowScene {
         bar.castShadow = true;
         f.add(bar);
       }
-      f.position.set(0, 0.92 + k * 0.035, 0);
+      f.position.set(0, STACK_GROUND_Y + k * 0.032, 0);
       f.rotation.y = k * 0.06;
       stack.add(f);
     }
-    // invisible hit proxy so the thin bars are easy to hover/click
-    const hit = new THREE.Mesh(new THREE.BoxGeometry(QUADRAT_SIZE, 0.25, QUADRAT_SIZE), new THREE.MeshBasicMaterial({ visible: false }));
-    hit.position.y = 1.0;
+    // invisible hit proxy (low slab over the frames) so the thin bars are easy to hover/click
+    const hit = new THREE.Mesh(new THREE.BoxGeometry(QUADRAT_SIZE, 0.3, QUADRAT_SIZE), new THREE.MeshBasicMaterial({ visible: false }));
+    hit.position.y = 0.15;
     stack.add(hit);
+    stack.position.set(STACK_OFFSET[0], 0, STACK_OFFSET[1]);
     g.add(stack);
     this.quadratStack = stack;
     // field guide: a green notebook on the table corner
@@ -239,6 +249,9 @@ export class MeadowScene {
     const sx = 50, sz = 2;
     g.position.set(sx, terrainHeight(sx, sz), sz);
     g.rotation.y = Math.PI; // face into the meadow
+    // the stack rests on the terrain under it (station frame is rotated by PI)
+    const stx = sx - STACK_OFFSET[0], stz = sz - STACK_OFFSET[1];
+    stack.position.y = terrainHeight(stx, stz) - g.position.y;
     this.station = g;
     this.scene.add(g);
   }
@@ -503,11 +516,12 @@ export class MeadowScene {
       });
       ring.scale.setScalar(2.4);
     }
-    const st = this.station.position;
+    this.station.updateMatrixWorld(true);
+    const st = this.quadratStack.getWorldPosition(new THREE.Vector3());
     ix.registerInteractive(this.quadratStack, {
       id: 'quadrat-stack', label: 'Quadrat stack', hint: 'Click to start placing quadrats',
       highlightColor: 0xf2c230,
-      cameraPos: [st.x + 0.4, st.y + 2.4, st.z + 3.2], cameraTarget: [st.x, st.y + 0.9, st.z],
+      cameraPos: [st.x + 0.4, st.y + 2.6, st.z + 3.4], cameraTarget: [st.x, st.y + 0.1, st.z],
       onClick: () => { this.freeCam = true; this.worldActions.startPlacement?.(); },
     });
     ix.registerInteractive(this.fieldGuideProp, {

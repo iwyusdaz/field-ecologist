@@ -243,24 +243,56 @@ function buildWallAndGate(parent) {
   parent.add(gate);
 }
 
+/** Stream ribbon half-width (m) and the clear margin it keeps from the field edge. */
+export const STREAM_HALF_WIDTH = 0.95;
+export const STREAM_FIELD_CLEARANCE = 1.5;
+
+/**
+ * Open-water stream course as ribbon segments (pure; no DOM). v2 revision V1/M1:
+ * the population model grows counted plants right on the stream line (it is a
+ * wet flush inside the field, not open water: 32 plant bases within 5 cm of it),
+ * so open water is drawn ONLY where the stream runs outside the sampling field —
+ * south of the field (z < 0) and north of it (z > 100), kept STREAM_FIELD_CLEARANCE
+ * metres clear of the boundary. Inside the field the course is the darker damp
+ * ground colour of the terrain (see meadow.js _buildTerrain), which never covers a
+ * plant. Each run is a list of [left, right] cross-section points ({x, z}).
+ * @returns {Array<Array<[{x:number,z:number},{x:number,z:number}]>>}
+ */
+export function streamRibbonRuns(w = STREAM_HALF_WIDTH) {
+  const ranges = [[-60, -STREAM_FIELD_CLEARANCE - w], [FIELD_SIZE + STREAM_FIELD_CLEARANCE + w, FIELD_SIZE + 60]];
+  return ranges.map(([z0, z1]) => {
+    const zs = [];
+    for (let z = z0; z < z1; z += 1.5) zs.push(z);
+    zs.push(z1);
+    return zs.map((z, i) => {
+      const zn = zs[Math.min(i + 1, zs.length - 1)], zp = zs[Math.max(i - 1, 0)];
+      const dx = streamX(zn) - streamX(zp), dz = zn - zp;
+      const len = Math.hypot(dx, dz) || 1;
+      const sx = (-dz / len) * w, sz = (dx / len) * w;
+      const x = streamX(z);
+      return [{ x: x - sx, z: z - sz }, { x: x + sx, z: z + sz }];
+    });
+  });
+}
+
 function buildStream() {
   const positions = [], uvs = [], idx = [];
-  const w = 0.95;
-  let dist = 0, prev = null;
-  const pts = [];
-  for (let z = -60; z <= FIELD_SIZE + 60; z += 1.5) pts.push(new THREE.Vector3(streamX(z), 0, z));
-  for (let i = 0; i < pts.length; i++) {
-    const pt = pts[i];
-    const next = pts[Math.min(i + 1, pts.length - 1)], prv = pts[Math.max(i - 1, 0)];
-    const dir = new THREE.Vector3().subVectors(next, prv).normalize();
-    const sx = -dir.z * w, sz = dir.x * w;
-    if (prev) dist += pt.distanceTo(prev);
-    prev = pt;
-    // flat across the bed, just above the higher bank so it never sinks under the terrain
-    const y = Math.max(terrainHeight(pt.x - sx, pt.z - sz), terrainHeight(pt.x + sx, pt.z + sz), terrainHeight(pt.x, pt.z)) + 0.035;
-    positions.push(pt.x - sx, y, pt.z - sz, pt.x + sx, y, pt.z + sz);
-    uvs.push(0, dist / 2.2, 1, dist / 2.2);
-    if (i < pts.length - 1) { const a = i * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+  let base = 0;
+  for (const run of streamRibbonRuns()) {
+    let dist = 0;
+    run.forEach(([l, r], i) => {
+      const cx = (l.x + r.x) / 2, cz = (l.z + r.z) / 2;
+      if (i > 0) {
+        const [pl, pr] = run[i - 1];
+        dist += Math.hypot(cx - (pl.x + pr.x) / 2, cz - (pl.z + pr.z) / 2);
+      }
+      // flat across the bed, just above the higher bank so it never sinks under the terrain
+      const y = Math.max(terrainHeight(l.x, l.z), terrainHeight(r.x, r.z), terrainHeight(cx, cz)) + 0.035;
+      positions.push(l.x, y, l.z, r.x, y, r.z);
+      uvs.push(0, dist / 2.2, 1, dist / 2.2);
+      if (i < run.length - 1) { const a = base + i * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+    });
+    base += run.length * 2;
   }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));

@@ -1,0 +1,16 @@
+/*
+ * Field Ecologist repo-specific HUD rules (loaded after ./v2/hud-shell.css,
+ * which is template-owned and must not carry repo rules).
+ */
+
+/* v2 revision (honesty): the fictional-species statement at the top of every guide */
+.field-guide .guide-honesty {
+  background: var(--v2-badge-bg, #e7efe0);
+  color: var(--v2-text, #1f291a);
+  border: 1px solid var(--v2-border, rgba(61, 107, 44, 0.38));
+  border-radius: 8px;
+  padding: 0.5rem 0.7rem;
+  margin: 0 0 0.6rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}

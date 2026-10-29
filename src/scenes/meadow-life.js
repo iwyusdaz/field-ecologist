@@ -120,7 +120,13 @@ export function buildMeadowLife(meadow) {
   const water = meadow.env?.water;
   if (water) {
     const nm = water.userData.normalMap;
-    life.addUpdater((dt) => { nm.offset.y -= dt * 0.18; nm.offset.x += dt * 0.012; });
+    // v2 revision M1: frozen in counting (and hidden, below); reduced motion
+    // already skips custom updaters.
+    life.addUpdater((dt) => {
+      if (counting) return;
+      nm.offset.y -= dt * 0.18; nm.offset.x += dt * 0.012;
+    });
+    hideInCounting.push(water);
   }
 
   // 7. The field ecologist beside the quadrat stack at the field station.
@@ -149,6 +155,9 @@ export function buildMeadowLife(meadow) {
       counting = on;
       life.setCalmMode(on);
       for (const o of hideInCounting) o.visible = !on;
+      // v2 revision M3: no cloud-shadow blob may slide across the quadrat while
+      // it fades, so the shadow snaps off the moment counting starts.
+      if (on) { cloudK = 0; cu.uCloudK.value = 0; }
     },
     update(dt, camera) {
       life.update(dt, camera);

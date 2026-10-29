@@ -207,6 +207,61 @@ test('text mode: full parity pass over the same objectives', async ({ page }) =>
   expect(events).toBeGreaterThan(3);
 });
 
+/** Put the camera on a fixed station view and return the guide/stack screen points. */
+async function stationView(page) {
+  // Collapse the HUD drawer so the station is not under the panel (review I4).
+  await page.locator('[data-action="toggle-drawer"]').click();
+  return page.evaluate(async () => {
+    const t = window.__TEST__;
+    const s = t.scene;
+    const ix = s.interaction;
+    s.station.updateMatrixWorld(true);
+    const g = s.fieldGuideProp.getWorldPosition(new s.station.position.constructor());
+    s.freeCam = true;
+    ix.glideTo([g.x + 0.6, g.y + 1.3, g.z - 1.6], [g.x, g.y, g.z], 0);
+    await new Promise((r) => setTimeout(r, 400));
+    const rect = t.engine.renderer.domElement.getBoundingClientRect();
+    const project = (obj) => {
+      const v = obj.getWorldPosition(new s.station.position.constructor()).project(t.engine.camera);
+      return { x: rect.left + (v.x + 1) / 2 * rect.width, y: rect.top + (1 - v.y) / 2 * rect.height };
+    };
+    const guide = project(s.fieldGuideProp);
+    const pickedId = ix._pickAtClient(guide.x, guide.y)?.entry?.id ?? null;
+    const topEl = document.elementFromPoint(guide.x, guide.y)?.id ?? null;
+    return { guide, pickedId, topEl };
+  });
+}
+
+test('in-world field guide prop is hoverable and opens the guide, not fieldwork', async ({ page }) => {
+  await boot(page);
+  const v = await stationView(page);
+  expect(v.topEl).toBe('app');
+  expect(v.pickedId).toBe('field-guide');
+  await page.mouse.move(v.guide.x, v.guide.y);
+  await expect(page.locator('.v2-world-tooltip')).toContainText('Field guide');
+  await page.mouse.down();
+  await page.mouse.up();
+  await expect(page.locator('#guide-dialog')).toHaveAttribute('open', '');
+  const mod = await page.evaluate(() => window.__TEST__.hooks.state().module);
+  expect(mod).not.toBe('m3');
+  // the fictional-species statement is visible in the in-field guide dialog
+  await expect(page.locator('#guide-dialog [data-testid="species-statement"]')).toBeVisible();
+  await expect(page.locator('#guide-dialog [data-testid="species-statement"]')).toContainText(/fictional/);
+});
+
+test('fictional-species statement is visible in Module 2 and text-mode Module 2', async ({ page }) => {
+  await boot(page);
+  await page.locator('.module-nav button').nth(1).click();
+  const m2 = page.locator('#overlays [data-testid="species-statement"]').first();
+  await expect(m2).toBeVisible();
+  await expect(m2).toContainText(/constructed for teaching purposes/);
+  await page.getByRole('button', { name: 'Text mode' }).first().click();
+  await expect(page.locator('#textmode')).toContainText('Module 2');
+  const tm = page.locator('#textmode [data-testid="species-statement"]');
+  await expect(tm).toBeVisible();
+  await expect(tm).toContainText(/fictional/);
+});
+
 test('CSV export produces a self-describing sheet', async ({ page }) => {
   await boot(page);
   const csv = await page.evaluate(() => {
