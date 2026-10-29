@@ -8,6 +8,24 @@
 .viewpoint-nav h3 { font-size: 0.95rem; margin: 0 0 0.35rem; }
 .viewpoint-nav ul { list-style: none; display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0; padding: 0; }
 
+/* v2 revision I3: tap-to-count species picker (learner names the species) */
+.tally-picker {
+  position: fixed;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 13rem;
+  padding: 0.6rem;
+  background: var(--v2-surface-solid, #faf6ec);
+  color: var(--v2-text, #1f291a);
+  border: 1px solid var(--v2-border, rgba(61, 107, 44, 0.38));
+  border-radius: 10px;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.28);
+}
+.tally-picker .tally-q { margin: 0 0 0.2rem; font-weight: 700; }
+.tally-picker button { text-align: left; }
+
 /* v2 revision (honesty): the fictional-species statement at the top of every guide */
 .field-guide .guide-honesty {
   background: var(--v2-badge-bg, #e7efe0);

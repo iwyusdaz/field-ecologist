@@ -385,6 +385,7 @@ export class FieldworkUI {
       this.drafts.delete(i);
       this.collapsed = false;
       this.activeIndex = null;
+      this._closeTallyPicker();
       this.scene?.exitQuadratView();
       this.render();
     });
@@ -396,6 +397,7 @@ export class FieldworkUI {
       this.drafts.delete(i);
       this.collapsed = false;
       this.activeIndex = null;
+      this._closeTallyPicker();
       this.scene?.exitQuadratView();
       this.render();
     });
@@ -479,11 +481,78 @@ export class FieldworkUI {
         duration: 1.2,
         then: () => {
           this.scene.enterQuadratView(i - 1);
-          announce(`Counting view open for quadrat ${i}.`);
+          this.scene.onCountTap = (tap) => this._openTallyPicker(i, tap);
+          announce(`Counting view open for quadrat ${i}. Click a plant to tally it, or type the counts in the form.`);
         },
       });
     }
     this.render();
+  }
+
+  /**
+   * v2 revision I3 (§4.3 tap-to-count): after a click on the plant, the learner
+   * names its species from a five-button picker; the matching count (draft and
+   * visible input) goes up by one and a tally ring marks the spot. The scene
+   * never tells the picker which plant was hit, so identification stays the
+   * learner's job. The number inputs remain the keyboard/text equivalent.
+   */
+  _openTallyPicker(i, tap) {
+    this._closeTallyPicker();
+    const picker = document.createElement('div');
+    picker.className = 'tally-picker';
+    picker.setAttribute('role', 'group');
+    picker.setAttribute('aria-label', 'Which species is this plant?');
+    const q = document.createElement('p');
+    q.className = 'tally-q';
+    q.textContent = 'Which species is this?';
+    picker.appendChild(q);
+    for (const sp of this.species) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.dataset.species = sp.id;
+      if (sp.coverEstimated) {
+        b.textContent = `${sp.name} (cover, not counted)`;
+        b.addEventListener('click', () => {
+          announce(`${sp.name} is recorded as a percent-cover band in the form, not tallied.`);
+          this._closeTallyPicker();
+        });
+      } else {
+        b.textContent = sp.name;
+        b.addEventListener('click', () => this._tally(i, sp, tap));
+      }
+      picker.appendChild(b);
+    }
+    const cancel = document.createElement('button');
+    cancel.type = 'button';
+    cancel.className = 'secondary';
+    cancel.textContent = 'Cancel';
+    cancel.addEventListener('click', () => this._closeTallyPicker());
+    picker.appendChild(cancel);
+    picker.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.stopPropagation(); this._closeTallyPicker(); } });
+    picker.style.left = `${Math.max(8, Math.min(window.innerWidth - 240, tap.clientX + 12))}px`;
+    picker.style.top = `${Math.max(8, Math.min(window.innerHeight - 280, tap.clientY - 20))}px`;
+    document.body.appendChild(picker);
+    this._picker = picker;
+    picker.querySelector('button')?.focus();
+  }
+
+  _closeTallyPicker() {
+    if (this._picker) { this._picker.remove(); this._picker = null; }
+  }
+
+  _tally(i, sp, tap) {
+    const draft = this._draft(i);
+    const rec = this.session.sheet.quadrats[i - 1];
+    const input = document.getElementById(`count-${i}-${sp.id}`);
+    const cur = draft.counts[sp.id] !== undefined ? draft.counts[sp.id]
+      : input ? input.value : rec.counts[sp.id] !== undefined ? String(rec.counts[sp.id]) : '';
+    const next = (parseInt(cur, 10) || 0) + 1;
+    draft.counts[sp.id] = String(next);
+    if (input) input.value = String(next);
+    this.scene?.addTallyMark(tap.x, tap.z);
+    this.app.record.log('experienced', { id: `quadrat-${i}-tally`, name: `Tallied a plant in quadrat ${i}` }, { response: sp.id });
+    announce(`${sp.name}: ${next} tallied in quadrat ${i}.`);
+    this._closeTallyPicker();
   }
 
   _syncScene() {

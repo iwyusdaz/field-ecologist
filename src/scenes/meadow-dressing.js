@@ -319,9 +319,23 @@ function buildStream() {
  * @param {import('../v2/model-placer.js').ModelLibrary} library
  */
 export async function placeDressing(library, statics) {
-  await Promise.all(DRESSING_PLACEMENTS.map(([id, x, z, h, ry]) => library.place(statics, id, {
+  const placed = await Promise.all(DRESSING_PLACEMENTS.map(([id, x, z, h, ry]) => library.place(statics, id, {
     position: [x, terrainHeight(x, z) - 0.03, z], rotationY: ry, targetHeight: h,
     castShadow: false, receiveShadow: true, contactShadow: h > 0.5,
   })));
+  // v2 revision V7: the hedgerow read near-black. Lift its foliage materials
+  // (shared by every bush, so each is adjusted once) before the per-material merge.
+  const lifted = new Set();
+  placed.forEach((w, k) => {
+    if (!w || DRESSING_PLACEMENTS[k][0] !== 'wild_rooibos_bush') return;
+    w.traverse((o) => {
+      const m = o.isMesh && o.material;
+      if (!m || Array.isArray(m) || lifted.has(m) || !m.color) return;
+      lifted.add(m);
+      m.color.multiplyScalar(1.6).offsetHSL(0, 0, 0.04);
+      if (m.emissive) m.emissive.setHex(0x1a2412);
+      m.envMapIntensity = Math.max(m.envMapIntensity ?? 1, 1.3);
+    });
+  });
   return mergeStaticGroup(statics);
 }

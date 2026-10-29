@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { DRESSING_PLACEMENTS, DRESSING_MIN_OFFSET, outsideField } from '../../src/scenes/meadow-dressing.js';
-import { BUTTERFLY_PATHS } from '../../src/scenes/meadow-life.js';
+import { BUTTERFLY_PATHS, lifeScaleFor } from '../../src/scenes/meadow-life.js';
 import { FIELD_SIZE } from '../../src/systems/moisture-field.js';
 import { QUADRAT_SIZE } from '../../src/systems/population-model.js';
 import speciesJson from '../../content/species.json';
@@ -24,6 +24,15 @@ describe('v2 meadow dressing honesty rule', () => {
       expect(allowed.has(id)).toBe(true);
       expect(counted.has(id)).toBe(false);
     }
+  });
+
+  it('scales ambient life down on Low (v2 revision M5)', () => {
+    const low = lifeScaleFor({ vegetationDensity: 0.4 });
+    const med = lifeScaleFor({ vegetationDensity: 0.7 });
+    expect(low.butterflies).toBe(3);
+    expect(low.mistSheets).toBe(3);
+    expect(low.pollen).toBeLessThan(med.pollen);
+    expect(lifeScaleFor({ vegetationDensity: 1 }).butterflies).toBe(BUTTERFLY_PATHS.length);
   });
 
   it('keeps butterfly loops over the margins, not the field interior', () => {

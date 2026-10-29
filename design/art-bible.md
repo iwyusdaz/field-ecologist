@@ -24,7 +24,7 @@ HUD surface: warm paper `rgba(250, 246, 236, 0.92)` with text `#1F291A` (≥ 12:
 |---|---|---|---|
 | Display | `--font-display` | Fraunces 600/700 | App title, module headings |
 | Body | `--font-body` | Nunito Sans 400/600/700 | All instructions, forms, the counting dock, buttons |
-| Accent | `--font-accent` | Caveat 600 | In-world field-notebook handwriting only: hover tooltips on the quadrat stack and field guide, notebook labels |
+| Accent | `--font-accent` | Caveat 600 | Reserved for in-world field-notebook handwriting (not yet used: hover tooltips use the body face under the readability rule) |
 
 Readability rule: instructions and numbers are always Nunito Sans. **Plain font** (header button) switches all three roles to system sans.
 
@@ -41,7 +41,7 @@ Readability rule: instructions and numbers are always Nunito Sans. **Plain font*
 
 All static dressing is merged per material (`mergeStaticGroup`) to stay inside the 300 draw-call budget.
 
-Procedural (own work): dry-stone wall + five-bar gate along the west boundary, distant hills ring, flowing stream ribbon with scrolling-normal water material, wing-flap butterflies, the field-ecologist character.
+Procedural (own work): dry-stone wall + five-bar gate along the **south** boundary (z = −11, gate beside the field station), distant hills ring, flowing stream ribbon with scrolling-normal water material (open water drawn only where the stream runs outside the field; inside the field the stream line is damp ground, so no counted plant is ever under water), low instanced turf (in-field tufts ≤ 1.2 cm, under the lowest counted field mark), wing-flap butterflies, the field-ecologist character. There are 32 dressing placements (`DRESSING_PLACEMENTS`).
 
 ## 5. The fictional-species honesty rule
 
@@ -70,6 +70,8 @@ Calm mode (counting view): motion slows to ~30 %, particles dim; nothing freezes
 
 - Glowing buttercup floor rings at the overview, the stream, the wet zone and the dry zone; clicking one glides the camera there.
 - WASD/arrows walk, drag looks (the orbit controller remains for keyboard/button steps).
-- Hover highlight + Caveat tooltip on the quadrat stack and the field guide at the station.
+- Hover highlight + tooltip (body face) on the quadrat stack (on the ground beside the table) and the field guide (on the table).
+- Every module panel ends with "Go to a viewpoint" buttons, the keyboard equivalent of the rings.
+- Counting view: click a plant, name its species in a five-species picker, and the tally goes up (the scene never names the plant).
 - Clicking the quadrat stack starts placement (same action as the panel button); clicking the field guide opens the guide.
 - Every in-world action keeps its panel and text-mode equivalent.

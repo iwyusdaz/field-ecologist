@@ -25,6 +25,20 @@ export const BUTTERFLY_PATHS = [
   [[22, 1.3, -6], [34, 1.9, -8], [40, 1.5, -5], [30, 1.7, -4]],
 ];
 
+/**
+ * Ambient-life counts per preset (scaled by vegetationDensity: Low 0.4,
+ * Medium 0.7, High/Ultra 1.0). Low drops to 3 butterflies and 3 mist sheets.
+ */
+export function lifeScaleFor(presetDef) {
+  const d = presetDef?.vegetationDensity ?? 1;
+  const low = d < 0.5;
+  return {
+    butterflies: low ? 3 : BUTTERFLY_PATHS.length,
+    pollen: Math.round(260 * Math.min(1, Math.max(0.3, d))),
+    mistSheets: low ? 3 : 6,
+  };
+}
+
 function makeButterfly(color) {
   const g = new THREE.Group();
   const wingGeo = new THREE.CircleGeometry(0.06, 7, 0, Math.PI);
@@ -64,7 +78,9 @@ export function buildMeadowLife(meadow) {
   // 2. Butterflies on margin loops (wing-flap meshes).
   const colors = [0xf2c230, 0xf6a65a, 0xffffff, 0xf2c230, 0xb8ccd6];
   const flies = [];
-  BUTTERFLY_PATHS.forEach((path, i) => {
+  // v2 revision M5: life at reduced counts on Low (plan §2.5).
+  const lifeScale = lifeScaleFor(meadow.engine?.quality?.presetDef);
+  BUTTERFLY_PATHS.slice(0, lifeScale.butterflies).forEach((path, i) => {
     const b = makeButterfly(colors[i % colors.length]);
     b.name = `butterfly-${i}`;
     scene.add(b);
@@ -83,7 +99,7 @@ export function buildMeadowLife(meadow) {
 
   // 3. Drifting pollen in the low sun (around the station and the south half).
   const pollen = life.addParticleVolume({
-    name: 'meadow-pollen', center: [50, 1.6, 22], extents: [70, 2.6, 40], count: 260,
+    name: 'meadow-pollen', center: [50, 1.6, 22], extents: [70, 2.6, 40], count: lifeScale.pollen,
     color: 0xffe3a0, size: 0.06, opacity: 0.55, drift: [0.12, 0.04, 0.08],
   });
   hideInCounting.push(pollen);
@@ -94,8 +110,8 @@ export function buildMeadowLife(meadow) {
   if (mistTex) mistMat.map = mistTex;
   const mist = new THREE.Group();
   mist.name = 'morning-mist';
-  for (let k = 0; k < 6; k++) {
-    const z = -10 + k * 22;
+  for (let k = 0; k < lifeScale.mistSheets; k++) {
+    const z = -10 + k * (132 / lifeScale.mistSheets);
     const sheet = new THREE.Mesh(new THREE.PlaneGeometry(26, 20), mistMat);
     sheet.rotation.x = -Math.PI / 2;
     sheet.position.set(streamX(z) + 3, terrainHeight(streamX(z), z) + 0.55 + (k % 2) * 0.25, z);

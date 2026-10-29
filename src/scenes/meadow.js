@@ -156,6 +156,8 @@ export class MeadowScene {
     this.scene.add(this.turf);
     this.lifeSystems.hideInCounting.push(this.turf);
     this._buildInteraction();
+    this.onCountTap = null;
+    this._bindCountTap();
     this._applyWind();
     // Exposed for tools (poster staging) and tests.
     this.terrainHeight = terrainHeight;
@@ -455,7 +457,78 @@ export class MeadowScene {
     if (this.counting) this._fitOrtho();
   }
 
+  /**
+   * v2 revision I3 (§4.3 tap-to-count): while counting, a short click on the
+   * canvas resolves to the GROUND point under the orthographic camera, inside
+   * the active quadrat, and is handed to `onCountTap({x, z, clientX, clientY})`.
+   * It deliberately never looks up which plant instance was hit: the learner
+   * names the species in the picker (no auto-ID).
+   */
+  _bindCountTap() {
+    const el = this.engine.renderer.domElement;
+    const ray = new THREE.Raycaster();
+    const ndc = new THREE.Vector2();
+    const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+    const hit = new THREE.Vector3();
+    let down = null;
+    el.addEventListener('pointerdown', (e) => { if (e.button === 0) down = { x: e.clientX, y: e.clientY }; });
+    el.addEventListener('pointerup', (e) => {
+      const d = down; down = null;
+      if (!d || !this.counting || !this.onCountTap || this.activeQuadrat < 0) return;
+      if (Math.hypot(e.clientX - d.x, e.clientY - d.y) > 6) return;
+      if (document.querySelector('dialog[open]')) return;
+      const pt = this.countTapPoint(e.clientX, e.clientY, { ray, ndc, plane, hit });
+      if (pt) this.onCountTap({ ...pt, clientX: e.clientX, clientY: e.clientY });
+    });
+  }
+
+  /** Ground point (x, z) under a client pixel in the counting view, or null outside the active quadrat. */
+  countTapPoint(clientX, clientY, tmp = {}) {
+    const g = this.quadratGroups[this.activeQuadrat];
+    if (!this.counting || !g) return null;
+    const el = this.engine.renderer.domElement;
+    const rect = el.getBoundingClientRect();
+    const ndc = tmp.ndc || new THREE.Vector2();
+    ndc.set(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
+    const ray = tmp.ray || new THREE.Raycaster();
+    ray.setFromCamera(ndc, this.orthoCam);
+    const plane = tmp.plane || new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+    plane.constant = -(g.position.y - 0.06);
+    const hit = tmp.hit || new THREE.Vector3();
+    if (!ray.ray.intersectPlane(plane, hit)) return null;
+    const half = QUADRAT_SIZE / 2 + 0.03;
+    if (Math.abs(hit.x - g.position.x) > half || Math.abs(hit.z - g.position.z) > half) return null;
+    return { x: hit.x, z: hit.z };
+  }
+
+  /** Drop a small tally marker on the ground at (x, z) (counting view only; cleared on exit). */
+  addTallyMark(x, z) {
+    if (!this.tallyMarks) {
+      const geo = new THREE.RingGeometry(0.03, 0.045, 16).rotateX(-Math.PI / 2);
+      const mat = new THREE.MeshBasicMaterial({ color: 0xffd166, side: THREE.DoubleSide, depthTest: false, transparent: true, opacity: 0.95 });
+      this.tallyMarks = new THREE.InstancedMesh(geo, mat, 300);
+      this.tallyMarks.name = 'tally-marks';
+      this.tallyMarks.count = 0;
+      this.tallyMarks.frustumCulled = false;
+      this.tallyMarks.renderOrder = 5;
+      this.scene.add(this.tallyMarks);
+    }
+    const tm = this.tallyMarks;
+    if (tm.count >= 300) return tm.count;
+    const m = new THREE.Matrix4().makeTranslation(x, terrainHeight(x, z) + 0.12, z);
+    tm.setMatrixAt(tm.count, m);
+    tm.count += 1;
+    tm.instanceMatrix.needsUpdate = true;
+    return tm.count;
+  }
+
+  clearTallyMarks() {
+    if (this.tallyMarks) this.tallyMarks.count = 0;
+  }
+
   exitQuadratView() {
+    this.clearTallyMarks();
+    this.onCountTap = null;
     this.counting = false;
     this._setCountingLife(false);
     this.engine.renderCamera = null;
@@ -544,6 +617,17 @@ export class MeadowScene {
         onClick: () => { this.freeCam = true; },
       });
       ring.scale.setScalar(2.4);
+      // v2 revision (a11y contrast): a dark outline under the buttercup ring keeps
+      // it ≥ 3:1 against the pale dry ground (buttercup alone was 1.85:1).
+      if (!this._ringOutlineGeo) {
+        this._ringOutlineGeo = new THREE.RingGeometry(0.255, 0.405, 32).rotateX(-Math.PI / 2);
+        this._ringOutlineMat = new THREE.MeshBasicMaterial({ color: 0x1f291a, transparent: true, opacity: 0.85, depthWrite: false, side: THREE.DoubleSide });
+      }
+      const outline = new THREE.Mesh(this._ringOutlineGeo, this._ringOutlineMat);
+      outline.position.y = 0.012;
+      outline.renderOrder = -1;
+      outline.name = `view-${id}-outline`;
+      ring.add(outline);
     }
     this.station.updateMatrixWorld(true);
     const st = this.quadratStack.getWorldPosition(new THREE.Vector3());

@@ -276,6 +276,46 @@ test('viewpoint buttons glide the camera by keyboard (ring equivalent)', async (
   await expect(page.getByRole('button', { name: 'Go to viewpoint: The stream' })).toBeVisible();
 });
 
+test('tap-to-count: click a plant, name its species, the tally increments (no auto-ID)', async ({ page }) => {
+  await boot(page);
+  await page.locator('.module-nav button').nth(2).click();
+  await page.getByRole('button', { name: /^Choose Simple random/ }).click();
+  await page.locator('button.chip').first().click();
+  // wait for the walk glide to end in the orthographic counting view
+  await expect.poll(() => page.evaluate(() => window.__TEST__.scene.counting), { timeout: 60_000 }).toBe(true);
+  // hide the form so the whole quadrat is clickable, then find a counted plant's screen point
+  await page.getByRole('button', { name: 'Hide form to see the whole quadrat' }).click();
+  const tap = await page.evaluate(() => {
+    const t = window.__TEST__;
+    const s = t.scene;
+    const g = s.quadratGroups[s.activeQuadrat].position;
+    const rect = t.engine.renderer.domElement.getBoundingClientRect();
+    const V = g.constructor;
+    // nearest plant (any counted species) to the quadrat centre, projected through the ortho camera
+    let best = null;
+    for (const pts of Object.values(t.app.population.positions)) {
+      for (const p of pts) {
+        const d = Math.hypot(p.x - g.x, p.z - g.z);
+        if (Math.abs(p.x - g.x) < 0.9 && Math.abs(p.z - g.z) < 0.9 && (!best || d < best.d)) best = { d, x: p.x, z: p.z };
+      }
+    }
+    const pt = best || { x: g.x, z: g.z };
+    const v = new V(pt.x, g.y, pt.z).project(s.orthoCam);
+    return { x: rect.left + (v.x + 1) / 2 * rect.width, y: rect.top + (1 - v.y) / 2 * rect.height };
+  });
+  await page.mouse.click(tap.x, tap.y);
+  const picker = page.getByRole('group', { name: 'Which species is this plant?' });
+  await expect(picker).toBeVisible();
+  // the picker offers all five species and has not pre-selected or labelled the plant
+  await expect(picker.locator('button[data-species]')).toHaveCount(5);
+  await picker.getByRole('button', { name: 'Meadow Butterweed', exact: true }).click();
+  await expect(picker).toHaveCount(0);
+  await expect.poll(() => page.evaluate(() => window.__TEST__.scene.tallyMarks?.count ?? 0)).toBe(1);
+  // the count form (text equivalent) shows the tally
+  await page.getByRole('button', { name: /Show counting form/ }).click();
+  await expect(page.locator('#count-1-butterweed')).toHaveValue('1');
+});
+
 test('CSV export produces a self-describing sheet', async ({ page }) => {
   await boot(page);
   const csv = await page.evaluate(() => {
