@@ -3,6 +3,11 @@
  * which is template-owned and must not carry repo rules).
  */
 
+/* v2 revision I2/A1: viewpoint buttons (keyboard equivalent of the rings) */
+.viewpoint-nav { margin-top: 0.8rem; }
+.viewpoint-nav h3 { font-size: 0.95rem; margin: 0 0 0.35rem; }
+.viewpoint-nav ul { list-style: none; display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0; padding: 0; }
+
 /* v2 revision (honesty): the fictional-species statement at the top of every guide */
 .field-guide .guide-honesty {
   background: var(--v2-badge-bg, #e7efe0);

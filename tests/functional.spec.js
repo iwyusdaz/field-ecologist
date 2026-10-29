@@ -262,6 +262,20 @@ test('fictional-species statement is visible in Module 2 and text-mode Module 2'
   await expect(tm).toContainText(/fictional/);
 });
 
+test('viewpoint buttons glide the camera by keyboard (ring equivalent)', async ({ page }) => {
+  await boot(page);
+  const btn = page.getByRole('button', { name: 'Go to viewpoint: Dry zone' });
+  await expect(btn).toBeVisible();
+  await btn.focus();
+  await page.keyboard.press('Enter');
+  // the glide ends at the dry-zone camera position (MEADOW_VIEWPOINTS: [76, 4.4, 46])
+  await expect.poll(async () => page.evaluate(() => {
+    const p = window.__TEST__.engine.camera.position;
+    return Math.hypot(p.x - 76, p.z - 46);
+  }), { timeout: 60_000 }).toBeLessThan(1.5);
+  await expect(page.getByRole('button', { name: 'Go to viewpoint: The stream' })).toBeVisible();
+});
+
 test('CSV export produces a self-describing sheet', async ({ page }) => {
   await boot(page);
   const csv = await page.evaluate(() => {

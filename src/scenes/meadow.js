@@ -18,6 +18,7 @@ import { ModelLibrary } from '../v2/model-placer.js';
 import { InWorldInteractionManager } from '../v2/in-world-interaction.js';
 import { buildEnvironment, placeDressing, addCloudShadows } from './meadow-dressing.js';
 import { buildMeadowLife } from './meadow-life.js';
+import { buildTurf } from './meadow-turf.js';
 
 /** v2 viewpoint rings: [id, label, ring x, ring z, camera pos, camera target]. */
 export const MEADOW_VIEWPOINTS = [
@@ -28,6 +29,18 @@ export const MEADOW_VIEWPOINTS = [
 ];
 
 const BASE = import.meta.env.BASE_URL || './';
+
+/** Dawn key light (v2 revision V2): elevation 15°, azimuth from the east-south-east. */
+export const DAWN_SUN_ELEVATION_DEG = 15;
+const DAWN_AZ = THREE.MathUtils.degToRad(70); // from +z towards +x
+const DAWN_EL = THREE.MathUtils.degToRad(DAWN_SUN_ELEVATION_DEG);
+export const DAWN_SUN_OFFSET = new THREE.Vector3(
+  Math.cos(DAWN_EL) * Math.sin(DAWN_AZ), Math.sin(DAWN_EL), Math.cos(DAWN_EL) * Math.cos(DAWN_AZ),
+).multiplyScalar(80);
+export const DAWN_SUN_COLOR = 0xffc683;
+export const DAWN_SUN_INTENSITY = 2.7;
+/** Warm dawn haze (mist blue warmed towards dawn gold). */
+export const DAWN_HAZE = 0xe6cfae;
 
 /** Quadrat stack placement in the station's local frame (beside the table, on the ground). */
 export const STACK_OFFSET = [2.0, 0.35];
@@ -76,8 +89,8 @@ export class MeadowScene {
     this.theme = applyCaseGrade('field-ecologist', { renderer: engine.renderer, scene: this.scene, addSkyDome: false });
     this.v2FogBase = 0.0032;
     this.v2Fog = this.scene.fog;
-    // mist-blue dawn haze (art bible: mist blue #B8CCD6 warmed towards dawn gold)
-    if (this.v2Fog) { this.v2Fog.density = this.v2FogBase; this.v2Fog.color.set(0xc6d0cc); }
+    // dawn haze (art bible: mist blue #B8CCD6 warmed towards dawn gold #F6A65A)
+    if (this.v2Fog) { this.v2Fog.density = this.v2FogBase; this.v2Fog.color.set(DAWN_HAZE); }
     this.cloudUniforms = { uCloudT: { value: 0 }, uCloudK: { value: 0.22 } };
 
     this._buildLights();
@@ -113,6 +126,17 @@ export class MeadowScene {
     engine.onUpdate((dt, t) => this._update(dt, t));
     engine.quality.onChange((def, name) => {
       this.vegetation.setPreset(def, name);
+      if (this.turf) {
+        const vis = this.turf.visible;
+        this.scene.remove(this.turf);
+        this.turf.geometry.dispose(); this.turf.material.dispose(); this.turf.dispose();
+        const hide = this.lifeSystems.hideInCounting;
+        const at = hide.indexOf(this.turf);
+        this.turf = buildTurf(def.vegetationDensity ?? 0.7);
+        this.turf.visible = vis;
+        if (at >= 0) hide[at] = this.turf;
+        this.scene.add(this.turf);
+      }
       this.post.dispose();
       this.post = createPost(engine.renderer, this.scene, engine.camera, def);
       engine.setComposer(this.post.composer);
@@ -127,6 +151,10 @@ export class MeadowScene {
     // The station (table, guide, quadrat stack) stands just inside the south edge;
     // it is not part of any count, so it leaves the top-down counting view.
     this.lifeSystems.hideInCounting.push(this.station);
+    // v2 revision V3: low instanced turf (one draw call), hidden in the counting view.
+    this.turf = buildTurf(engine.quality.presetDef.vegetationDensity ?? 0.7);
+    this.scene.add(this.turf);
+    this.lifeSystems.hideInCounting.push(this.turf);
     this._buildInteraction();
     this._applyWind();
     // Exposed for tools (poster staging) and tests.
@@ -134,9 +162,10 @@ export class MeadowScene {
   }
 
   _buildLights() {
-    // Neutral daylight (the HDRI carries the overcast sky; the sun adds soft shadows).
-    this.sun = new THREE.DirectionalLight(0xfff2df, 2.4);
-    this.sun.position.set(40, 60, 25);
+    // v2 revision V2 (dawn): a low (~15°) warm dawn-gold key light from the east;
+    // the HDRI still supplies sky and ambient fill.
+    this.sun = new THREE.DirectionalLight(DAWN_SUN_COLOR, DAWN_SUN_INTENSITY);
+    this.sun.position.copy(DAWN_SUN_OFFSET);
     this.sun.castShadow = true;
     this.sun.shadow.mapSize.set(this.engine.quality.presetDef.shadowMapSize || 2048, this.engine.quality.presetDef.shadowMapSize || 2048);
     const sc = this.sun.shadow.camera;
@@ -144,7 +173,7 @@ export class MeadowScene {
     this.sun.shadow.bias = -0.0004;
     this.scene.add(this.sun);
     this.scene.add(this.sun.target);
-    this.hemi = new THREE.HemisphereLight(0xcfe4f5, 0x51663c, 0.5);
+    this.hemi = new THREE.HemisphereLight(0xffe2bf, 0x55663c, 0.55);
     this.scene.add(this.hemi);
     this._dawnState = null; // set during S1 (see setDawn)
   }
@@ -293,10 +322,10 @@ export class MeadowScene {
       this._dawnState = null;
       this.scene.fog = this.v2Fog || null;
       if (this.v2Fog) this.v2Fog.density = this.v2FogBase;
-      this.sun.color.set(0xffe2b8);
-      this.sun.intensity = 2.4;
+      this.sun.color.set(DAWN_SUN_COLOR);
+      this.sun.intensity = DAWN_SUN_INTENSITY;
       this.engine.renderer.toneMappingExposure = this.theme?.exposure ?? 1.0;
-      this.sun.position.set(40, 60, 25);
+      this.sun.position.copy(DAWN_SUN_OFFSET);
       return;
     }
     this._dawnState = s;
@@ -531,6 +560,22 @@ export class MeadowScene {
     });
   }
 
+  /**
+   * Keyboard/POI equivalent of the viewpoint rings (v2 revision I2/A1): glide
+   * the camera to a MEADOW_VIEWPOINTS entry. Ignored while counting or while a
+   * cinematic owns the camera. Returns true when the glide started.
+   * @param {string} id 'overview' | 'stream' | 'wet' | 'dry'
+   */
+  goToViewpoint(id) {
+    const vp = MEADOW_VIEWPOINTS.find((v) => v[0] === id);
+    if (!vp || this.counting || !this.orbit.enabled || !this.interaction) return false;
+    this.walkAnim = null;
+    this.freeCam = true;
+    if (!this.interaction.enabled) this.interaction.setEnabled(true);
+    this.interaction.glideTo(vp[4], vp[5], 1.15);
+    return true;
+  }
+
   /** @param {{startPlacement?:Function, openGuide?:Function}} actions */
   setWorldActions(actions) {
     this.worldActions = { ...this.worldActions, ...actions };
@@ -580,7 +625,7 @@ export class MeadowScene {
     // sun shadow follows the camera target so a 60 m shadow box always covers the view
     const focus = this.counting ? this.engine.renderCamera.position : (this.freeCam && this.interaction ? this.interaction.target : this.orbit.target);
     this.sun.target.position.set(focus.x, 0, focus.z);
-    this.sun.position.set(focus.x + 40, 60, focus.z + 25);
+    if (!this._dawnState) this.sun.position.set(focus.x + DAWN_SUN_OFFSET.x, DAWN_SUN_OFFSET.y, focus.z + DAWN_SUN_OFFSET.z);
     this.vegetation.update(this.engine.renderCamera || this.engine.camera, dt, t);
   }
 

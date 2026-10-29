@@ -14,7 +14,7 @@ import { LearningRecord } from './learning/record.js';
 import { TextMode } from './a11y/text-mode.js';
 import { MotionPrefs } from './a11y/motion.js';
 import { ShotPlayer } from './cinematics/shot-player.js';
-import { MeadowScene } from './scenes/meadow.js';
+import { MeadowScene, MEADOW_VIEWPOINTS } from './scenes/meadow.js';
 import { buildPopulation, MEADOW_SEED } from './systems/population-model.js';
 import { FieldworkSession } from './systems/fieldwork.js';
 import { FieldworkUI } from './ui/fieldwork.js';
@@ -210,6 +210,37 @@ export class App {
     else if (id === 'm3') this._renderM3();
     else if (id === 'm4') this._renderM4();
     else if (id === 'm5') this._renderM5();
+    this._appendViewpointNav();
+  }
+
+  /**
+   * v2 revision I2/A1: DOM "Go to" buttons in the HUD panel, the keyboard and
+   * screen-reader equivalent of the in-world viewpoint rings.
+   */
+  _appendViewpointNav() {
+    if (!this.scene || !this.scene.goToViewpoint) return;
+    const nav = document.createElement('nav');
+    nav.className = 'viewpoint-nav';
+    nav.setAttribute('aria-label', 'Viewpoints in the meadow');
+    const h = document.createElement('h3');
+    h.textContent = 'Go to a viewpoint';
+    const list = document.createElement('ul');
+    for (const [vid, label] of MEADOW_VIEWPOINTS) {
+      const li = document.createElement('li');
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.dataset.viewpoint = vid;
+      b.textContent = label;
+      b.setAttribute('aria-label', `Go to viewpoint: ${label}`);
+      b.addEventListener('click', () => {
+        const ok = this.scene.goToViewpoint(vid);
+        announce(ok ? `Moving to ${label}.` : 'Viewpoints are unavailable while counting or during a cinematic.');
+      });
+      li.appendChild(b);
+      list.appendChild(li);
+    }
+    nav.append(h, list);
+    this._overlayHost().appendChild(nav);
   }
 
   /**
