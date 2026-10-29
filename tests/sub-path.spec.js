@@ -71,7 +71,9 @@ test('sub-path /play/<slug>/ loads with no failed requests or console errors', a
   page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
   page.on('pageerror', (e) => errors.push(String(e)));
 
-  await page.goto(`http://127.0.0.1:${port}/play/${SLUG}/`, { waitUntil: 'networkidle', timeout: 30_000 });
+  // 90 s: on shared CI runners the ~8.6 MB first load (models, textures) can
+  // take longer than 30 s to reach network idle (v2.0.1 release run).
+  await page.goto(`http://127.0.0.1:${port}/play/${SLUG}/`, { waitUntil: 'networkidle', timeout: 90_000 });
 
   expect(failed, `failed requests: ${failed.join('\n')}`).toEqual([]);
   expect(errors, `console errors: ${errors.join('\n')}`).toEqual([]);
