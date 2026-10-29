@@ -7,6 +7,26 @@
 import * as THREE from 'three';
 import { QualityManager } from './quality.js';
 
+/**
+ * Detect a software WebGL implementation (SwiftShader, llvmpipe, ...). Headless
+ * test browsers always use one, and on a 2-vCPU CI runner a back-to-back render
+ * loop starves the main thread so badly that overlay clicks time out.
+ * @returns {string|null} the renderer string when it is a software renderer
+ */
+function detectSoftwareGL() {
+  try {
+    const c = document.createElement('canvas');
+    const gl = c.getContext('webgl2');
+    if (!gl) return null;
+    const ext = gl.getExtension('WEBGL_debug_renderer_info');
+    const name = String(ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER));
+    gl.getExtension('WEBGL_lose_context')?.loseContext();
+    return /swiftshader|llvmpipe|softpipe|software|basic render/i.test(name) ? name : null;
+  } catch {
+    return null;
+  }
+}
+
 export class Engine {
   /**
    * @param {HTMLCanvasElement} canvas
@@ -16,6 +36,9 @@ export class Engine {
    */
   constructor(canvas, opts = {}) {
     this.canvas = canvas;
+    // Software WebGL: cap at ~5 fps so the main thread stays free for input.
+    this.softwareGL = detectSoftwareGL();
+    this.minFrameMs = this.softwareGL ? 200 : 0;
     this.renderer = new THREE.WebGLRenderer({
       canvas,
       antialias: false, // AA handled by SMAA pass on Medium+, or MSAA on Low via renderer (WebGL2 multisampled RT)
@@ -84,17 +107,25 @@ export class Engine {
     if (this._running) return;
     this._running = true;
     this.clock.start();
+    // Keep rendering at or below ~50% of the main thread so the overlay stays
+    // responsive when a single frame is expensive (software WebGL on CI).
+    const schedule = (delayMs) => {
+      if (delayMs > 4) setTimeout(() => requestAnimationFrame(tick), delayMs);
+      else requestAnimationFrame(tick);
+    };
     const tick = () => {
       if (!this._running) return;
-      requestAnimationFrame(tick);
-      if (this._paused || !this._visible) return;
+      if (this._paused || !this._visible) { schedule(100); return; }
       const dt = Math.min(this.clock.getDelta(), 0.1);
       const t = this.clock.elapsedTime;
+      const t0 = performance.now();
       for (const fn of this._updateFns) fn(dt, t);
       this.renderer.info.reset();
       const cam = this.renderCamera || this.camera;
       if (this.composer && !this.renderCamera) this.composer.render(dt);
       else this.renderer.render(this.scene, cam);
+      const cost = performance.now() - t0;
+      schedule(Math.max(cost > 20 ? cost : 0, this.minFrameMs - cost));
       // Dynamic resolution: sample a 2 s window during the first 20 s after load.
       this.frames++; this._fpsFrames++;
       this._fpsT += dt;

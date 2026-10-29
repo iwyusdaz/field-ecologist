@@ -1,7 +1,7 @@
 {
   "name": "field-ecologist",
   "private": true,
-  "version": "2.0.0",
+  "version": "2.0.1",
   "type": "module",
   "description": "Design a sampling plan for a realistic meadow, place quadrats, identify and count species, then see the meadow's true population and discover how your design choices biased your estimate.",
   "engines": {

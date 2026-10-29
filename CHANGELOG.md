@@ -4,7 +4,14 @@ All notable changes to this project are documented here. Format based on
 Keep a Changelog; versioning is semver (major for breaking changes, minor for
 new content, patch for fixes).
 
-## [2.0.0] — 2026-10-29
+## [2.0.1] — 2026-10-29
+
+First published v2 release. The `v2.0.0` tag exists, but its release job failed twice: the a11y suite timed out on the 2-vCPU CI runner, so no 2.0.0 archive was ever published. The tag was left in place rather than rewritten.
+
+- **CI reliability (V2-11):** `src/core/engine.js` detects software WebGL (SwiftShader, llvmpipe) and caps the render loop at about 5 fps. The loop also keeps rendering to at most about half the main thread, so overlay clicks get dispatched. This is the same fix as object-detective SP-15 and first-session-tutor-sim D17. GPU behaviour is unchanged, because detection only matches software renderers.
+- Posters renamed to `poster-2.0.1.*` (same image). Otherwise identical to the 2.0.0 commit.
+
+## [2.0.0] — 2026-10-29 (tagged, never released)
 
 Release gate: the v2 agent-review revisions (V2-0 to V2-9f) plus V2-10, a fix for diagonal stripes on the field ground found in the headed GPU check. Headed Apple M1: Medium 60 fps, 141 draw calls, 8.6 MB before first interaction. Posters and trailer re-recorded from the revised scene.
 
