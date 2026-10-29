@@ -29,7 +29,7 @@ the shared standards. Statuses: **done**, done(agent review pending), **not poss
 - [x] **done** — Posters `public/poster-2.0.0.webp` (34 KB) + `.jpg` (72 KB), re-rendered from the v2 scene with a blank-frame retry,, 1200×630, rendered from the real scene via `scripts/render-poster.mjs` (Playwright screenshot of the staged real scene; staging script is committed).
 - [x] **done** — `public/favicon.svg` (original SVG, CC BY 4.0 alongside content).
 - [x] **done** — Sub-path test green: `SLUG=field-ecologist npx playwright test tests/sub-path.spec.js` — zero failed requests, zero console errors, canvas renders, text mode opens, "All projects" → `/`.
-- [x] **done** — Unit tests green (105: the 96 v1 tests + v2-core + meadow-v2 honesty-rule tests); functional + a11y specs green (Playwright); CI workflow and release workflow present, actions pinned to SHAs, slug substituted in CI.
+- [x] **done** — Unit tests green (102: the 96 v1 tests + 3 v2-core + 3 meadow-v2 honesty-rule tests); functional + a11y specs green (Playwright); CI workflow and release workflow present, actions pinned to SHAs, slug substituted in CI.
 - [x] **done** — Self-hosted decoders (vite plugin serves them from the pinned three package into `dist/decoders/`; no CDN requests; no vendored decoder files in git).
 - [x] **done** — Re-sampling Web Worker loads from a sub-path (`new Worker(new URL('./resampler.worker.js', import.meta.url), { type: 'module' })`; proven by the sub-path test — the simulator runs there with zero console errors).
 - [x] **done** — gitleaks clean; no file > 20 MB; repo ≪ 300 MB.
