@@ -13,6 +13,19 @@ import { createPost } from '../core/post.js';
 import { VegetationRenderer } from '../systems/vegetation-renderer.js';
 import { FIELD_SIZE, terrainHeight, moisture, streamX } from '../systems/moisture-field.js';
 import { QUADRAT_SIZE } from '../systems/population-model.js';
+import { applyCaseGrade } from '../v2/cinematic-grade.js';
+import { ModelLibrary } from '../v2/model-placer.js';
+import { InWorldInteractionManager } from '../v2/in-world-interaction.js';
+import { buildEnvironment, placeDressing, addCloudShadows } from './meadow-dressing.js';
+import { buildMeadowLife } from './meadow-life.js';
+
+/** v2 viewpoint rings: [id, label, ring x, ring z, camera pos, camera target]. */
+export const MEADOW_VIEWPOINTS = [
+  ['overview', 'Overview', 48, 7, [50, 24, -16], [50, 0, 42]],
+  ['stream', 'The stream', 11, 28, [17, 2.6, 22], [8.5, 0.6, 34]],
+  ['wet', 'Wet zone', 22, 56, [27, 3.2, 47], [19, 0.5, 60]],
+  ['dry', 'Dry zone', 82, 56, [76, 4.4, 46], [84, 1.2, 60]],
+];
 
 const BASE = import.meta.env.BASE_URL || './';
 
@@ -54,10 +67,21 @@ export class MeadowScene {
     this.walkAnim = null;
     this._disposed = false;
 
+    // v2.0.0 grade: AgX + per-case exposure + dawn haze; the real HDRI stays the
+    // light source and distant sky (no gradient dome).
+    this.theme = applyCaseGrade('field-ecologist', { renderer: engine.renderer, scene: this.scene, addSkyDome: false });
+    this.v2FogBase = 0.0032;
+    this.v2Fog = this.scene.fog;
+    // mist-blue dawn haze (art bible: mist blue #B8CCD6 warmed towards dawn gold)
+    if (this.v2Fog) { this.v2Fog.density = this.v2FogBase; this.v2Fog.color.set(0xc6d0cc); }
+    this.cloudUniforms = { uCloudT: { value: 0 }, uCloudK: { value: 0.22 } };
+
     this._buildLights();
     this._buildTerrain();
-    this._buildStream();
     this._buildStation();
+    this.env = buildEnvironment(this.scene, { speckle: this._speckle, cloudUniforms: this.cloudUniforms });
+    this.models = new ModelLibrary();
+    this.dressingReady = placeDressing(this.models, this.env.statics).catch(() => 0);
     this._loadSky();
 
     this.vegetation = new VegetationRenderer({
@@ -92,6 +116,11 @@ export class MeadowScene {
 
     // Wind level state machine: ambient 1, counting 0.12, reduced motion 0.
     this.reducedMotion = engine.reducedMotion;
+    this.lifeSystems = buildMeadowLife(this);
+    this.life = this.lifeSystems.life;
+    this.character = this.lifeSystems.character;
+    this.lifeSystems.hideInCounting.push(this.character.root);
+    this._buildInteraction();
     this._applyWind();
     // Exposed for tools (poster staging) and tests.
     this.terrainHeight = terrainHeight;
@@ -137,47 +166,17 @@ export class MeadowScene {
     // Procedural speckle map (canvas-generated here, no asset): breaks the flat
     // vertex-coloured ground into soil/grass mottle at any distance.
     const speckle = makeSpeckleTexture();
+    this._speckle = speckle;
     speckle.repeat.set(46, 46);
     speckle.wrapS = speckle.wrapT = THREE.RepeatWrapping;
     const mat = new THREE.MeshStandardMaterial({
       vertexColors: true, map: speckle, roughness: 0.95, metalness: 0,
     });
+    addCloudShadows(mat, this.cloudUniforms);
     this.terrain = new THREE.Mesh(geo, mat);
     this.terrain.position.set(FIELD_SIZE / 2, 0, FIELD_SIZE / 2);
     this.terrain.receiveShadow = true;
     this.scene.add(this.terrain);
-  }
-
-  _buildStream() {
-    // A subtle ribbon following streamX(z).
-    const pts = [];
-    for (let z = -1; z <= FIELD_SIZE + 1; z += 2) {
-      pts.push(new THREE.Vector3(streamX(z), 0.045, z));
-    }
-    const geo = new THREE.BufferGeometry().setFromPoints(pts);
-    // Build a triangle strip manually (left/right offsets).
-    const positions = [];
-    const idx = [];
-    const w = 0.9;
-    for (let i = 0; i < pts.length; i++) {
-      const p = pts[i];
-      const next = pts[Math.min(i + 1, pts.length - 1)];
-      const prev = pts[Math.max(i - 1, 0)];
-      const dir = new THREE.Vector3().subVectors(next, prev).normalize();
-      const side = new THREE.Vector3(-dir.z, 0, dir.x).multiplyScalar(w);
-      positions.push(p.x - side.x, p.y, p.z - side.z, p.x + side.x, p.y, p.z + side.z);
-      if (i < pts.length - 1) {
-        const a = i * 2;
-        idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
-      }
-    }
-    const strip = new THREE.BufferGeometry();
-    strip.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-    strip.setIndex(idx);
-    strip.computeVertexNormals();
-    const mat = new THREE.MeshStandardMaterial({ color: 0x51707d, roughness: 0.25, metalness: 0.05 });
-    this.stream = new THREE.Mesh(strip, mat);
-    this.scene.add(this.stream);
   }
 
   _buildStation() {
@@ -194,13 +193,41 @@ export class MeadowScene {
       leg.castShadow = true;
       g.add(leg);
     }
-    // quadrat frame resting on the table
-    const frameMat = new THREE.MeshStandardMaterial({ color: 0xdad4c4, roughness: 0.6 });
-    for (const [w, d, ox, oz] of [[QUADRAT_SIZE, 0.03, 0, -QUADRAT_SIZE / 2], [QUADRAT_SIZE, 0.03, 0, QUADRAT_SIZE / 2], [0.03, QUADRAT_SIZE, -QUADRAT_SIZE / 2, 0], [0.03, QUADRAT_SIZE, QUADRAT_SIZE / 2, 0]]) {
-      const bar = new THREE.Mesh(new THREE.BoxGeometry(w, 0.03, d), frameMat);
-      bar.position.set(ox, 0.92, oz);
-      g.add(bar);
+    // quadrat stack: three folded frames leaning against the table (v2 interactive)
+    const frameMat = new THREE.MeshStandardMaterial({ color: 0xdad4c4, roughness: 0.6, emissive: 0x000000 });
+    const stack = new THREE.Group();
+    stack.name = 'quadrat-stack';
+    for (let k = 0; k < 3; k++) {
+      const f = new THREE.Group();
+      for (const [w, d, ox, oz] of [[QUADRAT_SIZE, 0.03, 0, -QUADRAT_SIZE / 2], [QUADRAT_SIZE, 0.03, 0, QUADRAT_SIZE / 2], [0.03, QUADRAT_SIZE, -QUADRAT_SIZE / 2, 0], [0.03, QUADRAT_SIZE, QUADRAT_SIZE / 2, 0]]) {
+        const bar = new THREE.Mesh(new THREE.BoxGeometry(w, 0.03, d), frameMat);
+        bar.position.set(ox, 0, oz);
+        bar.castShadow = true;
+        f.add(bar);
+      }
+      f.position.set(0, 0.92 + k * 0.035, 0);
+      f.rotation.y = k * 0.06;
+      stack.add(f);
     }
+    // invisible hit proxy so the thin bars are easy to hover/click
+    const hit = new THREE.Mesh(new THREE.BoxGeometry(QUADRAT_SIZE, 0.25, QUADRAT_SIZE), new THREE.MeshBasicMaterial({ visible: false }));
+    hit.position.y = 1.0;
+    stack.add(hit);
+    g.add(stack);
+    this.quadratStack = stack;
+    // field guide: a green notebook on the table corner
+    const guide = new THREE.Group();
+    guide.name = 'field-guide-prop';
+    const cover = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.035, 0.32), new THREE.MeshStandardMaterial({ color: 0x3d6b2c, roughness: 0.7, emissive: 0x000000 }));
+    const pages = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.03, 0.3), new THREE.MeshStandardMaterial({ color: 0xf4eedc, roughness: 0.8, emissive: 0x000000 }));
+    pages.position.set(0.006, 0.003, 0);
+    guide.add(cover, pages);
+    const ghit = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.3, 0.55), new THREE.MeshBasicMaterial({ visible: false }));
+    guide.add(ghit);
+    guide.position.set(-0.5, 0.9, 0.18);
+    guide.rotation.y = 0.4;
+    g.add(guide);
+    this.fieldGuideProp = guide;
     // sign post
     const post = new THREE.Mesh(new THREE.BoxGeometry(0.06, 1.3, 0.06), wood);
     post.position.set(-1.2, 0.65, -0.5);
@@ -251,10 +278,11 @@ export class MeadowScene {
   setDawn(s) {
     if (!s) {
       this._dawnState = null;
-      this.scene.fog = null;
-      this.sun.color.set(0xfff2df);
+      this.scene.fog = this.v2Fog || null;
+      if (this.v2Fog) this.v2Fog.density = this.v2FogBase;
+      this.sun.color.set(0xffe2b8);
       this.sun.intensity = 2.4;
-      this.engine.renderer.toneMappingExposure = 1.0;
+      this.engine.renderer.toneMappingExposure = this.theme?.exposure ?? 1.0;
       this.sun.position.set(40, 60, 25);
       return;
     }
@@ -266,10 +294,10 @@ export class MeadowScene {
     this.sun.intensity = 2.2;
     this.engine.renderer.toneMappingExposure = s.exposure ?? 1.0;
     if (s.mist > 0) {
-      this.scene.fog = this.scene.fog || new THREE.FogExp2(0xcfd8dc, 0.001);
+      this.scene.fog = this.v2Fog || this.scene.fog || new THREE.FogExp2(0xcfd8dc, 0.001);
       this.scene.fog.density = 0.028 * s.mist;
     } else {
-      this.scene.fog = null;
+      this.scene.fog = this.v2Fog || null;
     }
   }
 
@@ -342,6 +370,7 @@ export class MeadowScene {
   enterQuadratView(i) {
     if (i < 0 || !this.quadratGroups[i]) return;
     this.counting = true;
+    this._setCountingLife(true);
     const p = this.quadratGroups[i].position;
     const c = this.orthoCam;
     c.position.set(p.x, p.y + 8, p.z + 0.001);
@@ -386,6 +415,7 @@ export class MeadowScene {
 
   exitQuadratView() {
     this.counting = false;
+    this._setCountingLife(false);
     this.engine.renderCamera = null;
     this.setActiveQuadrat(-1);
     this.vegetation.setQuadratFocus(null);
@@ -397,6 +427,7 @@ export class MeadowScene {
     const cam = this.engine.camera;
     const from = cam.position.clone();
     const to = new THREE.Vector3(x, terrainHeight(x, z) + height, z);
+    this.freeCam = false;
     if (this.reducedMotion) {
       cam.position.copy(to);
       this.orbit.target.set(x, to.y - height + 1.2, z);
@@ -436,7 +467,59 @@ export class MeadowScene {
 
   setReducedMotion(reduced) {
     this.reducedMotion = reduced;
+    this.life?.setReducedMotion(reduced);
+    if (this.interaction) this.interaction.reducedMotion = reduced;
     this._applyWind();
+  }
+
+  /** Counting view: calm mode on, overlays that could sit over the quadrat hidden. */
+  _setCountingLife(on) {
+    this.lifeSystems?.setCounting(on);
+    for (const r of this.interaction?.hotspotRings || []) r.group.visible = !on;
+  }
+
+  /**
+   * v2 in-world interaction: viewpoint rings (camera glide), WASD/arrows walk,
+   * drag look, hover highlight + notebook tooltip on the quadrat stack and the
+   * field guide. App-level actions are injected via setWorldActions().
+   */
+  _buildInteraction() {
+    const ix = new InWorldInteractionManager({
+      canvas: this.engine.renderer.domElement,
+      camera: this.engine.camera,
+      scene: this.scene,
+      bounds: [-14, 114, -9, 112],
+      walkSpeed: 6,
+      reducedMotion: this.reducedMotion,
+    });
+    this.interaction = ix;
+    this.freeCam = false;
+    this.worldActions = {};
+    for (const [id, label, x, z, camPos, camTarget] of MEADOW_VIEWPOINTS) {
+      const ring = ix.addHotspotRing([x, terrainHeight(x, z) + 0.03, z], {
+        id: `view-${id}`, label, hint: 'Click to go there', color: 0xf2c230,
+        cameraPos: camPos, cameraTarget: camTarget,
+        onClick: () => { this.freeCam = true; },
+      });
+      ring.scale.setScalar(2.4);
+    }
+    const st = this.station.position;
+    ix.registerInteractive(this.quadratStack, {
+      id: 'quadrat-stack', label: 'Quadrat stack', hint: 'Click to start placing quadrats',
+      highlightColor: 0xf2c230,
+      cameraPos: [st.x + 0.4, st.y + 2.4, st.z + 3.2], cameraTarget: [st.x, st.y + 0.9, st.z],
+      onClick: () => { this.freeCam = true; this.worldActions.startPlacement?.(); },
+    });
+    ix.registerInteractive(this.fieldGuideProp, {
+      id: 'field-guide', label: 'Field guide', hint: 'Click to open the field guide',
+      highlightColor: 0xf2c230,
+      onClick: () => { this.freeCam = true; this.worldActions.openGuide?.(); },
+    });
+  }
+
+  /** @param {{startPlacement?:Function, openGuide?:Function}} actions */
+  setWorldActions(actions) {
+    this.worldActions = { ...this.worldActions, ...actions };
   }
 
   _applyWind() {
@@ -461,10 +544,27 @@ export class MeadowScene {
         cb?.();
       }
     } else if (!this.counting) {
-      this.orbit.update();
+      // In-world navigation (drag look / WASD / ring glide) takes the camera
+      // from the orbit controller until the app moves the orbit again.
+      const ix = this.interaction;
+      if (ix?.enabled && (ix.glide || ix.keys.size || ix._dragging)) this.freeCam = true;
+      if (!this.freeCam) {
+        this.orbit.update();
+        if (ix) { ix.target.copy(this.orbit.target); ix._syncAnglesFromCamera(); }
+      }
     }
+    // interaction is only live in the free 3D view (not counting, cinematics, walks)
+    const navOK = !this.counting && this.orbit.enabled && !this.walkAnim;
+    if (this.interaction && this.interaction.enabled !== navOK) this.interaction.setEnabled(navOK);
+    if (!this.orbit.enabled) this.freeCam = false;
+    this.interaction?.update(dt, t);
+    if (this.freeCam) {
+      const cam = this.engine.camera.position;
+      cam.y = Math.max(cam.y, terrainHeight(cam.x, cam.z) + 1.1);
+    }
+    this.lifeSystems?.update(dt, this.engine.renderCamera || this.engine.camera);
     // sun shadow follows the camera target so a 60 m shadow box always covers the view
-    const focus = this.counting ? this.engine.renderCamera.position : this.orbit.target;
+    const focus = this.counting ? this.engine.renderCamera.position : (this.freeCam && this.interaction ? this.interaction.target : this.orbit.target);
     this.sun.target.position.set(focus.x, 0, focus.z);
     this.sun.position.set(focus.x + 40, 60, focus.z + 25);
     this.vegetation.update(this.engine.renderCamera || this.engine.camera, dt, t);

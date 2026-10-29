@@ -38,7 +38,7 @@ export class VegetationRenderer {
     this.scene = scene;
     this.renderer = renderer;
     this.population = population;
-    this.windUniforms = { uTime: { value: 0 }, uWind: { value: 1 } };
+    this.windUniforms = { uTime: { value: 0 }, uWind: { value: 1 }, uGust: { value: 0 } };
     this.nearDist = 24;
     this.lastBuildPos = new THREE.Vector3(1e9, 0, 0);
     this.lastBuildTime = 0;

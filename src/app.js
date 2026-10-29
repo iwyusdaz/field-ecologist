@@ -21,7 +21,8 @@ import { FieldworkUI } from './ui/fieldwork.js';
 import { RevealUI } from './ui/reveal.js';
 import { ReportUI } from './ui/report.js';
 import { registerTextModules } from './a11y/textmode-modules.js';
-import { buildGuide } from './ui/field-guide.js';
+import { buildGuide, openGuideDialog } from './ui/field-guide.js';
+import { initFloatingHud } from './v2/cinematic-grade.js';
 import { mcItem } from './learning/assess.js';
 import { renderGuidePortraits } from './systems/guide-portraits.js';
 import { buildGrid } from './systems/quadrat-describe.js';
@@ -96,6 +97,8 @@ export class App {
 
     this.record = new LearningRecord(SLUG);
     this.motion = new MotionPrefs(SLUG);
+    // v2 floating HUD: Hide/Show panel drawer + Plain font toggle in the header.
+    initFloatingHud({ slug: SLUG, panel: this._overlayHost() });
 
     // 3D engine + scene (skipped cleanly when WebGL2 is unavailable; text mode
     // covers every objective — the fallback notice is injected by main.js).
@@ -111,6 +114,16 @@ export class App {
         onReady: () => { this.sceneReady = true; },
       });
       this.engine.quality.restore();
+      // Reduced motion (system preference or the Settings toggle) freezes ambient life.
+      this.scene.setReducedMotion(this.motion.reduced);
+      this.motion.onChange((r) => this.scene?.setReducedMotion(r));
+      // In-world actions (quadrat stack, field guide) = the same actions as the panel buttons.
+      this.scene.setWorldActions({
+        startPlacement: () => this.startPlacementFromWorld(),
+        openGuide: () => openGuideDialog(document.getElementById('guide-dialog'), {
+          species: this.species, portraits: this.portraits, trigger: this.canvas,
+        }),
+      });
       this.engine.start();
       this.settings = new Settings({
         slug: SLUG,
@@ -197,6 +210,18 @@ export class App {
     else if (id === 'm3') this._renderM3();
     else if (id === 'm4') this._renderM4();
     else if (id === 'm5') this._renderM5();
+  }
+
+  /**
+   * Clicking the quadrat stack in 3D: open Module 3 fieldwork at its current
+   * step (design picker → placement), same as choosing Module 3 in the nav.
+   */
+  startPlacementFromWorld() {
+    if (this.state.module !== 'm3') this.goToModule('m3');
+    const host = this._overlayHost();
+    const target = host.querySelector('#place-x') || host.querySelector('.design-card button') || host.querySelector('button');
+    target?.focus();
+    announce(this.session ? 'Fieldwork open: continue placing or counting your quadrats.' : 'Fieldwork open: choose a sampling design to start placing quadrats.');
   }
 
   restartModule() {
