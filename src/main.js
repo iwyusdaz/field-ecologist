@@ -4,6 +4,8 @@
  * exists).
  * @module main
  */
+import './styles/case-fonts.css';
+import './v2/hud-shell.css';
 import { App, SLUG } from './app.js';
 
 window.__SLUG__ = SLUG;

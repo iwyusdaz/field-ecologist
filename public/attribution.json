@@ -7,6 +7,69 @@
     "changes": "Unmodified (renamed copy); used as environment/background lighting"
   },
   {
+    "asset": "Rock 07 (`public/assets/models/rock_07-a678b612.glb`)",
+    "author": "Jenelle van Heerden",
+    "source": "https://polyhaven.com/a/rock_07",
+    "license": "CC0 1.0",
+    "changes": "Converted to self-contained GLB with resized JPEG textures; boulders beyond the field boundary (outside the sampling area, never counted)"
+  },
+  {
+    "asset": "Dead Tree Trunk (`public/assets/models/dead_tree_trunk-c97cd73f.glb`)",
+    "author": "Rob Tuytel",
+    "source": "https://polyhaven.com/a/dead_tree_trunk",
+    "license": "CC0 1.0",
+    "changes": "Converted to self-contained GLB with resized JPEG textures; fallen log beyond the field boundary (outside the sampling area)"
+  },
+  {
+    "asset": "Wild Rooibos Bush (`public/assets/models/wild_rooibos_bush-0e3edd51.glb`)",
+    "author": "James Ray Cock, Jenelle van Heerden",
+    "source": "https://polyhaven.com/a/wild_rooibos_bush",
+    "license": "CC0 1.0",
+    "changes": "Converted to self-contained GLB with resized JPEG textures; hedgerow beyond the north boundary (background only, never counted)"
+  },
+  {
+    "asset": "Fern 02 (`public/assets/models/fern_02-4e6dd7fb.glb`)",
+    "author": "Rob Tuytel, Rico Cilliers",
+    "source": "https://polyhaven.com/a/fern_02",
+    "license": "CC0 1.0",
+    "changes": "Converted to self-contained GLB with resized JPEG textures; stream-bank dressing beyond the field boundary (background only, never counted)"
+  },
+  {
+    "asset": "Flower Gazania (`public/assets/models/flower_gazania-a197c79d.glb`)",
+    "author": "James Ray Cock, Jenelle van Heerden",
+    "source": "https://polyhaven.com/a/flower_gazania",
+    "license": "CC0 1.0",
+    "changes": "Converted to self-contained GLB with resized JPEG textures; margin clusters beyond the field boundary (background only, never counted)"
+  },
+  {
+    "asset": "Celandine 01 (`public/assets/models/celandine_01-ac43b588.glb`)",
+    "author": "Rob Tuytel, Rico Cilliers",
+    "source": "https://polyhaven.com/a/celandine_01",
+    "license": "CC0 1.0",
+    "changes": "Converted to self-contained GLB with resized JPEG textures; margin clusters beyond the field boundary (background only, never counted)"
+  },
+  {
+    "asset": "Fraunces (Latin 600/700 WOFF2, `src/styles/fonts/`)",
+    "author": "Undercase Type (Phaedra Charles, Flavia Zimbardi)",
+    "source": "https://github.com/undercasetype/Fraunces",
+    "license": "SIL OFL 1.1",
+    "changes": "Self-hosted Latin WOFF2 subset (via @fontsource); display headings"
+  },
+  {
+    "asset": "Nunito Sans (Latin 400/600/700 WOFF2, `src/styles/fonts/`)",
+    "author": "Vernon Adams, Jacques Le Bailly, Manvel Shmavonyan, Alexei Vanyashin",
+    "source": "https://github.com/googlefonts/NunitoSans",
+    "license": "SIL OFL 1.1",
+    "changes": "Self-hosted Latin WOFF2 subset (via @fontsource); body copy, instructions and controls"
+  },
+  {
+    "asset": "Caveat (Latin 600 WOFF2, `src/styles/fonts/`)",
+    "author": "Impallari Type",
+    "source": "https://github.com/googlefonts/caveat",
+    "license": "SIL OFL 1.1",
+    "changes": "Self-hosted Latin WOFF2 subset (via @fontsource); in-world field-notebook accents (tooltips, notebook labels) only"
+  },
+  {
     "asset": "Draco decoder + Basis/KTX2 transcoder (`dist/decoders/`, served by `vite-plugin-decoders.js` from the pinned three package)",
     "author": "Google / Binomial LLC",
     "source": "via three.js `examples/jsm/libs` (Apache-2.0)",

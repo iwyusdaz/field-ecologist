@@ -11,9 +11,21 @@ editing this file).
 | Asset | Author | Source | License | Changes |
 |---|---|---|---|---|
 | `public/assets/sky-meadow-1k.hdr` (Belfast Open Field, 1k HDR) | Poly Haven contributors | https://polyhaven.com/a/belfast_open_field | CC0 1.0 | Unmodified (renamed copy); used as environment/background lighting |
+| Rock 07 (`public/assets/models/rock_07-a678b612.glb`) | Jenelle van Heerden | https://polyhaven.com/a/rock_07 | CC0 1.0 | Converted to self-contained GLB with resized JPEG textures; boulders beyond the field boundary (outside the sampling area, never counted) |
+| Dead Tree Trunk (`public/assets/models/dead_tree_trunk-c97cd73f.glb`) | Rob Tuytel | https://polyhaven.com/a/dead_tree_trunk | CC0 1.0 | Converted to self-contained GLB with resized JPEG textures; fallen log beyond the field boundary (outside the sampling area) |
+| Wild Rooibos Bush (`public/assets/models/wild_rooibos_bush-0e3edd51.glb`) | James Ray Cock, Jenelle van Heerden | https://polyhaven.com/a/wild_rooibos_bush | CC0 1.0 | Converted to self-contained GLB with resized JPEG textures; hedgerow beyond the north boundary (background only, never counted) |
+| Fern 02 (`public/assets/models/fern_02-4e6dd7fb.glb`) | Rob Tuytel, Rico Cilliers | https://polyhaven.com/a/fern_02 | CC0 1.0 | Converted to self-contained GLB with resized JPEG textures; stream-bank dressing beyond the field boundary (background only, never counted) |
+| Flower Gazania (`public/assets/models/flower_gazania-a197c79d.glb`) | James Ray Cock, Jenelle van Heerden | https://polyhaven.com/a/flower_gazania | CC0 1.0 | Converted to self-contained GLB with resized JPEG textures; margin clusters beyond the field boundary (background only, never counted) |
+| Celandine 01 (`public/assets/models/celandine_01-ac43b588.glb`) | Rob Tuytel, Rico Cilliers | https://polyhaven.com/a/celandine_01 | CC0 1.0 | Converted to self-contained GLB with resized JPEG textures; margin clusters beyond the field boundary (background only, never counted) |
+| Fraunces (Latin 600/700 WOFF2, `src/styles/fonts/`) | Undercase Type (Phaedra Charles, Flavia Zimbardi) | https://github.com/undercasetype/Fraunces | SIL OFL 1.1 | Self-hosted Latin WOFF2 subset (via @fontsource); display headings |
+| Nunito Sans (Latin 400/600/700 WOFF2, `src/styles/fonts/`) | Vernon Adams, Jacques Le Bailly, Manvel Shmavonyan, Alexei Vanyashin | https://github.com/googlefonts/NunitoSans | SIL OFL 1.1 | Self-hosted Latin WOFF2 subset (via @fontsource); body copy, instructions and controls |
+| Caveat (Latin 600 WOFF2, `src/styles/fonts/`) | Impallari Type | https://github.com/googlefonts/caveat | SIL OFL 1.1 | Self-hosted Latin WOFF2 subset (via @fontsource); in-world field-notebook accents (tooltips, notebook labels) only |
 | Draco decoder + Basis/KTX2 transcoder (`dist/decoders/`, served by `vite-plugin-decoders.js` from the pinned three package) | Google / Binomial LLC | via three.js `examples/jsm/libs` (Apache-2.0) | Apache-2.0 | Unmodified copies, self-hosted so no CDN requests |
 
-Everything else — species models, terrain, textures, sounds-free design, charts —
+Everything else — species models, terrain, textures, the v2 stream water,
+dry-stone wall, gate, hills, butterflies, mist, cloud shadows and the
+field-ecologist character (procedural, `src/v2/` + `src/scenes/meadow.js`),
+sounds-free design, charts —
 is original procedural work in this repository (MIT), constructed for teaching
 purposes. Species are fictional and botanically plausible; field marks are
 slightly exaggerated for legibility (see `design/realism-matrix.md`).

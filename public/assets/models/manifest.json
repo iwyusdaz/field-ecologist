@@ -1,0 +1,56 @@
+{
+  "rock_07": {
+    "id": "rock_07",
+    "file": "assets/models/rock_07-a678b612.glb",
+    "name": "Rock 07",
+    "authors": "Jenelle van Heerden",
+    "source": "https://polyhaven.com/a/rock_07",
+    "license": "CC0 1.0",
+    "sizeKB": 569
+  },
+  "dead_tree_trunk": {
+    "id": "dead_tree_trunk",
+    "file": "assets/models/dead_tree_trunk-c97cd73f.glb",
+    "name": "Dead Tree Trunk",
+    "authors": "Rob Tuytel",
+    "source": "https://polyhaven.com/a/dead_tree_trunk",
+    "license": "CC0 1.0",
+    "sizeKB": 2388
+  },
+  "wild_rooibos_bush": {
+    "id": "wild_rooibos_bush",
+    "file": "assets/models/wild_rooibos_bush-0e3edd51.glb",
+    "name": "Wild Rooibos Bush",
+    "authors": "James Ray Cock, Jenelle van Heerden",
+    "source": "https://polyhaven.com/a/wild_rooibos_bush",
+    "license": "CC0 1.0",
+    "sizeKB": 1346
+  },
+  "fern_02": {
+    "id": "fern_02",
+    "file": "assets/models/fern_02-4e6dd7fb.glb",
+    "name": "Fern 02",
+    "authors": "Rob Tuytel, Rico Cilliers",
+    "source": "https://polyhaven.com/a/fern_02",
+    "license": "CC0 1.0",
+    "sizeKB": 243
+  },
+  "flower_gazania": {
+    "id": "flower_gazania",
+    "file": "assets/models/flower_gazania-a197c79d.glb",
+    "name": "Flower Gazania",
+    "authors": "James Ray Cock, Jenelle van Heerden",
+    "source": "https://polyhaven.com/a/flower_gazania",
+    "license": "CC0 1.0",
+    "sizeKB": 987
+  },
+  "celandine_01": {
+    "id": "celandine_01",
+    "file": "assets/models/celandine_01-ac43b588.glb",
+    "name": "Celandine 01",
+    "authors": "Rob Tuytel, Rico Cilliers",
+    "source": "https://polyhaven.com/a/celandine_01",
+    "license": "CC0 1.0",
+    "sizeKB": 416
+  }
+}

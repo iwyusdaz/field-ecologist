@@ -1,0 +1,68 @@
+/**
+ * Self-hosted case typography for field-ecologist (v2.0.0).
+ * Roles:
+ *   --font-display : headings, titles, hero banners (Fraunces)
+ *   --font-body    : body copy, instructions, controls (Nunito Sans)
+ *   --font-accent  : in-world signage, tags, telemetry, notes (Caveat)
+ * Accessibility:
+ *   html[data-plain-font="on"] switches all three roles to clean system/hyperlegible sans.
+ */
+@font-face {
+  font-family: 'Fraunces';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./fonts/fraunces-latin-600-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Fraunces';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('./fonts/fraunces-latin-700-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Nunito Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/nunito-sans-latin-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Nunito Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./fonts/nunito-sans-latin-600-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Nunito Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('./fonts/nunito-sans-latin-700-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Caveat';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./fonts/caveat-latin-600-normal.woff2') format('woff2');
+}
+
+:root {
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Nunito Sans', system-ui, sans-serif;
+  --font-accent: 'Caveat', cursive, sans-serif;
+}
+
+html[data-plain-font="on"] {
+  --font-display: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-accent: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
