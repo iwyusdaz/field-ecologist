@@ -6,6 +6,8 @@ new content, patch for fixes).
 
 ## [2.0.0] — 2026-10-29
 
+Release gate: the v2 agent-review revisions (V2-0 to V2-9f) plus V2-10, a fix for diagonal stripes on the field ground found in the headed GPU check. Headed Apple M1: Medium 60 fps, 141 draw calls, 8.6 MB before first interaction. Posters and trailer re-recorded from the revised scene.
+
 Visual and interaction revamp ("Ashcombe Meadow at dawn", plan 09 §4.3). The
 learning core is unchanged: same seeded population, the same four designs, the
 area-weighted stratified estimator, the 1,000-sample re-sampler (+369 %

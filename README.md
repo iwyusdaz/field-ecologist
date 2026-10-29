@@ -1,8 +1,8 @@
 # Field Ecologist: Sampling the Meadow
 
-> **Evaluation status:** Automated functional, accessibility and performance testing plus agent-based design reviews are complete. No real learners have tested this yet. No physical phone testing has been done (mobile was checked with device emulation). See `evaluation/METHODS.md`. *(Headed performance was measured 2026-10-27 on the pre-revision build; it is re-run after revisions.)*
+> **Evaluation status:** Automated functional, accessibility and performance testing plus agent-based design reviews are complete. No real learners have tested this yet. No physical phone testing has been done (mobile was checked with device emulation). See `evaluation/METHODS.md`. v2.0.0 has its own four agent reviews (revisions V2-0 to V2-10 in DECISIONS.md) and a headed GPU measurement: 60 fps on Medium, 141 draw calls, 8.6 MB before the first interaction (`evaluation/results/perf-2026-10-29.json`).
 
-**Play:** https://immersive-learning-showcase.vercel.app/play/field-ecologist/ *(pending deployment)*
+**Play:** https://immersive-learning-showcase.vercel.app/play/field-ecologist/
 
 ## The problem
 
@@ -66,4 +66,4 @@ Code MIT (`LICENSE`), content CC BY 4.0 (`LICENSE-CONTENT`), assets CC0 or origi
 
 ## Trailer
 
-**Trailer:** [docs/trailer.webm](docs/trailer.webm) (56 s, captioned; WebVTT sidecar at [docs/trailer.vtt](docs/trailer.vtt)). Recorded from the real app on the Mac GPU; the caption text is also in the sidecar file.
+**Trailer:** [docs/trailer.webm](docs/trailer.webm) (57 s, recorded from v2.0.0, captioned; WebVTT sidecar at [docs/trailer.vtt](docs/trailer.vtt)). Recorded from the real app on the Mac GPU; the caption text is also in the sidecar file.

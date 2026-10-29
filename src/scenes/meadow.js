@@ -195,8 +195,11 @@ export class MeadowScene {
       pos.setY(i, terrainHeight(x, z));
       const m = moisture(x, z);
       c.lerpColors(dry, lush, Math.min(1, m * 1.15));
-      // per-vertex variation so the ground does not band
-      const n = 0.9 + 0.2 * Math.abs(Math.sin(x * 12.9898 + z * 78.233) % 1);
+      // Per-vertex variation so the ground does not band. sin() of a linear
+      // function of the grid is periodic (it drew stripes); the 43758.5453
+      // multiplier + fract turns it into a decorrelated hash.
+      const h = Math.sin(x * 12.9898 + z * 78.233) * 43758.5453;
+      const n = 0.9 + 0.2 * (h - Math.floor(h));
       colors[i * 3] = c.r * n; colors[i * 3 + 1] = c.g * n; colors[i * 3 + 2] = c.b * n;
     }
     geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
@@ -207,6 +210,9 @@ export class MeadowScene {
     this._speckle = speckle;
     speckle.repeat.set(46, 46);
     speckle.wrapS = speckle.wrapT = THREE.RepeatWrapping;
+    // The tiled speckle bands into stripes at grazing view angles without
+    // anisotropic filtering; three.js clamps to the GPU maximum.
+    speckle.anisotropy = 8;
     const mat = new THREE.MeshStandardMaterial({
       vertexColors: true, map: speckle, roughness: 0.95, metalness: 0,
     });

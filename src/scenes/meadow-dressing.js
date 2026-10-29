@@ -132,6 +132,7 @@ export function buildEnvironment(scene, { speckle, cloudUniforms }) {
   const apronSpeckle = speckle.clone();
   apronSpeckle.repeat.set(220, 220);
   apronSpeckle.wrapS = apronSpeckle.wrapT = THREE.RepeatWrapping;
+  apronSpeckle.anisotropy = 8;
   apronSpeckle.needsUpdate = true;
   const apronMat = new THREE.MeshStandardMaterial({ vertexColors: true, map: apronSpeckle, roughness: 0.96 });
   addCloudShadows(apronMat, cloudUniforms);
