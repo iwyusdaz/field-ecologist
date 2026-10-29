@@ -4,6 +4,41 @@ All notable changes to this project are documented here. Format based on
 Keep a Changelog; versioning is semver (major for breaking changes, minor for
 new content, patch for fixes).
 
+## [2.0.0] — 2026-10-29
+
+Visual and interaction revamp ("Ashcombe Meadow at dawn", plan 09 §4.3). The
+learning core is unchanged: same seeded population, the same four designs, the
+area-weighted stratified estimator, the 1,000-sample re-sampler (+369 %
+convenience bias at n = 10), the counting form dock and full text-mode parity.
+
+### Added
+- Art bible (`design/art-bible.md`): palette, grade, typography, model,
+  ambient-life and interaction lists, and the fictional-species honesty rule.
+- Self-hosted fonts (SIL OFL 1.1): Fraunces (display), Nunito Sans (body),
+  Caveat (in-world notebook accent); **Plain font** header toggle.
+- Floating HUD: full-bleed 3D with a collapsible panel drawer (**Hide panel**).
+- Living meadow: AgX case grade + dawn haze (the real CC0 HDRI still lights the
+  scene), surrounding terrain, distant hills, a dry-stone wall with an open
+  five-bar gate, a flowing stream (scrolling-normal water), and Poly Haven CC0
+  dressing (hedgerow, boulders, fallen trunk, ferns, margin flowers) merged per
+  material — all outside the sampling field and never counted.
+- Ambient life: wind gust waves across the grass, five wing-flap butterflies on
+  margin loops, drifting pollen, morning mist that thins, drifting cloud
+  shadows, and an animated field-ecologist character (cap + clipboard; idle and
+  writing poses; gaze follows the camera). Calm mode (~30 %) in the counting
+  view, where mist/pollen/butterflies/rings/cloud shadows are hidden; reduced
+  motion freezes everything.
+- In-world interaction: buttercup viewpoint rings (overview, stream, wet zone,
+  dry zone) with camera glide, WASD/arrow walk and drag look, hover highlight +
+  tooltip on the quadrat stack (click → fieldwork/placement) and the field
+  guide (click → guide dialog). Every panel control is kept.
+- Unit tests for the honesty rule (dressing and butterflies never inside the
+  field; dressing ids never a counted species).
+
+### Changed
+- Posters re-rendered from the v2 scene (`poster-2.0.0.*`, blank-frame retry);
+  1.0.0 posters removed.
+
 ## [1.0.0] — 2026-10-27
 
 First release: five course modules around a field-sampling game on a seeded

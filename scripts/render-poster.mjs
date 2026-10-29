@@ -37,9 +37,10 @@ const server = createServer((req, res) => {
 });
 await new Promise((r) => server.listen(4177, r));
 
-const browser = await chromium.launch();
+const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
 const page = await browser.newPage({ viewport: { width: 1200, height: 630 } });
 await page.goto('http://127.0.0.1:4177/', { waitUntil: 'networkidle', timeout: 45_000 });
+await page.waitForFunction(() => window.__TEST__?.hooks?.sceneReady?.(), null, { timeout: 60_000 }).catch(() => {});
 await page.waitForTimeout(1500);
 await page.keyboard.press('Escape'); // skip the dawn cinematic if playing
 await page.waitForTimeout(800);
@@ -78,8 +79,8 @@ __posterInfoRaw = await page.evaluate(() => {
     { x: px + 1.7, z: pz + 1.1 },
   ]);
   scene.orbit.target.set(px, scene.terrainHeight(px, pz) + 0.25, pz);
-  scene.orbit.spherical.radius = 5.2;
-  scene.orbit.spherical.phi = 1.35;
+  scene.orbit.spherical.radius = 6.4;
+  scene.orbit.spherical.phi = 1.32;
   scene.orbit.spherical.theta = 2.15; // camera south-west of the patch, looking into the field
   scene.orbit.update();
   scene.setDawn(null);
@@ -117,8 +118,16 @@ await page.evaluate(() => {
   }
 });
 await page.waitForTimeout(400);
-await page.screenshot({ path: join(root, 'public', `poster-${VERSION}.webp`), type: 'webp', quality: 82 });
-await page.screenshot({ path: join(root, 'public', `poster-${VERSION}.jpg`), type: 'jpeg', quality: 86 });
+// Blank-frame retry: a not-yet-composited WebGL frame encodes to a tiny,
+// near-uniform JPEG; re-capture until the frame carries real scene detail.
+for (let attempt = 1; attempt <= 6; attempt++) {
+  const probe = await page.screenshot({ type: 'jpeg', quality: 60 });
+  if (probe.length > 25_000) break;
+  console.log(`[poster] frame ${attempt} looks blank (${probe.length} B), retrying`);
+  await page.waitForTimeout(1500);
+}
+await page.screenshot({ path: join(root, 'public', `poster-${VERSION}.webp`), type: 'webp', quality: 80 });
+await page.screenshot({ path: join(root, 'public', `poster-${VERSION}.jpg`), type: 'jpeg', quality: 84 });
 
 for (const f of [`poster-${VERSION}.webp`, `poster-${VERSION}.jpg`]) {
   const kb = Math.round(statSync(join(root, 'public', f)).size / 1024);

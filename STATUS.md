@@ -1,4 +1,4 @@
-# Status — Field Ecologist: Sampling the Meadow (1.0.0)
+# Status — Field Ecologist: Sampling the Meadow (2.0.0)
 
 Checklist from plan `implementation-plans/immersive/03-field-ecologist.md` §14 and
 the shared standards. Statuses: **done**, done(agent review pending), **not possible (reason)**.
@@ -13,15 +13,23 @@ the shared standards. Statuses: **done**, done(agent review pending), **not poss
 - [x] **done** — Cinematics ≤ 90 s (S1+S2+S3 = 55 s), skippable from the first frame (Skip + Esc), captioned, with text descriptions and reduced-motion still versions.
 - [x] **done** — README: play link (marked pending deployment), evaluation notice at top, realism rationale in design/realism-matrix.md. *(Trailer: placeholder only — see below.)*
 
+## v2.0.0 revamp (plan 09 §4.3, §8)
+
+- [x] **done** — Art bible `design/art-bible.md`; palette, three self-hosted OFL fonts, Plain-font toggle, attribution (fonts + 6 Poly Haven CC0 models).
+- [x] **done** — Living meadow: wall + gate, hills, flowing stream, Poly Haven dressing outside the field (merged per material), gusts, butterflies, pollen, thinning mist, cloud shadows, animated field ecologist; calm counting view; reduced motion freezes life.
+- [x] **done** — In-world: viewpoint rings + glide, WASD/drag look, quadrat stack → fieldwork, field guide → guide dialog; panel controls and text mode unchanged.
+- [x] **done** — Headless draw calls (SwiftShader, 1280×720, Low auto-preset): m3 design picker 154; overview ring 220; station 210; mid-field 98; counting view 46 — under the 280 target and the 300 budget.
+- [ ] **pending** — Headed GPU fps on Medium for v2, v2 agent reviews (≥ 5 revisions), trailer re-record, `v2.0.0` tag + showcase re-pin (orchestrator).
+
 ## Build contract (08-vercel-deployment.md §5)
 
 - [x] **done** — Vite `base: './'`; relative asset URLs; no absolute paths in the built output.
-- [x] **done** — `public/showcase.json` matches `schemas/showcase.schema.json` (`node scripts/validate-showcase.mjs 1.0.0` passes).
+- [x] **done** — `public/showcase.json` matches `schemas/showcase.schema.json` (`node scripts/validate-showcase.mjs 2.0.0` passes).
 - [x] **done** — `public/attribution.json` generated from `ATTRIBUTION.md` (`scripts/gen-attribution.mjs`, run automatically by `npm run build`).
-- [x] **done** — Posters `public/poster-1.0.0.webp` (46 KB) + `.jpg` (92 KB), 1200×630, rendered from the real scene via `scripts/render-poster.mjs` (Playwright screenshot of the staged real scene; staging script is committed).
+- [x] **done** — Posters `public/poster-2.0.0.webp` (34 KB) + `.jpg` (72 KB), re-rendered from the v2 scene with a blank-frame retry,, 1200×630, rendered from the real scene via `scripts/render-poster.mjs` (Playwright screenshot of the staged real scene; staging script is committed).
 - [x] **done** — `public/favicon.svg` (original SVG, CC BY 4.0 alongside content).
 - [x] **done** — Sub-path test green: `SLUG=field-ecologist npx playwright test tests/sub-path.spec.js` — zero failed requests, zero console errors, canvas renders, text mode opens, "All projects" → `/`.
-- [x] **done** — Unit tests green (76); functional + a11y specs green (Playwright); CI workflow and release workflow present, actions pinned to SHAs, slug substituted in CI.
+- [x] **done** — Unit tests green (105: the 96 v1 tests + v2-core + meadow-v2 honesty-rule tests); functional + a11y specs green (Playwright); CI workflow and release workflow present, actions pinned to SHAs, slug substituted in CI.
 - [x] **done** — Self-hosted decoders (vite plugin serves them from the pinned three package into `dist/decoders/`; no CDN requests; no vendored decoder files in git).
 - [x] **done** — Re-sampling Web Worker loads from a sub-path (`new Worker(new URL('./resampler.worker.js', import.meta.url), { type: 'module' })`; proven by the sub-path test — the simulator runs there with zero console errors).
 - [x] **done** — gitleaks clean; no file > 20 MB; repo ≪ 300 MB.

@@ -24,6 +24,10 @@ Five modules around a field-sampling game on a seeded, 100 m × 100 m teaching m
 
 The meadow population is generated from one documented seed: a clumped (Thomas process) showy species, a random Poisson herb, a moisture-gradient sedge, a dense cover grass and a rare clumped orchid — the distribution patterns are what make sampling design matter.
 
+## v2.0.0: Ashcombe Meadow at dawn
+
+The 3D meadow is now a living place: a dry-stone wall and open gate, a flowing stream, a hedgerow and hills, gusts rolling across the grass, butterflies over the margins, pollen, thinning morning mist, cloud shadows and a field ecologist at the station. Click the glowing rings to glide between viewpoints, walk with WASD/arrows, drag to look, click the quadrat stack to start fieldwork or the green notebook to open the field guide. **Hide panel** gives you the whole scene; **Plain font** switches to system fonts. The five counted species are still fictional; the real Poly Haven plants are background only and sit outside the sampled field (see `design/art-bible.md`).
+
 ## Key design decisions
 
 - **A known "truth"** (seeded population model) instead of hand-placed plants — it is what makes the reveal possible. Parameters and seed in `design/ecology-model.md`.

@@ -1,6 +1,6 @@
 {
   "slug": "field-ecologist",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "title": "Field Ecologist: Sampling the Meadow",
   "format": "Hybrid",
   "niche": "Biology and research methods (ecology sampling, bias and uncertainty)",
@@ -11,9 +11,9 @@
   "contentNotes": [],
   "permissions": [],
   "poster": {
-    "webp": "poster-1.0.0.webp",
-    "jpg": "poster-1.0.0.jpg",
-    "alt": "Overhead view of a green meadow with a white 2 m quadrat frame in the foreground and yellow-flowered plants scattered in clumps toward a stream"
+    "webp": "poster-2.0.0.webp",
+    "jpg": "poster-2.0.0.jpg",
+    "alt": "Grass-level view across a meadow at dawn: two white 2 m quadrat frames among yellow-flowered plants and blue sedges, a stream winding behind them, a hedgerow and green hills on the horizon"
   },
   "repoUrl": "https://github.com/iwyusdaz/field-ecologist",
   "license": { "content": "CC BY 4.0", "code": "MIT" }
