@@ -75,5 +75,215 @@
     "source": "via three.js `examples/jsm/libs` (Apache-2.0)",
     "license": "Apache-2.0",
     "changes": "Unmodified copies, self-hosted so no CDN requests"
+  },
+  {
+    "asset": "v3: Wooden Table 02 (`public/assets/v3/models/station-table-cd1ca3ec.glb`)",
+    "author": "Serhii Khromov",
+    "source": "https://polyhaven.com/a/wooden_table_02",
+    "license": "CC0 1.0",
+    "changes": "1k glTF -> GLB; textures resized to 512 px and KTX2-encoded; meshopt + quantization; Field station table by the south gate"
+  },
+  {
+    "asset": "v3: Clipboard (`public/assets/v3/models/clipboard-66cb1fb3.glb`)",
+    "author": "ProgrammerOnCoffee",
+    "source": "https://polyhaven.com/a/clipboard",
+    "license": "CC0 1.0",
+    "changes": "1k glTF -> GLB; textures resized to 512 px and KTX2-encoded; meshopt + quantization; The learner's clipboard; the data sheet texture is drawn over it at run time"
+  },
+  {
+    "asset": "v3: Magnifying Glass 01 (`public/assets/v3/models/hand-lens-8707a7a7.glb`)",
+    "author": "Nazar Borodavka",
+    "source": "https://polyhaven.com/a/magnifying_glass_01",
+    "license": "CC0 1.0",
+    "changes": "1k glTF -> GLB; textures resized to 512 px and KTX2-encoded; meshopt + quantization; Hand lens on the station table; opens the close-up mode"
+  },
+  {
+    "asset": "v3: Binder Notebook (`public/assets/v3/models/field-guide-be1aafd6.glb`)",
+    "author": "DaDrood",
+    "source": "https://polyhaven.com/a/binder_notebook",
+    "license": "CC0 1.0",
+    "changes": "1k glTF -> GLB; simplified 18077 -> 8998 triangles (meshoptimizer); textures resized to 512 px and KTX2-encoded; meshopt + quantization; Field guide on the station table"
+  },
+  {
+    "asset": "v3: Plastic Thermos (`public/assets/v3/models/flask-69e13b4d.glb`)",
+    "author": "PierreB3D",
+    "source": "https://polyhaven.com/a/plastic_thermos",
+    "license": "CC0 1.0",
+    "changes": "1k glTF -> GLB; textures resized to 256 px and KTX2-encoded; meshopt + quantization; Flask on the station table"
+  },
+  {
+    "asset": "v3: Folding Wooden Stool (`public/assets/v3/models/stool-391de913.glb`)",
+    "author": "Ulan Cabanilla",
+    "source": "https://polyhaven.com/a/folding_wooden_stool",
+    "license": "CC0 1.0",
+    "changes": "1k glTF -> GLB; textures resized to 512 px and KTX2-encoded; meshopt + quantization; Folding stool beside the table"
+  },
+  {
+    "asset": "v3: Stationery Supplies (`public/assets/v3/models/pencils-bf4e078c.glb`)",
+    "author": "Mateusz Sadek",
+    "source": "https://polyhaven.com/a/stationery_supplies",
+    "license": "CC0 1.0",
+    "changes": "1k glTF -> GLB; textures resized to 256 px and KTX2-encoded; meshopt + quantization; Pencils and eraser on the station table"
+  },
+  {
+    "asset": "v3: Boulder 01 (`public/assets/v3/models/boulder-4141703d.glb`)",
+    "author": "Rico Cilliers",
+    "source": "https://polyhaven.com/a/boulder_01",
+    "license": "CC0 1.0",
+    "changes": "1k glTF -> GLB; simplified 66122 -> 7996 triangles (meshoptimizer); textures resized to 512 px and KTX2-encoded; meshopt + quantization; Boulders (about 1.8 m, real scan size) at the field corners, outside the sampling area"
+  },
+  {
+    "asset": "v3: Fern 02 (`public/assets/v3/models/fern-50759382.glb`)",
+    "author": "Rob Tuytel, Rico Cilliers",
+    "source": "https://polyhaven.com/a/fern_02",
+    "license": "CC0 1.0",
+    "changes": "1k glTF -> GLB; textures resized to 512 px and KTX2-encoded; meshopt + quantization; Ferns on the stream banks beyond the field"
+  },
+  {
+    "asset": "v3: Flower Gazania (`public/assets/v3/models/margin-gazania-05d8859b.glb`)",
+    "author": "James Ray Cock, Jenelle van Heerden",
+    "source": "https://polyhaven.com/a/flower_gazania",
+    "license": "CC0 1.0",
+    "changes": "1k glTF -> GLB; simplified 14340 -> 11993 triangles (meshoptimizer); textures resized to 512 px and KTX2-encoded; meshopt + quantization; Orange margin flowers in front of the wall, outside the field"
+  },
+  {
+    "asset": "v3: Celandine 01 (`public/assets/v3/models/margin-celandine-dd470fb4.glb`)",
+    "author": "Rob Tuytel, Rico Cilliers",
+    "source": "https://polyhaven.com/a/celandine_01",
+    "license": "CC0 1.0",
+    "changes": "1k glTF -> GLB; textures resized to 512 px and KTX2-encoded; meshopt + quantization; Low celandine clusters at the hedge foot, outside the field"
+  },
+  {
+    "asset": "v3: Periwinkle Plant (`public/assets/v3/models/margin-periwinkle-c50c6f30.glb`)",
+    "author": "Amal Kumar",
+    "source": "https://polyhaven.com/a/periwinkle_plant",
+    "license": "CC0 1.0",
+    "changes": "1k glTF -> GLB; simplified 34350 -> 11993 triangles (meshoptimizer); textures resized to 512 px and KTX2-encoded; meshopt + quantization; Pink periwinkle clusters along the margins, outside the field"
+  },
+  {
+    "asset": "v3: Dead Tree Trunk (`public/assets/v3/models/fallen-log-5f990f7e.glb`)",
+    "author": "Rob Tuytel",
+    "source": "https://polyhaven.com/a/dead_tree_trunk",
+    "license": "CC0 1.0",
+    "changes": "1k glTF -> GLB; simplified 101802 -> 11998 triangles (meshoptimizer); textures resized to 512 px and KTX2-encoded; meshopt + quantization; Fallen log beyond the east boundary"
+  },
+  {
+    "asset": "v3: Nettle Plant (`public/assets/v3/models/hedge-nettle-d0edd600.glb`)",
+    "author": "Rob Tuytel, Rico Cilliers",
+    "source": "https://polyhaven.com/a/nettle_plant",
+    "license": "CC0 1.0",
+    "changes": "1k glTF -> GLB; simplified 31304 -> 11995 triangles (meshoptimizer); textures resized to 512 px and KTX2-encoded; meshopt + quantization; Nettles at the hedge foot, outside the field"
+  },
+  {
+    "asset": "v3: Shrub 04 (`public/assets/v3/models/hedge-undergrowth-e7d1d89a.glb`)",
+    "author": "Rico Cilliers",
+    "source": "https://polyhaven.com/a/shrub_04",
+    "license": "CC0 1.0",
+    "changes": "1k glTF -> GLB; simplified 27327 -> 11968 triangles (meshoptimizer); textures resized to 512 px and KTX2-encoded; meshopt + quantization; Undergrowth at the hedge foot, outside the field"
+  },
+  {
+    "asset": "v3: Tree Stump 01 (`public/assets/v3/models/woodland-stump-c0b78cbf.glb`)",
+    "author": "Rob Tuytel",
+    "source": "https://polyhaven.com/a/tree_stump_01",
+    "license": "CC0 1.0",
+    "changes": "1k glTF -> GLB; simplified 41046 -> 10000 triangles (meshoptimizer); textures resized to 512 px and KTX2-encoded; meshopt + quantization; Tree stump at the woodland edge"
+  },
+  {
+    "asset": "v3: Dry Branches Medium 01 (`public/assets/v3/models/woodland-branches-5c37b91a.glb`)",
+    "author": "Rico Cilliers",
+    "source": "https://polyhaven.com/a/dry_branches_medium_01",
+    "license": "CC0 1.0",
+    "changes": "1k glTF -> GLB; simplified 16803 -> 7995 triangles (meshoptimizer); textures resized to 512 px and KTX2-encoded; meshopt + quantization; Fallen branches on the woodland floor"
+  },
+  {
+    "asset": "v3: Lilienstein (`public/assets/v3/hdri/sky-lilienstein-1k-07edff9b.hdr`)",
+    "author": "Andreas Mischok",
+    "source": "https://polyhaven.com/a/lilienstein",
+    "license": "CC0 1.0",
+    "changes": "Unmodified 1k HDR (renamed copy); Early-morning sky and image-based lighting on Low/Medium (Takram atmosphere replaces the visible sky on High/Ultra)"
+  },
+  {
+    "asset": "v3: Grass 004 (`public/assets/v3/textures/ground-dry-color-58911e7f.ktx2, ground-dry-normal-cd7c06ad.ktx2, ground-dry-rough-ae63196f.ktx2`)",
+    "author": "ambientCG",
+    "source": "https://ambientcg.com/a/Grass004",
+    "license": "CC0 1.0",
+    "changes": "1K JPG maps -> KTX2 (color 1024 px ETC1S, normal 512 px UASTC, rough 512 px ETC1S); Dry-rise sward (paler, firmer ground away from the stream)"
+  },
+  {
+    "asset": "v3: Grass 003 (`public/assets/v3/textures/ground-wet-color-cb29bb02.ktx2, ground-wet-normal-13fb2187.ktx2, ground-wet-rough-248dbb8f.ktx2`)",
+    "author": "ambientCG",
+    "source": "https://ambientcg.com/a/Grass003",
+    "license": "CC0 1.0",
+    "changes": "1K JPG maps -> KTX2 (color 1024 px ETC1S, normal 512 px UASTC, rough 512 px ETC1S); Streamside sward (darker, lusher ground)"
+  },
+  {
+    "asset": "v3: Rock 064 (`public/assets/v3/textures/wall-stone-color-c0013543.ktx2, wall-stone-normal-d60b1afc.ktx2, wall-stone-rough-05af37d6.ktx2`)",
+    "author": "ambientCG",
+    "source": "https://ambientcg.com/a/Rock064",
+    "license": "CC0 1.0",
+    "changes": "1K JPG maps -> KTX2 (color 512 px ETC1S, normal 512 px UASTC, rough 256 px ETC1S); Mossy stones of the dry-stone wall"
+  },
+  {
+    "asset": "v3: Foliage 001 (`public/assets/v3/textures/grass-blades-color-99a31e5f.ktx2`)",
+    "author": "ambientCG",
+    "source": "https://ambientcg.com/a/Foliage001",
+    "license": "CC0 1.0",
+    "changes": "1K JPG maps -> KTX2 (color 1024 px ETC1S); opacity merged into the colour alpha; Grass-blade cards for the wind-blown sward outside the field"
+  },
+  {
+    "asset": "v3: Ground 036 (`public/assets/v3/textures/stream-mud-color-01123f8a.ktx2, stream-mud-normal-134d6898.ktx2, stream-mud-rough-7ba784f5.ktx2`)",
+    "author": "ambientCG",
+    "source": "https://ambientcg.com/a/Ground036",
+    "license": "CC0 1.0",
+    "changes": "1K JPG maps -> KTX2 (color 512 px ETC1S, normal 512 px UASTC, rough 256 px ETC1S); Muddy stream banks seen up close"
+  },
+  {
+    "asset": "v3: Ground 048 (`public/assets/v3/textures/soil-color-d90361de.ktx2, soil-normal-a7ec5f89.ktx2, soil-rough-66022137.ktx2`)",
+    "author": "ambientCG",
+    "source": "https://ambientcg.com/a/Ground048",
+    "license": "CC0 1.0",
+    "changes": "1K JPG maps -> KTX2 (color 512 px ETC1S, normal 512 px UASTC, rough 256 px ETC1S); Topsoil in the cut stream bank"
+  },
+  {
+    "asset": "v3: ambientCG Bark012 (baked into `public/assets/v3/models/woodland-trees-7ce6d68b.glb`)",
+    "author": "ambientCG",
+    "source": "https://ambientcg.com/a/Bark012",
+    "license": "CC0 1.0",
+    "changes": "Colour 512 px ETC1S + NormalGL 256 px UASTC, embedded as the bark material"
+  },
+  {
+    "asset": "v3: ambientCG LeafSet024 (baked into `public/assets/v3/models/woodland-trees-7ce6d68b.glb`)",
+    "author": "ambientCG",
+    "source": "https://ambientcg.com/a/LeafSet024",
+    "license": "CC0 1.0",
+    "changes": "Leaves cut from the atlas and composited (320 per card, recoloured, with drawn twigs) into a 512 px leaf-cluster card, ETC1S + alpha"
+  },
+  {
+    "asset": "v3: woodland-trees (`public/assets/v3/models/woodland-trees-7ce6d68b.glb`)",
+    "author": "Field Ecologist project (own procedural work)",
+    "source": "https://github.com/iwyusdaz/field-ecologist/blob/v3/scripts/build-v3-own-assets.mjs",
+    "license": "Own work (MIT)",
+    "changes": "Generated by scripts/build-v3-own-assets.mjs; Three broadleaf forms (tall tree, small tree, hedge shrub), each LOD0 (<= 8k triangles) + LOD1 (<= 150 triangles), same pivot at the trunk base; impostors are baked from LOD0 at run time"
+  },
+  {
+    "asset": "v3: survey-stake (`public/assets/v3/models/survey-stake-ab589cf5.glb`)",
+    "author": "Field Ecologist project (own procedural work)",
+    "source": "https://github.com/iwyusdaz/field-ecologist/blob/v3/scripts/build-v3-own-assets.mjs",
+    "license": "Own work (MIT)",
+    "changes": "Generated by scripts/build-v3-own-assets.mjs; Numbered survey stake with flagging tape; the number plate takes a run-time canvas texture"
+  },
+  {
+    "asset": "v3: cloud-sprites (`public/assets/v3/sprites/cloud-sprites-9b47bd89.ktx2`)",
+    "author": "Field Ecologist project (own procedural work)",
+    "source": "https://github.com/iwyusdaz/field-ecologist/blob/v3/scripts/build-v3-own-assets.mjs",
+    "license": "Own work (MIT)",
+    "changes": "Generated by scripts/build-v3-own-assets.mjs; Four soft cloud billboards (2x2 atlas) for the Medium/High sky fallback"
+  },
+  {
+    "asset": "v3: ashcombe-dawn-33 (`public/assets/v3/lut/ashcombe-dawn-33-eea64172.png`, source `assets-src/lut/ashcombe-dawn-33.cube`)",
+    "author": "Field Ecologist project (own procedural work)",
+    "source": "https://github.com/iwyusdaz/field-ecologist/blob/v3/scripts/build-v3-own-assets.mjs",
+    "license": "Own work (MIT)",
+    "changes": "Generated by scripts/build-v3-own-assets.mjs; Case LUT grade (33^3) in display space after AgX; .cube source in assets-src/lut/, PNG strip shipped"
   }
 ]

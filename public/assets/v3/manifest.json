@@ -1,0 +1,1847 @@
+{
+  "assets": {
+    "station-table": {
+      "origin": "third-party",
+      "kind": "model",
+      "site": "polyhaven",
+      "sourceId": "wooden_table_02",
+      "name": "Wooden Table 02",
+      "author": "Serhii Khromov",
+      "source": "https://polyhaven.com/a/wooden_table_02",
+      "licence": "CC0 1.0",
+      "tier": "first",
+      "catalog": [
+        "field-station"
+      ],
+      "use": "Field station table by the south gate",
+      "files": [
+        {
+          "file": "assets/v3/models/station-table-cd1ca3ec.glb",
+          "bytes": 269516,
+          "sha256": "cd1ca3ec0408f4cc71dbd36ea1adaf1f51d23ae655530727dc7b8663b4f2a079"
+        }
+      ],
+      "triangles": 196,
+      "trianglesSource": 196,
+      "boundsM": [
+        1.134,
+        0.8,
+        0.706
+      ],
+      "parts": [
+        {
+          "node": "wooden_table_02",
+          "sizeM": [
+            1.134,
+            0.8,
+            0.706
+          ]
+        }
+      ],
+      "textures": [
+        {
+          "slots": [
+            "normalTexture"
+          ],
+          "encoding": "UASTC",
+          "bytes": 139636
+        },
+        {
+          "slots": [
+            "baseColorTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 67848
+        },
+        {
+          "slots": [
+            "metallicRoughnessTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 56716
+        }
+      ],
+      "changes": "1k glTF -> GLB; textures resized to 512 px and KTX2-encoded; meshopt + quantization",
+      "bytes": 269516
+    },
+    "clipboard": {
+      "origin": "third-party",
+      "kind": "model",
+      "site": "polyhaven",
+      "sourceId": "clipboard",
+      "name": "Clipboard",
+      "author": "ProgrammerOnCoffee",
+      "source": "https://polyhaven.com/a/clipboard",
+      "licence": "CC0 1.0",
+      "tier": "first",
+      "catalog": [
+        "clipboard"
+      ],
+      "use": "The learner's clipboard; the data sheet texture is drawn over it at run time",
+      "files": [
+        {
+          "file": "assets/v3/models/clipboard-66cb1fb3.glb",
+          "bytes": 256184,
+          "sha256": "66cb1fb3157bdfe8ffc027f5104579f31c94fe1983824c7efc93299b1df8e943"
+        }
+      ],
+      "triangles": 6176,
+      "trianglesSource": 6176,
+      "boundsM": [
+        0.229,
+        0.042,
+        0.337
+      ],
+      "parts": [
+        {
+          "node": "clipboard",
+          "sizeM": [
+            0.229,
+            0.042,
+            0.337
+          ]
+        }
+      ],
+      "textures": [
+        {
+          "slots": [
+            "normalTexture"
+          ],
+          "encoding": "UASTC",
+          "bytes": 108735
+        },
+        {
+          "slots": [
+            "baseColorTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 54943
+        },
+        {
+          "slots": [
+            "metallicRoughnessTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 45616
+        }
+      ],
+      "changes": "1k glTF -> GLB; textures resized to 512 px and KTX2-encoded; meshopt + quantization",
+      "bytes": 256184
+    },
+    "hand-lens": {
+      "origin": "third-party",
+      "kind": "model",
+      "site": "polyhaven",
+      "sourceId": "magnifying_glass_01",
+      "name": "Magnifying Glass 01",
+      "author": "Nazar Borodavka",
+      "source": "https://polyhaven.com/a/magnifying_glass_01",
+      "licence": "CC0 1.0",
+      "tier": "first",
+      "catalog": [
+        "hand-lens"
+      ],
+      "use": "Hand lens on the station table; opens the close-up mode",
+      "files": [
+        {
+          "file": "assets/v3/models/hand-lens-8707a7a7.glb",
+          "bytes": 183148,
+          "sha256": "8707a7a7324053269f7f7e9081605b698b5763227c29dc02559ce21f4fbae634"
+        }
+      ],
+      "triangles": 7240,
+      "trianglesSource": 7240,
+      "boundsM": [
+        0.132,
+        0.272,
+        0.027
+      ],
+      "parts": [
+        {
+          "node": "magnifying_glass_01",
+          "sizeM": [
+            0.132,
+            0.272,
+            0.027
+          ]
+        }
+      ],
+      "textures": [
+        {
+          "slots": [
+            "normalTexture"
+          ],
+          "encoding": "UASTC",
+          "bytes": 25099
+        },
+        {
+          "slots": [
+            "baseColorTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 27100
+        },
+        {
+          "slots": [
+            "metallicRoughnessTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 34739
+        },
+        {
+          "slots": [
+            "metallicRoughnessTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 46026
+        }
+      ],
+      "changes": "1k glTF -> GLB; textures resized to 512 px and KTX2-encoded; meshopt + quantization",
+      "bytes": 183148
+    },
+    "field-guide": {
+      "origin": "third-party",
+      "kind": "model",
+      "site": "polyhaven",
+      "sourceId": "binder_notebook",
+      "name": "Binder Notebook",
+      "author": "DaDrood",
+      "source": "https://polyhaven.com/a/binder_notebook",
+      "licence": "CC0 1.0",
+      "tier": "first",
+      "catalog": [
+        "field-station"
+      ],
+      "use": "Field guide on the station table",
+      "files": [
+        {
+          "file": "assets/v3/models/field-guide-be1aafd6.glb",
+          "bytes": 311968,
+          "sha256": "be1aafd6b1cb83fa56d24ad390eb9ea65231a6ca9f388fe57d77790c56e93417"
+        }
+      ],
+      "triangles": 8998,
+      "trianglesSource": 18077,
+      "boundsM": [
+        0.584,
+        0.025,
+        0.2
+      ],
+      "parts": [
+        {
+          "node": "binder_notebook",
+          "sizeM": [
+            0.365,
+            0.018,
+            0.2
+          ]
+        },
+        {
+          "node": "binder_notebook_closed",
+          "sizeM": [
+            0.171,
+            0.025,
+            0.2
+          ]
+        }
+      ],
+      "textures": [
+        {
+          "slots": [
+            "normalTexture"
+          ],
+          "encoding": "UASTC",
+          "bytes": 119615
+        },
+        {
+          "slots": [
+            "baseColorTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 62101
+        },
+        {
+          "slots": [
+            "metallicRoughnessTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 47232
+        }
+      ],
+      "changes": "1k glTF -> GLB; simplified 18077 -> 8998 triangles (meshoptimizer); textures resized to 512 px and KTX2-encoded; meshopt + quantization",
+      "bytes": 311968
+    },
+    "flask": {
+      "origin": "third-party",
+      "kind": "model",
+      "site": "polyhaven",
+      "sourceId": "plastic_thermos",
+      "name": "Plastic Thermos",
+      "author": "PierreB3D",
+      "source": "https://polyhaven.com/a/plastic_thermos",
+      "licence": "CC0 1.0",
+      "tier": "first",
+      "catalog": [
+        "field-station"
+      ],
+      "use": "Flask on the station table",
+      "files": [
+        {
+          "file": "assets/v3/models/flask-69e13b4d.glb",
+          "bytes": 101788,
+          "sha256": "69e13b4d939da12b0b064b52f18647da07aa0e40809aae9af372acbbfba47d07"
+        }
+      ],
+      "triangles": 5514,
+      "trianglesSource": 5514,
+      "boundsM": [
+        0.141,
+        0.32,
+        0.109
+      ],
+      "parts": [
+        {
+          "node": "plastic_thermos",
+          "sizeM": [
+            0.141,
+            0.32,
+            0.109
+          ]
+        }
+      ],
+      "textures": [
+        {
+          "slots": [
+            "normalTexture"
+          ],
+          "encoding": "UASTC",
+          "bytes": 31948
+        },
+        {
+          "slots": [
+            "baseColorTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 10083
+        },
+        {
+          "slots": [
+            "metallicRoughnessTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 14822
+        }
+      ],
+      "changes": "1k glTF -> GLB; textures resized to 256 px and KTX2-encoded; meshopt + quantization",
+      "bytes": 101788
+    },
+    "stool": {
+      "origin": "third-party",
+      "kind": "model",
+      "site": "polyhaven",
+      "sourceId": "folding_wooden_stool",
+      "name": "Folding Wooden Stool",
+      "author": "Ulan Cabanilla",
+      "source": "https://polyhaven.com/a/folding_wooden_stool",
+      "licence": "CC0 1.0",
+      "tier": "first",
+      "catalog": [
+        "field-station"
+      ],
+      "use": "Folding stool beside the table",
+      "files": [
+        {
+          "file": "assets/v3/models/stool-391de913.glb",
+          "bytes": 389356,
+          "sha256": "391de91334244dbee6521064b085c4f9537efff471d079671983e539764e3e0b"
+        }
+      ],
+      "triangles": 6324,
+      "trianglesSource": 6324,
+      "boundsM": [
+        0.528,
+        0.442,
+        0.547
+      ],
+      "parts": [
+        {
+          "node": "folding_wooden_stool",
+          "sizeM": [
+            0.528,
+            0.442,
+            0.547
+          ]
+        }
+      ],
+      "textures": [
+        {
+          "slots": [
+            "normalTexture"
+          ],
+          "encoding": "UASTC",
+          "bytes": 209395
+        },
+        {
+          "slots": [
+            "baseColorTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 69419
+        },
+        {
+          "slots": [
+            "metallicRoughnessTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 57316
+        }
+      ],
+      "changes": "1k glTF -> GLB; textures resized to 512 px and KTX2-encoded; meshopt + quantization",
+      "bytes": 389356
+    },
+    "pencils": {
+      "origin": "third-party",
+      "kind": "model",
+      "site": "polyhaven",
+      "sourceId": "stationery_supplies",
+      "name": "Stationery Supplies",
+      "author": "Mateusz Sadek",
+      "source": "https://polyhaven.com/a/stationery_supplies",
+      "licence": "CC0 1.0",
+      "tier": "first",
+      "catalog": [
+        "field-station"
+      ],
+      "use": "Pencils and eraser on the station table",
+      "files": [
+        {
+          "file": "assets/v3/models/pencils-bf4e078c.glb",
+          "bytes": 125820,
+          "sha256": "bf4e078c3f4eb272c5c4f3303dbb96b34e0d027e54df9a32ed08e86f282b3b78"
+        }
+      ],
+      "triangles": 4412,
+      "trianglesSource": 4412,
+      "boundsM": [
+        0.302,
+        0.164,
+        0.084
+      ],
+      "parts": [
+        {
+          "node": "stationery_supplies_pen_red",
+          "sizeM": [
+            0.141,
+            0.008,
+            0.008
+          ]
+        },
+        {
+          "node": "stationery_supplies_pencilcup",
+          "sizeM": [
+            0.084,
+            0.084,
+            0.084
+          ]
+        },
+        {
+          "node": "stationery_supplies_eraser",
+          "sizeM": [
+            0.045,
+            0.01,
+            0.019
+          ]
+        },
+        {
+          "node": "stationery_supplies_pencil_new_a",
+          "sizeM": [
+            0.194,
+            0.008,
+            0.008
+          ]
+        },
+        {
+          "node": "stationery_supplies_pencil_new_b",
+          "sizeM": [
+            0.17,
+            0.008,
+            0.008
+          ]
+        },
+        {
+          "node": "stationery_supplies_pencil_used",
+          "sizeM": [
+            0.12,
+            0.008,
+            0.008
+          ]
+        },
+        {
+          "node": "stationery_supplies_pencil_old",
+          "sizeM": [
+            0.094,
+            0.008,
+            0.008
+          ]
+        },
+        {
+          "node": "stationery_supplies_pen_fancy",
+          "sizeM": [
+            0.131,
+            0.014,
+            0.01
+          ]
+        },
+        {
+          "node": "stationery_supplies_pen_blue",
+          "sizeM": [
+            0.161,
+            0.01,
+            0.009
+          ]
+        }
+      ],
+      "textures": [
+        {
+          "slots": [
+            "normalTexture"
+          ],
+          "encoding": "UASTC",
+          "bytes": 39441
+        },
+        {
+          "slots": [
+            "baseColorTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 20668
+        },
+        {
+          "slots": [
+            "metallicRoughnessTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 17111
+        }
+      ],
+      "changes": "1k glTF -> GLB; textures resized to 256 px and KTX2-encoded; meshopt + quantization",
+      "bytes": 125820
+    },
+    "boulder": {
+      "origin": "third-party",
+      "kind": "model",
+      "site": "polyhaven",
+      "sourceId": "boulder_01",
+      "name": "Boulder 01",
+      "author": "Rico Cilliers",
+      "source": "https://polyhaven.com/a/boulder_01",
+      "licence": "CC0 1.0",
+      "tier": "stream",
+      "catalog": [],
+      "use": "Boulders (about 1.8 m, real scan size) at the field corners, outside the sampling area",
+      "files": [
+        {
+          "file": "assets/v3/models/boulder-4141703d.glb",
+          "bytes": 537328,
+          "sha256": "4141703d5507150620bd1f3fec20cd771a09f371629fc9f9f1f0f24d59106326"
+        }
+      ],
+      "triangles": 7996,
+      "trianglesSource": 66122,
+      "boundsM": [
+        1.271,
+        1.003,
+        1.827
+      ],
+      "parts": [
+        {
+          "node": "boulder_01",
+          "sizeM": [
+            1.271,
+            1.003,
+            1.827
+          ]
+        }
+      ],
+      "textures": [
+        {
+          "slots": [
+            "normalTexture"
+          ],
+          "encoding": "UASTC",
+          "bytes": 316687
+        },
+        {
+          "slots": [
+            "baseColorTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 80471
+        },
+        {
+          "slots": [
+            "metallicRoughnessTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 58639
+        }
+      ],
+      "changes": "1k glTF -> GLB; simplified 66122 -> 7996 triangles (meshoptimizer); textures resized to 512 px and KTX2-encoded; meshopt + quantization",
+      "bytes": 537328
+    },
+    "fern": {
+      "origin": "third-party",
+      "kind": "model",
+      "site": "polyhaven",
+      "sourceId": "fern_02",
+      "name": "Fern 02",
+      "author": "Rob Tuytel, Rico Cilliers",
+      "source": "https://polyhaven.com/a/fern_02",
+      "licence": "CC0 1.0",
+      "tier": "stream",
+      "catalog": [
+        "stream"
+      ],
+      "use": "Ferns on the stream banks beyond the field",
+      "files": [
+        {
+          "file": "assets/v3/models/fern-50759382.glb",
+          "bytes": 300532,
+          "sha256": "507593823a39f2002d73820fda035cd71225e6fe74a3605f607a6f93a38c67fb"
+        }
+      ],
+      "triangles": 6232,
+      "trianglesSource": 6232,
+      "boundsM": [
+        1.973,
+        0.428,
+        1.724
+      ],
+      "parts": [
+        {
+          "node": "fern_02_b",
+          "sizeM": [
+            0.99,
+            0.428,
+            0.894
+          ]
+        },
+        {
+          "node": "fern_02_c",
+          "sizeM": [
+            0.874,
+            0.349,
+            0.765
+          ]
+        },
+        {
+          "node": "fern_02_a",
+          "sizeM": [
+            0.552,
+            0.287,
+            0.613
+          ]
+        },
+        {
+          "node": "fern_02_d",
+          "sizeM": [
+            0.573,
+            0.213,
+            0.593
+          ]
+        }
+      ],
+      "textures": [
+        {
+          "slots": [
+            "normalTexture"
+          ],
+          "encoding": "UASTC",
+          "bytes": 159207
+        },
+        {
+          "slots": [
+            "baseColorTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 51456
+        },
+        {
+          "slots": [
+            "metallicRoughnessTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 28289
+        }
+      ],
+      "changes": "1k glTF -> GLB; textures resized to 512 px and KTX2-encoded; meshopt + quantization",
+      "bytes": 300532
+    },
+    "margin-gazania": {
+      "origin": "third-party",
+      "kind": "model",
+      "site": "polyhaven",
+      "sourceId": "flower_gazania",
+      "name": "Flower Gazania",
+      "author": "James Ray Cock, Jenelle van Heerden",
+      "source": "https://polyhaven.com/a/flower_gazania",
+      "licence": "CC0 1.0",
+      "tier": "stream",
+      "catalog": [
+        "margin-flowers"
+      ],
+      "use": "Orange margin flowers in front of the wall, outside the field",
+      "files": [
+        {
+          "file": "assets/v3/models/margin-gazania-05d8859b.glb",
+          "bytes": 578468,
+          "sha256": "05d8859bf8af5599cbfd906c552cbc524104073607dd12e90bc39eaa343aabd4"
+        }
+      ],
+      "triangles": 11993,
+      "trianglesSource": 14340,
+      "boundsM": [
+        1.481,
+        0.166,
+        0.703
+      ],
+      "parts": [
+        {
+          "node": "flower_gazania_a_LOD0",
+          "sizeM": [
+            0.138,
+            0.045,
+            0.133
+          ]
+        },
+        {
+          "node": "flower_gazania_b_LOD0",
+          "sizeM": [
+            0.215,
+            0.048,
+            0.268
+          ]
+        },
+        {
+          "node": "flower_gazania_c_LOD0",
+          "sizeM": [
+            0.241,
+            0.069,
+            0.186
+          ]
+        },
+        {
+          "node": "flower_gazania_d_LOD0",
+          "sizeM": [
+            0.246,
+            0.1,
+            0.266
+          ]
+        },
+        {
+          "node": "flower_gazania_h_LOD0",
+          "sizeM": [
+            0.338,
+            0.166,
+            0.326
+          ]
+        },
+        {
+          "node": "flower_gazania_g_LOD0",
+          "sizeM": [
+            0.269,
+            0.124,
+            0.288
+          ]
+        },
+        {
+          "node": "flower_gazania_f_LOD0",
+          "sizeM": [
+            0.312,
+            0.11,
+            0.307
+          ]
+        },
+        {
+          "node": "flower_gazania_e_LOD0",
+          "sizeM": [
+            0.241,
+            0.107,
+            0.186
+          ]
+        }
+      ],
+      "textures": [
+        {
+          "slots": [
+            "normalTexture"
+          ],
+          "encoding": "UASTC",
+          "bytes": 289203
+        },
+        {
+          "slots": [
+            "baseColorTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 55699
+        },
+        {
+          "slots": [
+            "metallicRoughnessTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 59021
+        }
+      ],
+      "changes": "1k glTF -> GLB; simplified 14340 -> 11993 triangles (meshoptimizer); textures resized to 512 px and KTX2-encoded; meshopt + quantization",
+      "bytes": 578468
+    },
+    "margin-celandine": {
+      "origin": "third-party",
+      "kind": "model",
+      "site": "polyhaven",
+      "sourceId": "celandine_01",
+      "name": "Celandine 01",
+      "author": "Rob Tuytel, Rico Cilliers",
+      "source": "https://polyhaven.com/a/celandine_01",
+      "licence": "CC0 1.0",
+      "tier": "stream",
+      "catalog": [
+        "margin-flowers"
+      ],
+      "use": "Low celandine clusters at the hedge foot, outside the field",
+      "files": [
+        {
+          "file": "assets/v3/models/margin-celandine-dd470fb4.glb",
+          "bytes": 404784,
+          "sha256": "dd470fb438185c44b10bbf279e6732b7fafc29b3d764a2aa99fd6bdb24d278f0"
+        }
+      ],
+      "triangles": 8966,
+      "trianglesSource": 8966,
+      "boundsM": [
+        2.239,
+        0.186,
+        0.307
+      ],
+      "parts": [
+        {
+          "node": "celandine_01_a_LOD0",
+          "sizeM": [
+            0.276,
+            0.186,
+            0.228
+          ]
+        },
+        {
+          "node": "celandine_01_b_LOD0",
+          "sizeM": [
+            0.252,
+            0.145,
+            0.307
+          ]
+        },
+        {
+          "node": "celandine_01_c_LOD0",
+          "sizeM": [
+            0.257,
+            0.176,
+            0.186
+          ]
+        },
+        {
+          "node": "celandine_01_d_LOD0",
+          "sizeM": [
+            0.187,
+            0.149,
+            0.223
+          ]
+        },
+        {
+          "node": "celandine_01_e_LOD0",
+          "sizeM": [
+            0.188,
+            0.124,
+            0.216
+          ]
+        }
+      ],
+      "textures": [
+        {
+          "slots": [
+            "normalTexture"
+          ],
+          "encoding": "UASTC",
+          "bytes": 202728
+        },
+        {
+          "slots": [
+            "baseColorTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 57512
+        },
+        {
+          "slots": [
+            "metallicRoughnessTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 46247
+        }
+      ],
+      "changes": "1k glTF -> GLB; textures resized to 512 px and KTX2-encoded; meshopt + quantization",
+      "bytes": 404784
+    },
+    "margin-periwinkle": {
+      "origin": "third-party",
+      "kind": "model",
+      "site": "polyhaven",
+      "sourceId": "periwinkle_plant",
+      "name": "Periwinkle Plant",
+      "author": "Amal Kumar",
+      "source": "https://polyhaven.com/a/periwinkle_plant",
+      "licence": "CC0 1.0",
+      "tier": "stream",
+      "catalog": [
+        "margin-flowers"
+      ],
+      "use": "Pink periwinkle clusters along the margins, outside the field",
+      "files": [
+        {
+          "file": "assets/v3/models/margin-periwinkle-c50c6f30.glb",
+          "bytes": 553328,
+          "sha256": "c50c6f30ec66258c0b10d369c5beba2d468689cd8b8eb499fd3680b5d7807ee2"
+        }
+      ],
+      "triangles": 11993,
+      "trianglesSource": 34350,
+      "boundsM": [
+        1.235,
+        0.411,
+        0.321
+      ],
+      "parts": [
+        {
+          "node": "periwinkle_plant_04_LOD0",
+          "sizeM": [
+            0.156,
+            0.265,
+            0.184
+          ]
+        },
+        {
+          "node": "periwinkle_plant_06_LOD0",
+          "sizeM": [
+            0.103,
+            0.16,
+            0.089
+          ]
+        },
+        {
+          "node": "periwinkle_plant_03_LOD0",
+          "sizeM": [
+            0.167,
+            0.3,
+            0.147
+          ]
+        },
+        {
+          "node": "periwinkle_plant_02_LOD0",
+          "sizeM": [
+            0.231,
+            0.411,
+            0.225
+          ]
+        },
+        {
+          "node": "periwinkle_plant_05_LOD0",
+          "sizeM": [
+            0.111,
+            0.206,
+            0.141
+          ]
+        },
+        {
+          "node": "periwinkle_plant_01_LOD0",
+          "sizeM": [
+            0.261,
+            0.397,
+            0.321
+          ]
+        }
+      ],
+      "textures": [
+        {
+          "slots": [
+            "normalTexture"
+          ],
+          "encoding": "UASTC",
+          "bytes": 205866
+        },
+        {
+          "slots": [
+            "baseColorTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 53063
+        },
+        {
+          "slots": [
+            "metallicRoughnessTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 38414
+        }
+      ],
+      "changes": "1k glTF -> GLB; simplified 34350 -> 11993 triangles (meshoptimizer); textures resized to 512 px and KTX2-encoded; meshopt + quantization",
+      "bytes": 553328
+    },
+    "fallen-log": {
+      "origin": "third-party",
+      "kind": "model",
+      "site": "polyhaven",
+      "sourceId": "dead_tree_trunk",
+      "name": "Dead Tree Trunk",
+      "author": "Rob Tuytel",
+      "source": "https://polyhaven.com/a/dead_tree_trunk",
+      "licence": "CC0 1.0",
+      "tier": "stream",
+      "catalog": [
+        "fallen-log"
+      ],
+      "use": "Fallen log beyond the east boundary",
+      "files": [
+        {
+          "file": "assets/v3/models/fallen-log-5f990f7e.glb",
+          "bytes": 501612,
+          "sha256": "5f990f7efc9ed32ee9f1ccb51c3f1548dab6bc599ddc24480f4c13000fba0d03"
+        }
+      ],
+      "triangles": 11998,
+      "trianglesSource": 101802,
+      "boundsM": [
+        3.051,
+        0.29,
+        0.278
+      ],
+      "parts": [
+        {
+          "node": "dead_tree_trunk",
+          "sizeM": [
+            3.051,
+            0.29,
+            0.278
+          ]
+        }
+      ],
+      "textures": [
+        {
+          "slots": [
+            "normalTexture"
+          ],
+          "encoding": "UASTC",
+          "bytes": 293413
+        },
+        {
+          "slots": [
+            "baseColorTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 68319
+        },
+        {
+          "slots": [
+            "metallicRoughnessTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 59174
+        }
+      ],
+      "changes": "1k glTF -> GLB; simplified 101802 -> 11998 triangles (meshoptimizer); textures resized to 512 px and KTX2-encoded; meshopt + quantization",
+      "bytes": 501612
+    },
+    "hedge-nettle": {
+      "origin": "third-party",
+      "kind": "model",
+      "site": "polyhaven",
+      "sourceId": "nettle_plant",
+      "name": "Nettle Plant",
+      "author": "Rob Tuytel, Rico Cilliers",
+      "source": "https://polyhaven.com/a/nettle_plant",
+      "licence": "CC0 1.0",
+      "tier": "stream",
+      "catalog": [
+        "hedgerow"
+      ],
+      "use": "Nettles at the hedge foot, outside the field",
+      "files": [
+        {
+          "file": "assets/v3/models/hedge-nettle-d0edd600.glb",
+          "bytes": 485276,
+          "sha256": "d0edd600fca4abd4abf150cbaaad60c7c09dfed19b667bcba4e4eed646ec2224"
+        }
+      ],
+      "triangles": 11995,
+      "trianglesSource": 31304,
+      "boundsM": [
+        1.083,
+        0.218,
+        0.095
+      ],
+      "parts": [
+        {
+          "node": "nettle_plant_medium_a_LOD0",
+          "sizeM": [
+            0.077,
+            0.131,
+            0.089
+          ]
+        },
+        {
+          "node": "nettle_plant_medium_b_LOD0",
+          "sizeM": [
+            0.065,
+            0.105,
+            0.066
+          ]
+        },
+        {
+          "node": "nettle_plant_small_a_LOD0",
+          "sizeM": [
+            0.064,
+            0.063,
+            0.043
+          ]
+        },
+        {
+          "node": "nettle_plant_small_b_LOD0",
+          "sizeM": [
+            0.06,
+            0.022,
+            0.039
+          ]
+        },
+        {
+          "node": "nettle_plant_tall_a_LOD0",
+          "sizeM": [
+            0.104,
+            0.217,
+            0.09
+          ]
+        },
+        {
+          "node": "nettle_plant_tall_b_LOD0",
+          "sizeM": [
+            0.082,
+            0.193,
+            0.095
+          ]
+        }
+      ],
+      "textures": [
+        {
+          "slots": [
+            "normalTexture"
+          ],
+          "encoding": "UASTC",
+          "bytes": 238483
+        },
+        {
+          "slots": [
+            "baseColorTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 55672
+        },
+        {
+          "slots": [
+            "metallicRoughnessTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 50316
+        }
+      ],
+      "changes": "1k glTF -> GLB; simplified 31304 -> 11995 triangles (meshoptimizer); textures resized to 512 px and KTX2-encoded; meshopt + quantization",
+      "bytes": 485276
+    },
+    "hedge-undergrowth": {
+      "origin": "third-party",
+      "kind": "model",
+      "site": "polyhaven",
+      "sourceId": "shrub_04",
+      "name": "Shrub 04",
+      "author": "Rico Cilliers",
+      "source": "https://polyhaven.com/a/shrub_04",
+      "licence": "CC0 1.0",
+      "tier": "stream",
+      "catalog": [
+        "hedgerow"
+      ],
+      "use": "Undergrowth at the hedge foot, outside the field",
+      "files": [
+        {
+          "file": "assets/v3/models/hedge-undergrowth-e7d1d89a.glb",
+          "bytes": 412268,
+          "sha256": "e7d1d89ac2a367fa15b18f0d2c623bce99dc8dff70843fd8ac152e8178928641"
+        }
+      ],
+      "triangles": 11968,
+      "trianglesSource": 27327,
+      "boundsM": [
+        0.584,
+        0.219,
+        0.146
+      ],
+      "parts": [
+        {
+          "node": "shrub_04",
+          "sizeM": [
+            0.584,
+            0.219,
+            0.146
+          ]
+        }
+      ],
+      "textures": [
+        {
+          "slots": [
+            "normalTexture"
+          ],
+          "encoding": "UASTC",
+          "bytes": 196036
+        },
+        {
+          "slots": [
+            "baseColorTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 60777
+        },
+        {
+          "slots": [
+            "metallicRoughnessTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 39030
+        }
+      ],
+      "changes": "1k glTF -> GLB; simplified 27327 -> 11968 triangles (meshoptimizer); textures resized to 512 px and KTX2-encoded; meshopt + quantization",
+      "bytes": 412268
+    },
+    "woodland-stump": {
+      "origin": "third-party",
+      "kind": "model",
+      "site": "polyhaven",
+      "sourceId": "tree_stump_01",
+      "name": "Tree Stump 01",
+      "author": "Rob Tuytel",
+      "source": "https://polyhaven.com/a/tree_stump_01",
+      "licence": "CC0 1.0",
+      "tier": "stream",
+      "catalog": [
+        "woodland-edge"
+      ],
+      "use": "Tree stump at the woodland edge",
+      "files": [
+        {
+          "file": "assets/v3/models/woodland-stump-c0b78cbf.glb",
+          "bytes": 535396,
+          "sha256": "c0b78cbf10a25eb2836b0bd7cbb05766bb7aa23bc7bf33078405d7e5df71f22d"
+        }
+      ],
+      "triangles": 10000,
+      "trianglesSource": 41046,
+      "boundsM": [
+        1.426,
+        0.572,
+        1.59
+      ],
+      "parts": [
+        {
+          "node": "tree_stump_01",
+          "sizeM": [
+            1.426,
+            0.572,
+            1.59
+          ]
+        }
+      ],
+      "textures": [
+        {
+          "slots": [
+            "normalTexture"
+          ],
+          "encoding": "UASTC",
+          "bytes": 318913
+        },
+        {
+          "slots": [
+            "baseColorTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 77605
+        },
+        {
+          "slots": [
+            "metallicRoughnessTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 62624
+        }
+      ],
+      "changes": "1k glTF -> GLB; simplified 41046 -> 10000 triangles (meshoptimizer); textures resized to 512 px and KTX2-encoded; meshopt + quantization",
+      "bytes": 535396
+    },
+    "woodland-branches": {
+      "origin": "third-party",
+      "kind": "model",
+      "site": "polyhaven",
+      "sourceId": "dry_branches_medium_01",
+      "name": "Dry Branches Medium 01",
+      "author": "Rico Cilliers",
+      "source": "https://polyhaven.com/a/dry_branches_medium_01",
+      "licence": "CC0 1.0",
+      "tier": "stream",
+      "catalog": [
+        "woodland-edge"
+      ],
+      "use": "Fallen branches on the woodland floor",
+      "files": [
+        {
+          "file": "assets/v3/models/woodland-branches-5c37b91a.glb",
+          "bytes": 535184,
+          "sha256": "5c37b91a34a286f51dbd7ea003a1f49951f6440687966b5bba8880c2d795968e"
+        }
+      ],
+      "triangles": 7995,
+      "trianglesSource": 16803,
+      "boundsM": [
+        1.059,
+        0.341,
+        1.299
+      ],
+      "parts": [
+        {
+          "node": "dry_branches_medium_01_c",
+          "sizeM": [
+            0.131,
+            0.143,
+            0.777
+          ]
+        },
+        {
+          "node": "dry_branches_medium_01_b",
+          "sizeM": [
+            0.151,
+            0.142,
+            1.039
+          ]
+        },
+        {
+          "node": "dry_branches_medium_01_a",
+          "sizeM": [
+            0.323,
+            0.341,
+            1.299
+          ]
+        }
+      ],
+      "textures": [
+        {
+          "slots": [
+            "normalTexture"
+          ],
+          "encoding": "UASTC",
+          "bytes": 314280
+        },
+        {
+          "slots": [
+            "baseColorTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 74521
+        },
+        {
+          "slots": [
+            "metallicRoughnessTexture"
+          ],
+          "encoding": "ETC1S",
+          "bytes": 65282
+        }
+      ],
+      "changes": "1k glTF -> GLB; simplified 16803 -> 7995 triangles (meshoptimizer); textures resized to 512 px and KTX2-encoded; meshopt + quantization",
+      "bytes": 535184
+    },
+    "sky-lilienstein-1k": {
+      "origin": "third-party",
+      "kind": "hdri",
+      "site": "polyhaven",
+      "sourceId": "lilienstein",
+      "name": "Lilienstein",
+      "author": "Andreas Mischok",
+      "source": "https://polyhaven.com/a/lilienstein",
+      "licence": "CC0 1.0",
+      "tier": "first",
+      "catalog": [
+        "sun-dawn",
+        "clouds"
+      ],
+      "use": "Early-morning sky and image-based lighting on Low/Medium (Takram atmosphere replaces the visible sky on High/Ultra)",
+      "takenAt": "2020-08-14T04:26:00.000Z",
+      "files": [
+        {
+          "file": "assets/v3/hdri/sky-lilienstein-1k-07edff9b.hdr",
+          "bytes": 1726218,
+          "sha256": "07edff9b407e97cd380e5b7aa4b22675d65305693a67379f28ad893634e45b05"
+        }
+      ],
+      "changes": "Unmodified 1k HDR (renamed copy)",
+      "bytes": 1726218
+    },
+    "ground-dry": {
+      "origin": "third-party",
+      "kind": "material",
+      "site": "ambientcg",
+      "sourceId": "Grass004",
+      "name": "Grass 004",
+      "author": "ambientCG",
+      "source": "https://ambientcg.com/a/Grass004",
+      "licence": "CC0 1.0",
+      "tier": "first",
+      "catalog": [
+        "dry-ground",
+        "wind"
+      ],
+      "use": "Dry-rise sward (paler, firmer ground away from the stream)",
+      "tileSizeM": 1.4,
+      "files": [
+        {
+          "file": "assets/v3/textures/ground-dry-color-58911e7f.ktx2",
+          "bytes": 261473,
+          "sha256": "58911e7fd9da77d394211fc5497bd0b4343b2ae1dbaf0b23f0bd40c64cf729ec",
+          "map": "color",
+          "sizePx": 1024,
+          "encoding": "ETC1S"
+        },
+        {
+          "file": "assets/v3/textures/ground-dry-normal-cd7c06ad.ktx2",
+          "bytes": 316410,
+          "sha256": "cd7c06ad58cd45fbd6cc2c9037433268afa6fe84e225422dfcef1ab3b6ed4dc3",
+          "map": "normal",
+          "sizePx": 512,
+          "encoding": "UASTC"
+        },
+        {
+          "file": "assets/v3/textures/ground-dry-rough-ae63196f.ktx2",
+          "bytes": 54040,
+          "sha256": "ae63196f38299f4c311efb74fc8f0951eb5adc0c3cf11ac48d13a0d855b3f184",
+          "map": "rough",
+          "sizePx": 512,
+          "encoding": "ETC1S"
+        }
+      ],
+      "changes": "1K JPG maps -> KTX2 (color 1024 px ETC1S, normal 512 px UASTC, rough 512 px ETC1S)",
+      "bytes": 631923
+    },
+    "ground-wet": {
+      "origin": "third-party",
+      "kind": "material",
+      "site": "ambientcg",
+      "sourceId": "Grass003",
+      "name": "Grass 003",
+      "author": "ambientCG",
+      "source": "https://ambientcg.com/a/Grass003",
+      "licence": "CC0 1.0",
+      "tier": "first",
+      "catalog": [
+        "wet-ground"
+      ],
+      "use": "Streamside sward (darker, lusher ground)",
+      "tileSizeM": 1.4,
+      "files": [
+        {
+          "file": "assets/v3/textures/ground-wet-color-cb29bb02.ktx2",
+          "bytes": 233017,
+          "sha256": "cb29bb025cfdef129045885f09507e32bf9ee1b34309ee1375b163c9a7eb77bd",
+          "map": "color",
+          "sizePx": 1024,
+          "encoding": "ETC1S"
+        },
+        {
+          "file": "assets/v3/textures/ground-wet-normal-13fb2187.ktx2",
+          "bytes": 316867,
+          "sha256": "13fb2187d7ab8f502f8a6cb6b31e4c718336c7a2553a2840a6f1314a3988453c",
+          "map": "normal",
+          "sizePx": 512,
+          "encoding": "UASTC"
+        },
+        {
+          "file": "assets/v3/textures/ground-wet-rough-248dbb8f.ktx2",
+          "bytes": 54177,
+          "sha256": "248dbb8f3177bb88752e4fcca72b08ef42a15854a525d6a315d1b055fd4d402e",
+          "map": "rough",
+          "sizePx": 512,
+          "encoding": "ETC1S"
+        }
+      ],
+      "changes": "1K JPG maps -> KTX2 (color 1024 px ETC1S, normal 512 px UASTC, rough 512 px ETC1S)",
+      "bytes": 604061
+    },
+    "wall-stone": {
+      "origin": "third-party",
+      "kind": "material",
+      "site": "ambientcg",
+      "sourceId": "Rock064",
+      "name": "Rock 064",
+      "author": "ambientCG",
+      "source": "https://ambientcg.com/a/Rock064",
+      "licence": "CC0 1.0",
+      "tier": "first",
+      "catalog": [
+        "stone-wall"
+      ],
+      "use": "Mossy stones of the dry-stone wall",
+      "tileSizeM": null,
+      "files": [
+        {
+          "file": "assets/v3/textures/wall-stone-color-c0013543.ktx2",
+          "bytes": 81914,
+          "sha256": "c0013543d8e6faee28b35ea8acbc9c04f6f4f6ca04a253e68963f48c9471babb",
+          "map": "color",
+          "sizePx": 512,
+          "encoding": "ETC1S"
+        },
+        {
+          "file": "assets/v3/textures/wall-stone-normal-d60b1afc.ktx2",
+          "bytes": 155353,
+          "sha256": "d60b1afc655c02d60329b72fab1b3e93b6a4afdaade28bf1d513838cc96a3b6a",
+          "map": "normal",
+          "sizePx": 512,
+          "encoding": "UASTC"
+        },
+        {
+          "file": "assets/v3/textures/wall-stone-rough-05af37d6.ktx2",
+          "bytes": 14268,
+          "sha256": "05af37d652513c55934374a1b77da8574565c13f3758a91abbcc5952941169e5",
+          "map": "rough",
+          "sizePx": 256,
+          "encoding": "ETC1S"
+        }
+      ],
+      "changes": "1K JPG maps -> KTX2 (color 512 px ETC1S, normal 512 px UASTC, rough 256 px ETC1S)",
+      "bytes": 251535
+    },
+    "grass-blades": {
+      "origin": "third-party",
+      "kind": "material",
+      "site": "ambientcg",
+      "sourceId": "Foliage001",
+      "name": "Foliage 001",
+      "author": "ambientCG",
+      "source": "https://ambientcg.com/a/Foliage001",
+      "licence": "CC0 1.0",
+      "tier": "first",
+      "catalog": [
+        "wind"
+      ],
+      "use": "Grass-blade cards for the wind-blown sward outside the field",
+      "tileSizeM": null,
+      "files": [
+        {
+          "file": "assets/v3/textures/grass-blades-color-99a31e5f.ktx2",
+          "bytes": 120113,
+          "sha256": "99a31e5ff42f0eebea3ef04805f8ae34c09d2a62e29472e815a01b2b6112db77",
+          "map": "color",
+          "sizePx": 1024,
+          "encoding": "ETC1S"
+        }
+      ],
+      "changes": "1K JPG maps -> KTX2 (color 1024 px ETC1S); opacity merged into the colour alpha",
+      "bytes": 120113
+    },
+    "stream-mud": {
+      "origin": "third-party",
+      "kind": "material",
+      "site": "ambientcg",
+      "sourceId": "Ground036",
+      "name": "Ground 036",
+      "author": "ambientCG",
+      "source": "https://ambientcg.com/a/Ground036",
+      "licence": "CC0 1.0",
+      "tier": "stream",
+      "catalog": [
+        "stream"
+      ],
+      "use": "Muddy stream banks seen up close",
+      "tileSizeM": null,
+      "files": [
+        {
+          "file": "assets/v3/textures/stream-mud-color-01123f8a.ktx2",
+          "bytes": 79772,
+          "sha256": "01123f8a9d98800ef9682201a5f618702d97163f81a2c83f041f55f766e25700",
+          "map": "color",
+          "sizePx": 512,
+          "encoding": "ETC1S"
+        },
+        {
+          "file": "assets/v3/textures/stream-mud-normal-134d6898.ktx2",
+          "bytes": 324573,
+          "sha256": "134d689836bca91059e54a3a79b82ddc44c50f3d814e265aa54976935d212ce3",
+          "map": "normal",
+          "sizePx": 512,
+          "encoding": "UASTC"
+        },
+        {
+          "file": "assets/v3/textures/stream-mud-rough-7ba784f5.ktx2",
+          "bytes": 14607,
+          "sha256": "7ba784f5bd616adc78028434a7bffe7d2a670e04aaec57043fc285790c7c069d",
+          "map": "rough",
+          "sizePx": 256,
+          "encoding": "ETC1S"
+        }
+      ],
+      "changes": "1K JPG maps -> KTX2 (color 512 px ETC1S, normal 512 px UASTC, rough 256 px ETC1S)",
+      "bytes": 418952
+    },
+    "soil": {
+      "origin": "third-party",
+      "kind": "material",
+      "site": "ambientcg",
+      "sourceId": "Ground048",
+      "name": "Ground 048",
+      "author": "ambientCG",
+      "source": "https://ambientcg.com/a/Ground048",
+      "licence": "CC0 1.0",
+      "tier": "stream",
+      "catalog": [
+        "soil"
+      ],
+      "use": "Topsoil in the cut stream bank",
+      "tileSizeM": 1.4,
+      "files": [
+        {
+          "file": "assets/v3/textures/soil-color-d90361de.ktx2",
+          "bytes": 75178,
+          "sha256": "d90361de225266a9752b180f6aa0c1cfd580141b0a23cf858903fcef60b67220",
+          "map": "color",
+          "sizePx": 512,
+          "encoding": "ETC1S"
+        },
+        {
+          "file": "assets/v3/textures/soil-normal-a7ec5f89.ktx2",
+          "bytes": 318212,
+          "sha256": "a7ec5f89ec1033d3010cb995ae6a76ef19c92d82c44e5897b3c6fbd23fff20ff",
+          "map": "normal",
+          "sizePx": 512,
+          "encoding": "UASTC"
+        },
+        {
+          "file": "assets/v3/textures/soil-rough-66022137.ktx2",
+          "bytes": 13369,
+          "sha256": "66022137719878fed8e15a08c1baaf8b82ac879cc0918e8cfe5880a1d0d05ee1",
+          "map": "rough",
+          "sizePx": 256,
+          "encoding": "ETC1S"
+        }
+      ],
+      "changes": "1K JPG maps -> KTX2 (color 512 px ETC1S, normal 512 px UASTC, rough 256 px ETC1S)",
+      "bytes": 406759
+    },
+    "woodland-trees": {
+      "origin": "own",
+      "kind": "model",
+      "author": "Field Ecologist project (own procedural work)",
+      "source": "https://github.com/iwyusdaz/field-ecologist/blob/v3/scripts/build-v3-own-assets.mjs",
+      "licence": "Own work (MIT)",
+      "tier": "first",
+      "catalog": [
+        "woodland-edge",
+        "hedgerow"
+      ],
+      "use": "Three broadleaf forms (tall tree, small tree, hedge shrub), each LOD0 (<= 8k triangles) + LOD1 (<= 150 triangles), same pivot at the trunk base; impostors are baked from LOD0 at run time",
+      "files": [
+        {
+          "file": "assets/v3/models/woodland-trees-7ce6d68b.glb",
+          "bytes": 516728,
+          "sha256": "7ce6d68b27d4b110af64c50f8cf9003d14dd06dd389c3a16a1508df37261e678"
+        }
+      ],
+      "triangles": 16805,
+      "boundsM": [
+        14.81,
+        16.399,
+        15.013
+      ],
+      "parts": [
+        {
+          "node": "tree-tall-LOD0",
+          "triangles": 7190,
+          "sizeM": [
+            13.636,
+            15.856,
+            13.791
+          ]
+        },
+        {
+          "node": "tree-tall-LOD1",
+          "triangles": 134,
+          "sizeM": [
+            14.81,
+            16.39,
+            15.013
+          ]
+        },
+        {
+          "node": "tree-small-LOD0",
+          "triangles": 4987,
+          "sizeM": [
+            8.621,
+            10.235,
+            8.474
+          ]
+        },
+        {
+          "node": "tree-small-LOD1",
+          "triangles": 134,
+          "sizeM": [
+            8.868,
+            10.404,
+            9.696
+          ]
+        },
+        {
+          "node": "hedge-shrub-LOD0",
+          "triangles": 4220,
+          "sizeM": [
+            4.205,
+            2.918,
+            3.089
+          ]
+        },
+        {
+          "node": "hedge-shrub-LOD1",
+          "triangles": 140,
+          "sizeM": [
+            4.405,
+            3.08,
+            2.896
+          ]
+        }
+      ],
+      "derivedFrom": [
+        {
+          "site": "ambientcg",
+          "sourceId": "Bark012",
+          "source": "https://ambientcg.com/a/Bark012",
+          "author": "ambientCG",
+          "licence": "CC0 1.0",
+          "changes": "Colour 512 px ETC1S + NormalGL 256 px UASTC, embedded as the bark material"
+        },
+        {
+          "site": "ambientcg",
+          "sourceId": "LeafSet024",
+          "source": "https://ambientcg.com/a/LeafSet024",
+          "author": "ambientCG",
+          "licence": "CC0 1.0",
+          "changes": "Leaves cut from the atlas and composited (320 per card, recoloured, with drawn twigs) into a 512 px leaf-cluster card, ETC1S + alpha"
+        }
+      ],
+      "note": "Generic broadleaf forms, not a specific species. Nodes <form>-LOD0 / <form>-LOD1 share the origin at the trunk base; bake impostors from LOD0 at run time.",
+      "bytes": 516728
+    },
+    "survey-stake": {
+      "origin": "own",
+      "kind": "model",
+      "author": "Field Ecologist project (own procedural work)",
+      "source": "https://github.com/iwyusdaz/field-ecologist/blob/v3/scripts/build-v3-own-assets.mjs",
+      "licence": "Own work (MIT)",
+      "tier": "first",
+      "catalog": [
+        "random-sampling"
+      ],
+      "use": "Numbered survey stake with flagging tape; the number plate takes a run-time canvas texture",
+      "files": [
+        {
+          "file": "assets/v3/models/survey-stake-ab589cf5.glb",
+          "bytes": 13188,
+          "sha256": "ab589cf5003e1b16a8c2fb701fee8b2518c329db53a0d8b7c42d4ef9783682ed"
+        }
+      ],
+      "triangles": 40,
+      "boundsM": [
+        0.092,
+        0.6,
+        0.042
+      ],
+      "parts": [
+        {
+          "node": "survey-stake",
+          "triangles": 40,
+          "sizeM": [
+            0.092,
+            0.6,
+            0.042
+          ]
+        }
+      ],
+      "note": "Origin at ground level; the 6 cm point sits below ground. Material \"number-plate\" takes a run-time canvas texture with the stake number.",
+      "bytes": 13188
+    },
+    "cloud-sprites": {
+      "origin": "own",
+      "kind": "texture",
+      "author": "Field Ecologist project (own procedural work)",
+      "source": "https://github.com/iwyusdaz/field-ecologist/blob/v3/scripts/build-v3-own-assets.mjs",
+      "licence": "Own work (MIT)",
+      "tier": "first",
+      "catalog": [
+        "clouds"
+      ],
+      "use": "Four soft cloud billboards (2x2 atlas) for the Medium/High sky fallback",
+      "files": [
+        {
+          "file": "assets/v3/sprites/cloud-sprites-9b47bd89.ktx2",
+          "bytes": 61121,
+          "sha256": "9b47bd89cfa3129178f7e13ae2a3cb22456e444e9dc91f337e918dd4999f2933",
+          "sizePx": 1024,
+          "encoding": "ETC1S",
+          "layout": "2x2 atlas, 512 px tiles"
+        }
+      ],
+      "bytes": 61121
+    },
+    "ashcombe-dawn-33": {
+      "origin": "own",
+      "kind": "lut",
+      "author": "Field Ecologist project (own procedural work)",
+      "source": "https://github.com/iwyusdaz/field-ecologist/blob/v3/scripts/build-v3-own-assets.mjs",
+      "licence": "Own work (MIT)",
+      "tier": "first",
+      "catalog": [],
+      "use": "Case LUT grade (33^3) in display space after AgX; .cube source in assets-src/lut/, PNG strip shipped",
+      "files": [
+        {
+          "file": "assets/v3/lut/ashcombe-dawn-33-eea64172.png",
+          "bytes": 92848,
+          "sha256": "eea641721352ceb601e78223f7954ec7f07797baa5e2a6cbe26a2732dbe5584a",
+          "layout": "1089x33 RGB8 strip (blue = slice, x within slice = red, y = green)"
+        }
+      ],
+      "sourceFile": "assets-src/lut/ashcombe-dawn-33.cube",
+      "bytes": 92848
+    }
+  },
+  "licenceCheck": {
+    "polyhaven": {
+      "page": "https://polyhaven.com/license",
+      "licence": "CC0 1.0",
+      "checkedAt": "2026-10-30"
+    },
+    "ambientcg": {
+      "page": "https://docs.ambientcg.com/license/",
+      "licence": "CC0 1.0",
+      "checkedAt": "2026-10-30"
+    }
+  }
+}

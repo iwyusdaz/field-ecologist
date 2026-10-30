@@ -55,6 +55,16 @@ the shared standards. Statuses: **done**, done(agent review pending), **not poss
 - [x] Phase 9 — all copy lives in `content/*.json`; ≥ 5 revisions documented in `DECISIONS.md`; trailer: **not possible (no video asset produced — placeholder section in README; screen-capture trailer left to the orchestrator)**.
 - [x] Post-review — agent design reviews run (2026-10-27, reports + screenshots in `evaluation/reviews/`); 7 revisions (R1–R7) fix their findings with unit-test and functional-test evidence; bias figures re-measured on the revised estimator (+369 % / +365 % convenience Butterweed at n = 10 / 40; random +1.4 %; stratified −6.9 % at n = 10).
 
+## v3 S4 assets (plan 10 §6.3, §4) — staged 2026-10-31, not yet loaded by the app
+
+Agent work. The app shell is unchanged; S6 wires these in.
+
+- `content/objects.json`: 28 catalog objects (11 task, 17 explore) from the owner-approved S0 list, every draft note resolved; §4.1 fields only, sources in `research/sources.md` (rows 8–16 added and opened 2026-10-31) or a repo file; `realSizeBasis` says what each size measures.
+- `public/assets/v3/` + `manifest.json`: 17 Poly Haven models, 1 Poly Haven HDRI (Lilienstein, photographed in the early morning), 6 ambientCG materials, and own work (woodland-trees GLB with three broadleaf forms × LOD0/LOD1, survey stake, cloud billboards, case LUT). Models are GLB + `EXT_meshopt_compression` + `KHR_mesh_quantization` + `KHR_texture_basisu`, so S6 needs `MeshoptDecoder` and `KTX2Loader` (basis transcoder already self-hosted in `decoders/`). Manifest tiers: 5.4 MB `first`, 5.4 MB `stream` (after the first click); the largest file is the 1.7 MB HDRI.
+- Rebuild: `npm run assets:v3` (needs magick and toktx 4.4.2); verify: `npm run check:assets` (licences, attribution rows, sizes, hashes, catalog fields).
+- For S6: delete the v2 copies (`public/assets/models/*`, `sky-meadow-1k.hdr`) and their ATTRIBUTION rows when the v3 scene stops loading them; real-scale rule means the v2 4× upscaled log and rock are replaced by real-size scans (the rock by `boulder_01`); faceted hills, mist, wind, bees, birds and the field worker stay code (see `CODE_ONLY` in `scripts/v3-assets.config.mjs`).
+- Scale gate caveat: ui-audit measures the world bounding box of the `userData.objectId` node. Terrain-following objects (wall, hedgerow, stream, strata) need a hit proxy at their own size, and the Sun's `realSize` is its true diameter; filed as a template issue.
+
 ## Known limitations (honest)
 
 1. No real learners and no physical phone testing (see the README notice).
