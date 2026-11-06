@@ -682,6 +682,9 @@ export class Lessons {
     const W = innerWidth, H = innerHeight, top = sh.topBarHeight();
     const nx = (px) => (px / W) * 2 - 1, ny = (py) => 1 - (py / H) * 2;
     const f = { x0: -0.98, x1: 0.98, y0: -0.98, y1: ny(top + 8) };
+    // The notebook rail (left, desktop) or tab strip (bottom, phones).
+    const nav = sh.topBar?.offsetParent ? sh.topBar.getBoundingClientRect() : null;
+    if (nav?.width) { if (nav.height > H * 0.6) f.x0 = nx(nav.right + 12); else f.y0 = ny(nav.top - 12); }
     if (sh.now.hidden || !r.width) return f;
     if (r.width < W * 0.6) { if (r.left < W / 2) f.x0 = nx(r.right + 12); else f.x1 = nx(r.left - 12); }
     else f.y0 = ny(r.top - 12);

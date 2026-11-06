@@ -829,7 +829,10 @@ export class MeadowWorld {
     const app = this.app;
     this.quadratFrames = points.map((p) => {
       const f = new THREE.Mesh(this.frameGeo, this.frameMat);
-      f.position.set(p.x, terrainHeight(p.x, p.z) + 0.02, p.z);
+      // Rest on the highest corner, so no bar sinks into sloping ground.
+      const hq = QUADRAT_SIZE / 2;
+      const y = Math.max(...[[-hq, -hq], [hq, -hq], [hq, hq], [-hq, hq], [0, 0]].map(([dx, dz]) => terrainHeight(p.x + dx, p.z + dz)));
+      f.position.set(p.x, y + 0.02, p.z);
       f.castShadow = true;
       f.userData.scaleFrame = 'local';
       f.name = 'quadrat-frame';
@@ -989,6 +992,15 @@ export class MeadowWorld {
       case 'mist': return g([30, y(30, 30, 2.2), 26], [streamX(46), 1.4, 46], 60);
       case 'field-worker': return { look: true, fitFov: true, heightFrac: 0.4 };
       case 'birds': return { look: true, fitFov: true, heightFrac: 0.3, minFov: 2 };
+      case 'clipboard': case 'hand-lens': {
+        // Flat things on the table: look down on them from the station side, so the
+        // sheet (or the lens) reads face-on instead of edge-on.
+        const root = this.roots[id]?.[0];
+        if (!root) return {};
+        const c = new THREE.Box3().setFromObject(root).getCenter(new THREE.Vector3());
+        const d = id === 'clipboard' ? 0.55 : 0.32;
+        return g([c.x + 0.04, c.y + d, c.z - d * 0.55], c.toArray(), 40);
+      }
       default: return {};
     }
   }

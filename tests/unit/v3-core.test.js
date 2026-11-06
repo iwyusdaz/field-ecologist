@@ -51,7 +51,7 @@ describe('catalog (plan 10 §4.1)', () => {
   it('throws in strict mode and serves lookups', () => {
     expect(() => createCatalog([entry({ honesty: 'x' })])).toThrow(/problem/);
     const c = createCatalog(catalogRaw);
-    expect(c.get('anemometer').name).toBe('Cup anemometer');
+    expect(c.get('quadrat').name).toBe('Quadrat frame (2 m × 2 m)');
     expect(c.has('nope')).toBe(false);
   });
 
@@ -143,13 +143,13 @@ describe('discovery journal (plan 10 §4.2)', () => {
     const j = new DiscoveryJournal({ slug: 't', catalog, storage });
     const seen = [];
     j.onChange((n) => seen.push(n));
-    expect(j.discover('bench')).toBe(true);
-    expect(j.discover('bench')).toBe(false);
+    expect(j.discover('clipboard')).toBe(true);
+    expect(j.discover('clipboard')).toBe(false);
     expect(j.discover('not-in-catalog')).toBe(false);
     expect(j.label()).toBe(`Discovered 1 of ${catalog.size}`);
     expect(seen).toEqual([1]);
     const again = new DiscoveryJournal({ slug: 't', catalog, storage });
-    expect(again.has('bench')).toBe(true);
+    expect(again.has('clipboard')).toBe(true);
     again.clear();
     expect(new DiscoveryJournal({ slug: 't', catalog, storage }).count).toBe(0);
   });
@@ -197,8 +197,8 @@ describe('motion layers (plan 10 §5)', () => {
 
   it('time-lapse and illustrative motion must be named on a card', () => {
     const m = new MotionLayerManager({ root: null });
-    m.add(sys('sun', 'sky', { label: 'time-lapse', objects: ['solar-panel'] }));
-    m.add(sys('walk', 'agents', { label: 'illustrative', objects: ['field-technician'] }));
+    m.add(sys('sun', 'sky', { label: 'time-lapse', objects: ['sun-dawn'] }));
+    m.add(sys('walk', 'agents', { label: 'illustrative', objects: ['butterflies'] }));
     m.add(sys('bad', 'objects', { label: 'illustrative', objects: [] }));
     const problems = m.checkLabels(createCatalog(catalogRaw));
     expect(problems).toEqual(['bad: illustrative motion names no catalog object']);
@@ -304,8 +304,9 @@ if (existsSync(join(ROOT, 'src', 'demo', 'content.js'))) describe('demo Now card
   });
 });
 
-it('ships the case LUT strip and the font licence', () => {
-  expect(existsSync(join(ROOT, 'public', 'lut', 'template-grade-33.png'))).toBe(true);
+it('ships the case LUT strip and the font licences', () => {
+  expect(existsSync(join(ROOT, 'public', 'assets', 'v3', 'lut', 'ashcombe-dawn-33-eea64172.png'))).toBe(true);
+  for (const f of ['Fraunces', 'NunitoSans', 'Caveat']) expect(readFileSync(join(ROOT, 'src', 'styles', 'fonts', `LICENSE-${f}.txt`), 'utf8')).toMatch(/SIL Open Font License/);
   expect(readFileSync(join(ROOT, 'src', 'v3', 'fonts', 'LICENSE-Inter.txt'), 'utf8')).toMatch(/SIL Open Font License/);
 });
 

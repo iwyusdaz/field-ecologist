@@ -1,0 +1,50 @@
+{
+  "_note": "Field Ecologist v3 (plan 10 §6.3). navBar: the field-notebook rail is on the left on desktop and becomes a bottom tab strip on phones (owner direction 2026-11-06; ui-audit 1.1.6). Module states m1-m5 come from the rail tabs. Extra states are views a learner reaches from the Now card: the survey stakes after choosing a design, the kneeling counting view at quadrat 1, the hand-lens close-up, and the field guide and data sheet drawers.",
+  "navBar": { "desktop": "left", "phone": "bottom" },
+  "notMainScene": "^(start)$",
+  "settleMs": 3000,
+  "extraStates": [
+    {
+      "name": "m3-stakes",
+      "label": "Module 3: choose Simple random, see the numbered survey stakes",
+      "steps": [
+        { "eval": "(() => { const L = window.__TEST__.lessons; L.app.goModule(2); L.chooseDesign('random'); L.step[2] = 1; L._enterStep(2); L.refresh(); })()" },
+        { "wait": 3500 }
+      ]
+    },
+    {
+      "name": "count-kneel",
+      "label": "Module 3: kneel at quadrat 1 to count",
+      "steps": [
+        { "eval": "(() => { const L = window.__TEST__.lessons; L.app.goModule(2); if (!L.session?.design) L.chooseDesign('random'); L.step[2] = 2; L._enterStep(2); L.refresh(); L.enterQuadrat(1); })()" },
+        { "wait": 4000 }
+      ]
+    },
+    {
+      "name": "count-lens",
+      "label": "Module 3: hand lens close-up inside quadrat 1",
+      "steps": [
+        { "eval": "(() => { const L = window.__TEST__.lessons; L.app.goModule(2); if (!L.session?.design) L.chooseDesign('random'); L.step[2] = 2; L._enterStep(2); L.refresh(); L.enterQuadrat(1); })()" },
+        { "wait": 3000 },
+        { "eval": "(() => { const L = window.__TEST__.lessons; L._lensOn(); L._lensZoom(L.world.quadratFrames[0].position.clone()); })()" },
+        { "wait": 2500 }
+      ]
+    },
+    {
+      "name": "drawer-guide",
+      "label": "Module 2: Open the field guide (Field guide drawer)",
+      "steps": [
+        { "eval": "(() => { const L = window.__TEST__.lessons; L.app.goModule(1); L._guideDrawer(null); })()" },
+        { "wait": 2500 }
+      ]
+    },
+    {
+      "name": "drawer-datasheet",
+      "label": "Module 3: Open the data sheet (Data sheet drawer)",
+      "steps": [
+        { "eval": "(() => { const L = window.__TEST__.lessons; L.app.goModule(2); if (!L.session?.design) L.chooseDesign('random'); L.step[2] = 3; L._enterStep(2); L.refresh(); L._dataSheetDrawer(); })()" },
+        { "wait": 2500 }
+      ]
+    }
+  ]
+}
