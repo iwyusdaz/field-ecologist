@@ -169,8 +169,10 @@ export function buildGround(parent, cloud) {
     field, apron, material: mat, wetPatch, dryPatch,
     setMaps({ dry, wet, normal, rough }) {
       mat.map = dry; mat.userData.wetMap.value = wet;
-      mat.normalMap = normal; mat.normalScale.set(0.7, 0.7);
-      mat.roughnessMap = rough;
+      // A sward is matte: at a 3-20 deg dawn Sun the scanned gravel roughness map and a
+      // strong normal map gave a wet, glittering sheen (v3 GPU screens). Rough map unused.
+      mat.normalMap = normal; mat.normalScale.set(0.35, 0.35);
+      mat.roughness = 1; void rough;
       mat.needsUpdate = true;
     },
   };

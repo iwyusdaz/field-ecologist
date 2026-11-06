@@ -1,106 +1,62 @@
 /**
- * Accessibility: axe on the HTML overlay (menus, HUD, module panels, dialogs,
- * text mode incl. the 20x20 grid map). Gate: zero critical or serious issues
- * (push gate in CI).
+ * axe-core checks (0 critical or serious) on the v3 states: title, practice,
+ * every module, an open info card, the field guide, data sheet and report
+ * drawers, the menu, and text mode.
  */
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-
-test('overlay UI has no critical or serious axe issues', async ({ page }) => {
-  await page.goto('/');
-  await expect(page.locator('canvas, [data-webgl-fallback]').first()).toBeVisible({ timeout: 20_000 });
-  await page.waitForTimeout(1500); // let the menu/HUD settle
-
-  const scan = async (label) => {
-    const results = await new AxeBuilder({ page })
-      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
-      .exclude('canvas')
-      .analyze();
-    const bad = results.violations.filter((v) => v.impact === 'critical' || v.impact === 'serious');
-    if (bad.length) console.log(`axe violations (${label}):`, JSON.stringify(bad, null, 2));
-    expect(bad, label).toEqual([]);
-  };
-
-  await scan('initial view');
-
-  // Settings dialog
-  await page.getByRole('button', { name: 'Settings' }).click();
-  await scan('settings dialog');
-  await page.keyboard.press('Escape');
-
-  // Menu dialog
-  await page.getByRole('button', { name: 'Menu' }).click();
-  await scan('menu dialog');
-  await page.keyboard.press('Escape');
-
-  // Text mode (module 1: hypothesis + pre-check)
-  await page.getByRole('button', { name: /text mode/i }).first().click();
-  await scan('text mode');
-
-  // My progress dialog (from text mode the header is still present)
-  await page.getByRole('button', { name: 'Menu' }).click();
-  await page.getByRole('button', { name: 'My progress' }).click();
-  await scan('progress dialog');
-  await page.keyboard.press('Escape');
-  await page.getByRole('button', { name: /text mode/i }).first().click(); // back to 3D
-});
-
-test('module panels, field guide and text-mode grid have no critical or serious issues', async ({ page }) => {
-  await page.goto('/');
-  await expect(page.locator('canvas, [data-webgl-fallback]').first()).toBeVisible({ timeout: 20_000 });
+import { ready } from './helpers.js';
+async function scan(page, label) {
+  const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
+  const bad = r.violations.filter((v) => ['critical', 'serious'].includes(v.impact));
+  expect(bad.map((v) => `${label}: ${v.id} (${v.impact}) ${v.nodes.slice(0, 2).map((n) => n.target.join(' ')).join(', ')}`)).toEqual([]);
+}
+test('axe: 0 critical/serious on every v3 state', async ({ page }) => {
+  await page.addInitScript(() => localStorage.clear());
+  await ready(page);
+  await scan(page, 'title');
+  await page.getByRole('button', { name: /^start/i }).click();
+  await scan(page, 'practice');
+  await page.getByRole('button', { name: /skip practice/i }).click();
   await page.waitForTimeout(1200);
-  await page.keyboard.press('Escape'); // skip cinematic
-
-  const scan = async (label) => {
-    const results = await new AxeBuilder({ page })
-      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
-      .exclude('canvas')
-      .analyze();
-    const bad = results.violations.filter((v) => v.impact === 'critical' || v.impact === 'serious');
-    if (bad.length) console.log(`axe violations (${label}):`, JSON.stringify(bad, null, 2));
-    expect(bad, label).toEqual([]);
-  };
-
-  // Module 2: field guide cards + quiz
-  await page.locator('.module-nav button').nth(1).click();
-  await page.waitForTimeout(900);
-  await scan('module 2 field guide');
-
-  // Field guide dialog (opens from the counting form)
-  await page.locator('.module-nav button').nth(2).click();
-  await page.getByRole('button', { name: /Choose Simple random/ }).click();
-  await page.waitForTimeout(600);
-  await scan('module 3 fieldwork view');
-  await page.locator('.chip').first().click();
-  await page.waitForTimeout(600);
-  await page.getByRole('button', { name: 'Open field guide' }).click();
-  await scan('field guide dialog');
+  await scan(page, 'm1');
+  await page.evaluate(() => window.__TEST__.inspect.open('field-station'));
+  await page.waitForTimeout(800);
+  await scan(page, 'info card');
   await page.keyboard.press('Escape');
-
-  // Module 4 reveal (gated state: unsubmitted) + module 5 report
-  await page.locator('.module-nav button').nth(3).click();
-  await page.waitForTimeout(500);
-  await scan('module 4 gated');
-  await page.locator('.module-nav button').nth(4).click();
-  await page.waitForTimeout(500);
-  await scan('module 5 report');
-
-  // Text mode fieldwork grid (400-cell map) + reveal in text mode
-  await page.evaluate(() => {
-    const t = window.__TEST__;
-    t.hooks.goTo('m3');
-    t.hooks.chooseDesign('random');
-    for (let i = 1; i <= 10; i++) {
-      t.hooks.visitQuadrat(i);
-      t.hooks.setCount(i, { butterweed: t.app.session.trueCounts(i).butterweed || 0 });
-      t.hooks.finishQuadrat(i);
-    }
-    t.hooks.submitFieldwork();
-    t.shell.toggleTextMode();
-    t.hooks.goTo('m3');
+  for (const i of [1, 2, 3, 4]) {
+    await page.evaluate((n) => window.__TEST__.app.goModule(n), i);
+    await page.waitForTimeout(2200);
+    await scan(page, `m${i + 1}`);
+  }
+  await page.evaluate(() => window.__TEST__.lessons._guideDrawer(null));
+  await page.waitForTimeout(800);
+  await scan(page, 'field guide drawer');
+  await page.keyboard.press('Escape');
+  await page.evaluate(() => { const L = window.__TEST__.lessons; L.app.goModule(2); L.chooseDesign('random'); L._dataSheetDrawer(); });
+  await page.waitForTimeout(1200);
+  await scan(page, 'data sheet drawer');
+  await page.keyboard.press('Escape');
+  await page.evaluate(() => { const L = window.__TEST__.lessons; L.app.goModule(4); L._reportDrawer(); });
+  await page.waitForTimeout(1200);
+  await scan(page, 'report drawer');
+  await page.keyboard.press('Escape');
+  await page.locator('[data-action="menu"]').click();
+  await scan(page, 'menu');
+  await page.keyboard.press('Escape');
+  await page.evaluate(() => window.__TEST__.ui.toggleTextMode());
+  await page.waitForTimeout(1200);
+  await scan(page, 'text mode');
+});
+test.describe('phone', () => {
+  test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+  test('axe: bottom tab strip and bottom-sheet card', async ({ page }) => {
+    await ready(page);
+    await page.evaluate(() => window.__TEST__.app.goModule(1));
+    await page.waitForTimeout(2200);
+    await scan(page, 'phone m2');
+    await page.evaluate(() => window.__TEST__.inspect.open('clipboard'));
+    await page.waitForTimeout(800);
+    await scan(page, 'phone info card');
   });
-  await scan('text mode grid map');
-  await page.locator('.module-nav button').nth(3).click();
-  await page.waitForTimeout(400);
-  await scan('text mode reveal');
 });

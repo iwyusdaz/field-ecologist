@@ -172,7 +172,7 @@ export class Lessons {
       calm: false,
       enter: () => L.enterModule(i),
       now: () => L.nowFor(i),
-      text: (body) => L.textFor(i, body),
+      text: (body, app) => { if (!L.app && app) L.bind(app, null); L.textFor(i, body); }, // sceneless: bound on first render
     });
     return MODULE_IDS.map((_, i) => mk(i));
   }
@@ -368,7 +368,8 @@ export class Lessons {
           result: L.done('m2-lens') ? 'You used the lens. Use it again any time you are not sure.' : undefined,
           primary: L.done('m2-lens') ? { label: 'Next step', onClick: () => { L._lensOff(); L.next(1); } }
             : L.fw.lens ? { label: 'Lens off', onClick: () => L._lensOff() } : { label: 'Use the hand lens', onClick: () => L._lensOn() },
-          secondary: L.done('m2-lens') && (L.fw.lens || L.fw.zoomed) ? { label: 'Lens off', onClick: () => L._lensOff() } : undefined,
+          secondary: L.done('m2-lens') && (L.fw.lens || L.fw.zoomed) ? { label: 'Lens off', onClick: () => L._lensOff() }
+            : L.fw.lens && !L.fw.zoomed ? { label: 'Look at the centre', onClick: () => L._lensCentre() } : undefined,
         }),
       },
       {
@@ -428,6 +429,14 @@ export class Lessons {
     let ring = layer.querySelector('.fe-lens');
     if (!ring) { ring = el('div', { className: 'fe-lens' }); ring.setAttribute('aria-hidden', 'true'); layer.appendChild(ring); }
     ring.classList.toggle('is-on', on);
+  }
+  /** Keyboard path for the lens: look at the plant in the middle of the free view. */
+  _lensCentre() {
+    const fr = this.freeRect();
+    const x = (((fr.x0 + fr.x1) / 2 + 1) / 2) * innerWidth, y = ((1 - (fr.y0 + fr.y1) / 2) / 2) * innerHeight;
+    const hit = this.world.plantAt(x, y, this.fw.active ? { quadrat: this.session.points[this.fw.active - 1] } : {});
+    const p = hit?.point || this.world.groundAt(x, y) || this.world.fieldPointAt(x, y) || new THREE.Vector3(...this._lensSpotView().target);
+    this._lensZoom(p);
   }
   /** Zoom the camera onto a point like a hand lens (a narrow field of view from close by). */
   _lensZoom(point) {
@@ -644,6 +653,7 @@ export class Lessons {
       tool: (box) => {
         const row = box.appendChild(el('div', { className: 'fe-tools' }));
         row.appendChild(btn(fw.lens ? 'Lens off' : 'Hand lens', () => (fw.lens ? this._lensOff() : this._lensOn()), 'v3-btn'));
+        if (fw.lens && !fw.zoomed) row.appendChild(btn('Look at the centre', () => this._lensCentre(), 'v3-btn'));
         row.appendChild(btn('Count sheet', () => this._countSheetDrawer(), 'v3-btn'));
       },
       primary: { label: 'Next: grass cover', onClick: () => { fw.phase = 'cover'; this._lensOff(); this.refresh(); } },

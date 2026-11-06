@@ -1,26 +1,26 @@
 import { defineConfig } from '@playwright/test';
-
-// Root-level config (Playwright only auto-discovers it from the CWD).
-// testMatch is restricted to *.spec.js so vitest's unit tests (*.test.js)
-// are never picked up by the Playwright runner.
+// Browser tests run against a VITE_TEST_HOOKS=1 build (window.__TEST__) served by
+// vite preview on this repo's own port. tests/sub-path.spec.js tests the release
+// build in dist/ (npm run build first). Headless Chromium uses software WebGL:
+// functional checks only; the GPU gates run headed with _tools/ui-audit.mjs.
+// testMatch is restricted to *.spec.js so vitest's unit tests are never picked up.
+const PORT = 4179;
 export default defineConfig({
   testDir: 'tests',
   testMatch: /.*\.spec\.js/,
-  // CI runners (2 vCPU) are far slower than the local M1; local runs stay well under.
-  timeout: 180_000,
+  timeout: 300_000,
   retries: 0,
   workers: 1,
   use: {
-    baseURL: 'http://127.0.0.1:4179',
+    baseURL: `http://127.0.0.1:${PORT}`,
     trace: 'retain-on-failure',
   },
   webServer: {
-    // --host 127.0.0.1: vite preview otherwise binds ::1 only, and the URL
-    // check below uses IPv4.
-    command: 'npm run preview -- --port 4179 --strictPort --host 127.0.0.1',
-    url: 'http://127.0.0.1:4179',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
+    command: `VITE_TEST_HOOKS=1 npx vite build --outDir tmp/e2e-dist --emptyOutDir && npx vite preview --outDir tmp/e2e-dist --port ${PORT} --strictPort --host 127.0.0.1`,
+    url: `http://127.0.0.1:${PORT}`,
+    // Never reuse: another repo's preview server on a shared port would be tested by mistake.
+    reuseExistingServer: false,
+    timeout: 180_000,
   },
   projects: [
     { name: 'chromium', use: { browserName: 'chromium' } },
