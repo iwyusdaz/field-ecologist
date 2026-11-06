@@ -38,6 +38,51 @@ export const HOME_VIEW = { target: [50, 1.1, 15], radius: 13, theta: Math.PI, ph
 
 function seeded(seed) { let s = seed >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
 const up = new THREE.Vector3(0, 1, 0);
+/**
+ * One variant per scanned plant: LOD1 where the scan has it (they sit at the
+ * field margins, seen from a few metres or more), else LOD0, else the first.
+ */
+export function lodPick(list) {
+  const by = new Map();
+  const rank = (l) => (l === 1 ? 0 : l === 0 ? 1 : 2);
+  for (const o of list) {
+    const m = /^(.*)_LOD(\d+)$/.exec(o.name || '');
+    const base = m ? m[1] : o.name || o.uuid, lv = m ? +m[2] : 0;
+    const cur = by.get(base);
+    if (!cur || rank(lv) < rank(cur.lv)) by.set(base, { o, lv });
+  }
+  return [...by.values()].map((v) => v.o);
+}
+/**
+ * Replace repeated clones under `group` (same geometry and material) with one
+ * InstancedMesh each: the same plants in the same places, one draw call per
+ * part instead of one per copy. Instances get no outline hull (hover shows the label).
+ */
+export function instancify(group) {
+  group.updateMatrixWorld(true);
+  const inv = new THREE.Matrix4().copy(group.matrixWorld).invert();
+  const buckets = new Map();
+  group.traverse((m) => {
+    if (!m.isMesh || m.isInstancedMesh || Array.isArray(m.material)) return;
+    const k = `${m.geometry.uuid}|${m.material.uuid}`;
+    if (!buckets.has(k)) buckets.set(k, []);
+    buckets.get(k).push(m);
+  });
+  const mat = new THREE.Matrix4();
+  for (const list of buckets.values()) {
+    if (list.length < 2) continue;
+    const im = new THREE.InstancedMesh(list[0].geometry, list[0].material, list.length);
+    list.forEach((m, i) => im.setMatrixAt(i, mat.multiplyMatrices(inv, m.matrixWorld)));
+    im.castShadow = list[0].castShadow;
+    im.receiveShadow = list[0].receiveShadow;
+    im.name = `${list[0].name}-instances`;
+    im.userData.noOutline = true;
+    im.computeBoundingBox();
+    im.computeBoundingSphere();
+    group.add(im);
+    for (const m of list) m.parent.remove(m);
+  }
+}
 
 export class MeadowWorld {
   /**
@@ -209,9 +254,10 @@ export class MeadowWorld {
         if (orig) orig.decompose(pos, q, sc); else pos.set(s.x, terrainHeight(s.x, s.z), s.z);
         mesh.position.copy(pos);
         mesh.quaternion.copy(q);
-        mesh.castShadow = true;
+        mesh.castShadow = this.presetName === 'high' || this.presetName === 'ultra'; // like the plants around it
         mesh.receiveShadow = true;
         mesh.name = `${id}-specimen`;
+        mesh.userData.scaleFrame = 'local'; // turned like the plant it replaces: measure in its own axes
         this._specimenGroup.add(mesh);
         s.mesh = mesh;
         this.add(id, mesh);
@@ -394,7 +440,7 @@ export class MeadowWorld {
     const s = this.stakeProto.clone(true);
     s.traverse((o) => {
       if (!o.isMesh) return;
-      o.castShadow = true;
+      o.castShadow = false; // a 4 cm stake: its shadow cost a draw per cascade per stake
       if (o.material?.name === 'number-plate') { o.material = o.material.clone(); o.material.map = tx.numberPlateTexture(n); o.material.color?.set(0xffffff); o.material.needsUpdate = true; }
       if (o.material?.name === 'flagging-tape') s.userData.tape = o;
     });
@@ -406,7 +452,7 @@ export class MeadowWorld {
   // ------------------------------------------------------------------ wall, trees, dressing
   _buildWall(colorMap, normalMap) {
     const rnd = seeded(4242);
-    const stoneGeo = new THREE.DodecahedronGeometry(0.24, 1);
+    const stoneGeo = new THREE.DodecahedronGeometry(0.24, 0); // split-stone facets; detail 1 cost 169k triangles
     const mat = new THREE.MeshStandardMaterial({ map: colorMap, normalMap, roughness: 0.95, color: 0xd8d2c4 });
     colorMap.repeat.set(1, 1);
     const pl = [];
@@ -427,7 +473,7 @@ export class MeadowWorld {
       m.compose(p.set(st.x, st.y + (cap ? 0.06 : 0), st.z), cap ? q.setFromEuler(e.set(0, rnd() * 3, 1.45)) : q, s);
       stones.setMatrixAt(i, m);
     });
-    stones.castShadow = true;
+    stones.castShadow = this.presetName === 'high' || this.presetName === 'ultra'; // 169k triangles per cascade on Medium
     stones.receiveShadow = true;
     stones.name = 'dry-stone-wall';
     const wall = new THREE.Group();
@@ -562,10 +608,14 @@ export class MeadowWorld {
       return o;
     };
     for (const [x, z, r] of [[-8, -7, 0.3], [108, -6, 1.7], [109, 30, 2.5], [-9, 96, 0.9], [110, 88, 2.1]]) place(boulder.scene, x, z, r, 1, 0.1);
+    const ferns = new THREE.Group();
+    ferns.name = 'stream-ferns';
+    this.group.add(ferns);
     for (const [x, z, r] of [[streamX(-6) - 2.2, -6, 0.4], [streamX(-9) + 2.3, -9.5, 1.9], [streamX(-14) - 2.4, -14, 2.6], [streamX(106) - 2.2, 106, 1.1], [streamX(110) + 2.4, 110, 0.2], [streamX(113) - 2.5, 113, 2.2]]) {
-      const f = place(fern.scene, x, z, r, 1, 0.02, false);
-      this.add('stream', f);
+      ferns.attach(place(fern.scene, x, z, r, 1, 0.02, false));
     }
+    instancify(ferns); // six ferns, four parts each: four draws instead of 24
+    this.add('stream', ferns);
     const lg = place(log.scene, 109, 62, Math.PI / 2, 1, 0.06);
     lg.userData.scaleFrame = 'local';
     this.add('fallen-log', lg);
@@ -577,9 +627,14 @@ export class MeadowWorld {
 
   _buildHedgeFoot({ nettle, under }) {
     const rnd = seeded(31);
-    const parts = [...nettle.scene.children.filter((o) => o.isMesh || o.children.length), ...under.scene.children];
+    const nettles = lodPick(nettle.scene.children.filter((o) => o.isMesh || o.children.length));
+    const shrubs = lodPick(under.scene.children); // about 12k triangles each: about one spot in twelve
+    const foot = new THREE.Group();
+    foot.name = 'hedge-foot';
+    this.hedgeGroup.add(foot);
     for (let x = -4; x < 103; x += 1.1 + rnd() * 1.4) {
       if (Math.abs(x - streamX(HEDGE_Z)) < 3) continue;
+      const parts = rnd() < 0.08 ? shrubs : nettles;
       const src = parts[Math.floor(rnd() * parts.length)];
       const o = src.clone(true);
       const z = HEDGE_Z - 1.3 - rnd() * 0.6;
@@ -587,13 +642,14 @@ export class MeadowWorld {
       o.rotation.y = rnd() * 6.28;
       o.scale.setScalar(1 + rnd() * 0.25); // real scan size (no upscaling)
       o.traverse((m) => { if (m.isMesh) { m.receiveShadow = true; } });
-      this.hedgeGroup.add(o);
+      foot.add(o);
     }
+    instancify(foot);
   }
 
   _buildMarginFlowers({ gaz, cel, peri }) {
     const rnd = seeded(77);
-    const sets = [peri, gaz, cel].map((glb) => glb.scene.children.filter((o) => o.isObject3D));
+    const sets = [peri, gaz, cel].map((glb) => lodPick(glb.scene.children.filter((o) => o.isObject3D)));
     const spots = [];
     for (let x = 6; x < 100; x += 2.2 + rnd() * 2) spots.push([x, -6.2 - rnd() * 1.6]);
     for (let x = 4; x < 100; x += 2.4 + rnd() * 2.4) spots.push([x, HEDGE_Z - 2.6 - rnd() * 0.8]);
@@ -620,6 +676,7 @@ export class MeadowWorld {
       const set = sets[(i + 1) % 3];
       put(set[Math.floor(rnd() * set.length)], x, z, rnd() * 6.28, g);
     });
+    instancify(g);
     this.add('margin-flowers', g);
     this.marginFlowers = g;
   }
@@ -744,10 +801,13 @@ export class MeadowWorld {
       if (!o.isMesh || !o.material || o.material.map) return;
       o.material = o.material.clone();
       o.material.map = o.material.color && o.material.color.r > 0.6 && o.material.color.g > 0.4 && o.material.color.b > 0.3 ? skin : cloth;
-      o.castShadow = true;
+      o.castShadow = this.presetName === 'high' || this.presetName === 'ultra'; // 100 m off: its shadow pass is not worth 22 draws per cascade
     });
     worker.root.updateMatrixWorld(true);
-    const wb = new THREE.Box3().setFromObject(worker.root).getSize(new THREE.Vector3());
+    // The figure's own box: the flat contact-shadow disc under the feet (0.7 m) is not part of the person.
+    const body = new THREE.Box3(), mb = new THREE.Box3();
+    worker.root.traverse((o) => { if (!o.isMesh) return; mb.setFromObject(o); if (mb.max.y - mb.min.y > 0.01) body.union(mb); });
+    const wb = body.getSize(new THREE.Vector3());
     worker.root.userData.restSize = [wb.x, wb.y, wb.z].map((v) => +v.toFixed(3));
     worker.root.name = 'field-worker';
     this.worker = worker;
@@ -1139,6 +1199,9 @@ export class MeadowWorld {
     this.vegetation.update(cam, dt, t);
     this.vegetation.windUniforms.uTime.value = this.windTime;
     for (const l of this.lodSets || []) l.update(cam, dt);
+    // Small life is not drawn where it would be under a pixel or two (overhead views).
+    for (const b of this.bees || []) b.visible = b.position.distanceToSquared(cam.position) < 35 * 35;
+    for (const b of this.butterflies || []) b.visible = b.position.distanceToSquared(cam.position) < 90 * 90;
   }
 }
 

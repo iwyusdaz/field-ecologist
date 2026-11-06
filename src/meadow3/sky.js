@@ -71,6 +71,8 @@ export class DawnSky {
     this.sunGlow.userData.noOutline = true;
     this.sun.add(this.sunGlow);
     this.sunGlow.scale.setScalar(9); // relative to the disc
+    // Scale check: the Sun is the disc sprite; the child halo is scattered light in the air, not the Sun.
+    this.sun.userData.restSize = [disc, disc, 0];
     parent.add(this.sun);
 
     // Sun light: SunLight cascades on Medium and up (template createSun), none on Low.

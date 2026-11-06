@@ -57,7 +57,7 @@
   --v3-focus: #ffd166;
 }
 .v3-topbar .v3-btn { background: rgba(245, 239, 220, 0.08); }
-.v3-brand { font-family: var(--font-display); }
+.v3-brand { font-weight: 700; letter-spacing: 0.02em; }
 .v3-step-dot { position: relative; }
 /* Progress tick: a pencil tick on the tab once its module is done. */
 .v3-step.is-done .v3-step-dot::after {
@@ -138,7 +138,7 @@
   background: linear-gradient(135deg, rgba(60, 50, 30, 0.18) 0 50%, transparent 50%);
   border-top-left-radius: 4px; pointer-events: none;
 }
-.v3-now-goal, .v3-info-card h2, .v3-drawer-head h2, .v3 dialog h2 { font-family: var(--font-display); font-weight: 600; }
+/* The display face (Fraunces) is for the title screen and chapter cards only (plan §3, typeface gate). */
 .v3-btn, .v3-icon-btn { background: rgba(255, 255, 255, 0.7); }
 .v3-primary { background: var(--v3-accent); color: var(--v3-accent-ink); }
 .v3-link-btn { background: transparent; }

@@ -211,7 +211,9 @@ export class VegetationRenderer {
         // Chunk centre distance decides near vs imposter.
         const dx = camera.position.x - (x0 + CHUNK / 2);
         const dz = camera.position.z - (z0 + CHUNK / 2);
-        const dist2 = dx * dx + dz * dz;
+        // Height counts too (v3): from an overhead view the whole field is not "near".
+        const dy = Math.max(0, camera.position.y - 1);
+        const dist2 = dx * dx + dz * dz + dy * dy;
         const isNear = dist2 < this.nearDist * this.nearDist;
         for (let k = 0; k < count; k++) {
           const instIdx = start + k;

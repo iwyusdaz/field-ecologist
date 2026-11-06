@@ -38,7 +38,30 @@ export async function loadKTX2(renderer, path, { srgb = true, repeat = false, an
 }
 
 export async function loadGLB(renderer, path) {
-  return getGLTF(renderer).loadAsync(`${BASE}${path}`);
+  const g = await getGLTF(renderer).loadAsync(`${BASE}${path}`);
+  noTransmission(g.scene);
+  return g;
+}
+
+/**
+ * Transmissive glTF glass (KHR_materials_transmission: the hand lens, the
+ * flask) makes three.js draw the whole opaque scene a second time every frame
+ * (it doubled every draw call and triangle here; object-detective measured
+ * about 26 ms of GPU time for one lens). Thin glass reads the same as a
+ * transparent, reflective surface, so transmission is swapped for opacity.
+ */
+export function noTransmission(root) {
+  root.traverse((o) => {
+    if (!o.isMesh) return;
+    for (const m of [o.material].flat()) {
+      if (!m?.isMeshPhysicalMaterial || !(m.transmission > 0)) continue;
+      m.transmission = 0;
+      m.transparent = true;
+      m.opacity = Math.min(m.opacity, 0.25);
+      m.depthWrite = false;
+      m.needsUpdate = true;
+    }
+  });
 }
 
 export async function loadHDR(path) {
