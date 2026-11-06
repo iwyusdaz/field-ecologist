@@ -91,71 +91,119 @@ test('every catalog object is in the keyboard list after streaming and opens by 
   await expect(page.locator('[data-ui="info-card"][data-object-id="clipboard"]')).toBeVisible();
 });
 
-test('keyboard-only completion of all five modules', async ({ page }) => {
-  await ready(page);
-  await kb(page, page.getByRole('button', { name: /^start/i }));
-  await kb(page, page.getByRole('button', { name: /skip practice/i }));
-  // Module 1
-  await kb(page, now(page, /^Next step$/));
-  await kb(page, page.locator('[data-ui="now-card"] .v3-choice').first());
-  await page.waitForTimeout(2600);
-  await kb(page, now(page, /^Next step$/));
-  await kb(page, now(page, /Open the pre-check/));
-  await answerAll(page);
-  await kb(page, now(page, /^Next step$/));
-  await expect(page.locator('[data-ui="now-card"]')).toContainText('Meet the five species');
-  // Module 2
-  await kb(page, now(page, /Open the field guide/));
-  await page.keyboard.press('Escape');
-  await kb(page, now(page, /^Next step$/));
-  await kb(page, now(page, /Use the hand lens/));
-  await kb(page, now(page, /Look at the centre/));
-  await kb(page, now(page, /^Next step$/));
-  await kb(page, now(page, /Open the quiz/));
-  await answerAll(page);
-  await kb(page, now(page, /^Next step$/));
-  await expect(page.locator('[data-ui="now-card"]')).toContainText('Choose a sampling design');
-  // Module 3: simple random, count every quadrat with the count sheet
-  await kb(page, page.locator('[data-ui="now-card"] .v3-choice').filter({ hasText: /random/i }).first());
-  await page.waitForTimeout(2000);
-  await kb(page, now(page, /^Next step$/));
-  await kb(page, now(page, /^Next step$/));
-  for (let q = 0; q < 12; q++) {
-    const go = now(page, /Go to quadrat \d+/);
-    if (!(await go.isVisible().catch(() => false))) break;
-    await kb(page, go);
-    await kb(page, now(page, /Count sheet/));
-    await kb(page, drawer(page).locator('input[type="radio"]').first(), 'Space');
-    await kb(page, drawer(page).getByRole('button', { name: /Save quadrat/ }));
-    await page.waitForTimeout(400);
-  }
-  await kb(page, now(page, /^Next step$/));
-  await kb(page, now(page, /Open the data sheet/));
-  await kb(page, drawer(page).getByRole('button', { name: /Submit fieldwork/ }));
-  await expect(page.locator('[data-ui="now-card"]')).toContainText('See the true population');
-  // Module 4
-  await kb(page, now(page, /Open the results/));
-  await page.keyboard.press('Escape');
-  await kb(page, now(page, /Open the simulator/));
-  await kb(page, drawer(page).getByRole('button', { name: /Run 1,000 virtual samples/ }));
-  await page.waitForFunction(() => window.__TEST__.lessons.state.simRan, null, { timeout: 120_000 });
-  await page.keyboard.press('Escape');
-  await kb(page, now(page, /^Next step$/));
-  await kb(page, now(page, /Open the chart questions/));
-  await answerAll(page);
-  await kb(page, now(page, /^Next step$/));
-  await expect(page.locator('[data-ui="now-card"]')).toContainText('Write your report');
-  // Module 5
-  await kb(page, now(page, /Open the report/));
-  await kb(page, drawer(page).locator('textarea').first(), 'KeyM');
-  await page.keyboard.type('eadow Butterweed was clumped near the stream.');
-  await page.keyboard.press('Tab');
-  await page.keyboard.press('Escape');
-  await kb(page, now(page, /^Next step$/));
-  await kb(page, now(page, /Open the transfer questions/));
-  await answerAll(page);
-  await kb(page, now(page, /^Finish$/));
-  expect(await T(page, () => [0, 1, 2, 3, 4].every((i) => window.__TEST__.shell.done.has(i)))).toBe(true);
+// Keyboard-only completion, one test per module (software WebGL is slow; one
+// five-module run did not fit the 5-minute test cap). Each test reaches its
+// module's start state through the test hooks (the earlier modules' results),
+// then completes the module with Tab, Shift+Tab, Enter, Space, typing and Esc only.
+const SUBMITTED = () => {
+  const L = window.__TEST__.lessons;
+  L.app.goModule(2); L.chooseDesign('random');
+  for (let i = 1; i <= L.session.points.length; i++) { L.enterQuadrat(i); L.fw.draft.cover = '5-25'; L._saveQuadrat(); }
+  L.submit();
+};
+test.describe('keyboard-only completion', () => {
+  test.use({ viewport: { width: 800, height: 600 } });
+  test('Module 1 (from the title screen)', async ({ page }) => {
+    await ready(page);
+    await kb(page, page.getByRole('button', { name: /^start/i }));
+    await kb(page, page.getByRole('button', { name: /skip practice/i }));
+    await kb(page, now(page, /^Next step$/));
+    await kb(page, page.locator('[data-ui="now-card"] .v3-choice').first());
+    await page.waitForTimeout(2600);
+    await kb(page, now(page, /^Next step$/));
+    await kb(page, now(page, /Open the pre-check/));
+    await answerAll(page);
+    await kb(page, now(page, /^Next step$/));
+    await expect(page.locator('[data-ui="now-card"]')).toContainText('Meet the five species');
+    expect(await T(page, () => window.__TEST__.shell.done.has(0))).toBe(true);
+  });
+  test('Module 2', async ({ page }) => {
+    await ready(page);
+    await T(page, () => window.__TEST__.app.goModule(1));
+    await page.waitForTimeout(1500);
+    await kb(page, now(page, /Open the field guide/));
+    await page.keyboard.press('Escape');
+    await kb(page, now(page, /^Next step$/));
+    await kb(page, now(page, /Use the hand lens/));
+    await kb(page, now(page, /Look at the centre/));
+    await kb(page, now(page, /^Next step$/));
+    await kb(page, now(page, /Open the quiz/));
+    await answerAll(page);
+    await kb(page, now(page, /^Next step$/));
+    await expect(page.locator('[data-ui="now-card"]')).toContainText('Choose a sampling design');
+    expect(await T(page, () => window.__TEST__.shell.done.has(1))).toBe(true);
+  });
+  const countByKeyboard = async (page, max) => {
+    for (let q = 0; q < max; q++) {
+      const go = now(page, /Go to quadrat \d+/);
+      if (!(await go.isVisible().catch(() => false))) break;
+      await kb(page, go);
+      await kb(page, now(page, /Count sheet/));
+      await kb(page, drawer(page).locator('input[type="radio"]').first(), 'Space');
+      await kb(page, drawer(page).getByRole('button', { name: /Save quadrat/ }));
+      await page.waitForTimeout(300);
+    }
+  };
+  test('Module 3 (part 1): design, stakes, quadrats 1-4 by the count sheet', async ({ page }) => {
+    await ready(page);
+    await T(page, () => window.__TEST__.app.goModule(2));
+    await page.waitForTimeout(1500);
+    await kb(page, page.locator('[data-ui="now-card"] .v3-choice').filter({ hasText: /random/i }).first());
+    await page.waitForTimeout(2000);
+    await kb(page, now(page, /^Next step$/));
+    await kb(page, now(page, /^Next step$/));
+    await countByKeyboard(page, 4);
+    expect(await T(page, () => window.__TEST__.lessons.session.sheet.visitedCount())).toBe(4);
+  });
+  test('Module 3 (part 2): quadrats 5-10 by the count sheet, then submit', async ({ page }) => {
+    await ready(page);
+    await T(page, () => {
+      const L = window.__TEST__.lessons;
+      L.app.goModule(2); L.chooseDesign('random'); L.step[2] = 2; L._enterStep(2);
+      for (let i = 1; i <= 4; i++) { L.enterQuadrat(i); L.fw.draft.cover = '5-25'; L._saveQuadrat(); }
+    });
+    await page.waitForTimeout(2000);
+    await countByKeyboard(page, 8);
+    await kb(page, now(page, /^Next step$/));
+    await kb(page, now(page, /Open the data sheet/));
+    await kb(page, drawer(page).getByRole('button', { name: /Submit fieldwork/ }));
+    await expect(page.locator('[data-ui="now-card"]')).toContainText('See the true population');
+    expect(await T(page, () => window.__TEST__.shell.done.has(2))).toBe(true);
+  });
+  test('Module 4: results, simulator, chart questions', async ({ page }) => {
+    await ready(page);
+    await T(page, SUBMITTED);
+    await page.waitForTimeout(2000);
+    await expect(page.locator('[data-ui="now-card"]')).toContainText('See the true population');
+    await kb(page, now(page, /Open the results/));
+    await page.keyboard.press('Escape');
+    await kb(page, now(page, /Open the simulator/));
+    await kb(page, drawer(page).getByRole('button', { name: /Run 1,000 virtual samples/ }));
+    await page.waitForFunction(() => window.__TEST__.lessons.state.simRan, null, { timeout: 120_000 });
+    await page.keyboard.press('Escape');
+    await kb(page, now(page, /^Next step$/));
+    await kb(page, now(page, /Open the chart questions/));
+    await answerAll(page);
+    await kb(page, now(page, /^Next step$/));
+    await expect(page.locator('[data-ui="now-card"]')).toContainText('Write your report');
+    expect(await T(page, () => window.__TEST__.shell.done.has(3))).toBe(true);
+  });
+  test('Module 5: report and transfer', async ({ page }) => {
+    await ready(page);
+    await T(page, SUBMITTED);
+    await T(page, () => window.__TEST__.app.goModule(4));
+    await page.waitForTimeout(2000);
+    await kb(page, now(page, /Open the report/));
+    await kb(page, drawer(page).locator('textarea').first(), 'KeyM');
+    await page.keyboard.type('eadow Butterweed was clumped near the stream.');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Escape');
+    await kb(page, now(page, /^Next step$/));
+    await kb(page, now(page, /Open the transfer questions/));
+    await answerAll(page);
+    await kb(page, now(page, /^Finish$/));
+    expect(await T(page, () => window.__TEST__.shell.done.has(4))).toBe(true);
+  });
 });
 
 test('text mode: every module renders, every catalog object is listed, decisions write the same state', async ({ page }) => {
@@ -168,13 +216,17 @@ test('text mode: every module renders, every catalog object is listed, decisions
   const names = await T(page, () => window.__TEST__.catalog.objects.map((o) => o.name));
   const text = await tm.innerText();
   for (const n of names) expect(text).toContain(n);
-  await tm.locator('.choice-btn').first().click();
+  const fs = tm.locator('fieldset').first();
+  await fs.getByRole('radio').first().check();
+  await fs.getByRole('button', { name: /Submit answer/ }).click();
   await page.waitForTimeout(300);
   expect(await T(page, () => window.__TEST__.lessons.state.hypothesis)).toBeTruthy();
-  for (const i of [1, 2, 3, 4]) {
+  for (const [i, label] of [[1, 'Species'], [2, 'Fieldwork'], [3, 'Reveal'], [4, 'Report']]) {
     await T(page, (n) => window.__TEST__.app.goModule(n), i);
     await page.waitForTimeout(1000);
-    await expect(tm.locator('h3').first()).toContainText(`Module ${i + 1}`);
+    const sec = tm.locator(`section[aria-label="${label}"]`);
+    await expect(sec).toBeVisible();
+    expect((await sec.innerText()).length).toBeGreaterThan(80);
   }
 });
 

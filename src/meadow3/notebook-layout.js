@@ -33,6 +33,12 @@ export function applyNotebookLayout(app) {
   const sync = () => { shell.root.dataset.nav = navEdge(shell.layout); };
   sync();
   shell.on('layout', sync);
+  // The drawer body scrolls; keyboard users can reach it even when it holds no
+  // control (the field guide, results), axe scrollable-region-focusable.
+  const body = shell.drawer.querySelector('.v3-drawer-body');
+  body.tabIndex = 0;
+  body.setAttribute('role', 'region');
+  body.setAttribute('aria-labelledby', 'v3-drawer-title');
   // No bar along the top edge in either layout: bounds start at the viewport top.
   shell.topBarHeight = () => 0;
   const reserved = shell.reservedRects.bind(shell);
