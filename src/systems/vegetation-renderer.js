@@ -120,6 +120,28 @@ export class VegetationRenderer {
     }
   }
 
+  /**
+   * Hide the instance of a species at (x, z) (v3: that plant is drawn as its
+   * own mesh, a catalog specimen the learner can click). Its matrix becomes a
+   * zero scale, so neither the near mesh nor the imposter draws it; the plant
+   * stays in the population, so every count is unchanged.
+   * @returns {THREE.Matrix4|null} the plant's original matrix
+   */
+  hideInstance(speciesId, x, z) {
+    const sp = this.species.get(speciesId);
+    if (!sp) return null;
+    for (const m of sp.matrices) {
+      if (Math.abs(m.elements[12] - x) < 1e-3 && Math.abs(m.elements[14] - z) < 1e-3) {
+        const orig = m.clone();
+        m.makeScale(0, 0, 0);
+        m.elements[12] = orig.elements[12]; m.elements[13] = orig.elements[13]; m.elements[14] = orig.elements[14];
+        this.lastBuildPos.set(1e9, 0, 0);
+        return orig;
+      }
+    }
+    return null;
+  }
+
   /** Set wind level: 1 ambient, 0.12 quadrat counting, 0 reduced motion. */
   setWindLevel(v) { this.windUniforms.uWind.value = v; }
 
@@ -201,6 +223,7 @@ export class VegetationRenderer {
           const focusDist = focus ? Math.hypot(px - focus.x, pz - focus.z) : Infinity;
           const inFocus = focus != null && focusDist < focus.r;
           if (!inFocus && frac(instIdx * 7 + 3) >= this.densityFactor) continue;
+          if (m.elements[0] === 0 && m.elements[5] === 0 && m.elements[10] === 0) continue; // hideInstance()
           if (isNear) {
             if (nearCount >= nearMesh.instanceMatrix.count) break;
             if (inFocus && focus.species.has(sp.id)) {

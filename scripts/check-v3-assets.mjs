@@ -24,6 +24,7 @@ import { MANIFEST, OUT, ROOT } from './lib/v3-asset-lib.mjs';
 const MAX_FILE = 20 * 1024 * 1024;
 const FIRST_LOAD_ASSET_CEILING = 8 * 1024 * 1024; // mobile first-load budget; the whole page is measured by ui-audit
 const FIELDS = ['id', 'name', 'short', 'more', 'whyItMatters', 'realSize', 'honesty', 'source', 'role'];
+const OPTIONAL_FIELDS = ['realSizeNote', 'realDistance'];
 const HONESTY = ['real', 'reconstructed', 'fictional', 'illustrative', 'time-lapse'];
 const fails = [];
 const fail = (m) => fails.push(m);
@@ -86,7 +87,7 @@ for (const o of objects) {
   const where = `objects.json ${o.id || '(no id)'}`;
   const keys = Object.keys(o);
   for (const k of FIELDS) if (!(k in o)) fail(`${where}: missing ${k}`);
-  for (const k of keys) if (!FIELDS.includes(k)) fail(`${where}: extra field ${k}`);
+  for (const k of keys) if (!FIELDS.includes(k) && !OPTIONAL_FIELDS.includes(k)) fail(`${where}: extra field ${k}`);
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(o.id || '')) fail(`${where}: id not kebab-case`);
   if (ids.has(o.id)) fail(`${where}: duplicate id`);
   ids.add(o.id);
@@ -96,13 +97,18 @@ for (const o of objects) {
   if (typeof o.whyItMatters !== 'string') fail(`${where}: whyItMatters must be a string`);
   if (o.role === 'task' && !o.whyItMatters.trim()) fail(`${where}: task object without whyItMatters`);
   const rs = o.realSize;
+  // v3 template catalog rules (src/v3/catalog.js): realSize null needs a realSizeNote
+  // (a line, a layer or an area whose box measures the terrain), realDistance an
+  // angular check for a sky body drawn at its true angular size.
   const okSize = (typeof rs === 'number' && rs > 0) || (Array.isArray(rs) && rs.length === 3 && rs.every((v) => typeof v === 'number' && v > 0));
-  if (!okSize) fail(`${where}: realSize must be a positive number or [x, y, z] in metres`);
-  if (!cat.realSizeBasis?.[o.id]) fail(`${where}: no realSizeBasis note`);
+  if (rs === null) { if (!String(o.realSizeNote || '').trim()) fail(`${where}: realSize null needs a realSizeNote`); }
+  else if (!okSize) fail(`${where}: realSize must be a positive number or [x, y, z] in metres`);
+  else if (!cat.realSizeBasis?.[o.id]) fail(`${where}: no realSizeBasis note`);
+  if (o.realDistance !== undefined && !(typeof o.realDistance === 'number' && o.realDistance > 0 && typeof rs === 'number')) fail(`${where}: realDistance needs a single-number realSize`);
   if (!HONESTY.includes(o.honesty)) fail(`${where}: honesty "${o.honesty}"`);
   if (!['task', 'explore'].includes(o.role)) fail(`${where}: role "${o.role}"`);
   if (typeof o.source !== 'string' || !o.source) fail(`${where}: empty source`);
-  else if (o.source.startsWith('repo:')) { if (!existsSync(join(ROOT, o.source.slice(5)))) fail(`${where}: ${o.source} does not exist`); }
+  else if (o.source.startsWith('research/')) { if (!existsSync(join(ROOT, o.source.split('#')[0]))) fail(`${where}: ${o.source} does not exist`); }
   else if (!/^https:\/\//.test(o.source) || !sourcesMd.includes(o.source)) fail(`${where}: source ${o.source} is not listed in research/sources.md`);
   if (o.honesty === 'fictional' && ['butterweed', 'daisyleaf', 'blue-sedge', 'bunchgrass', 'fen-orchid'].includes(o.id) && !/fictional teaching species/i.test(o.more)) fail(`${where}: species card must say it is a fictional teaching species`);
   if (MOTION[o.id] && !new RegExp(MOTION[o.id], 'i').test(`${o.short} ${o.more}`)) fail(`${where}: moving object must say "${MOTION[o.id]}" in its card`);

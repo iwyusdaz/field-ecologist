@@ -88,9 +88,11 @@ export class ShotPlayer {
     this.caption.textContent = shot.captions?.join(' ') || '';
     this.desc.textContent = shot.description || '';
     this._t = 0;
+    this.onShot?.(shot, this.index); // v3: shot effects (lighting) for the shot that starts
     if (this.motion.reduced) {
       // Reduced-motion version: still frame at the end of the path + captions.
       this._placeAt(shot, 1);
+      this.onProgress?.(shot, 1);
       const hold = Math.max(2500, (shot.duration || 10) * 700);
       this._stillDeadline = performance.now() + hold;
       this._stillTimer = setTimeout(() => this._nextShot(), hold);
@@ -105,6 +107,7 @@ export class ShotPlayer {
         const dur = shot.duration || 10;
         const t = Math.min(1, elapsed / dur);
         this._placeAt(shot, t);
+        this.onProgress?.(shot, t);
         if (t >= 1) { this._nextShot(); return; }
         this._raf = requestAnimationFrame(step);
       };
