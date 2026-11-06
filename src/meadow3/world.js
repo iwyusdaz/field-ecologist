@@ -34,7 +34,7 @@ import * as tx from './textures.js';
 
 export const STATION = { x: 50, z: 2 };
 /** Where the learner first stands: by the station, looking north into the meadow. */
-export const HOME_VIEW = { target: [50, 1.1, 15], radius: 13, theta: Math.PI, phi: 1.4 };
+export const HOME_VIEW = { target: [50, groundY(50, 15) + 1.1, 15], radius: 13, theta: Math.PI, phi: 1.4 };
 
 function seeded(seed) { let s = seed >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
 const up = new THREE.Vector3(0, 1, 0);
@@ -1121,7 +1121,7 @@ export class MeadowWorld {
   _updateMist(t) {
     const el = this.sky.override ?? this.sky.elevation;
     const thin = THREE.MathUtils.clamp((el - 3) / 16, 0, 1);
-    this.mistMat.opacity = 0.55 - 0.42 * thin;
+    this._mistOpacity = 0.55 - 0.42 * thin;
     this.mistBanks.forEach((b, i) => { b.position.x = b.userData.baseX + Math.sin(t * 0.04 + i) * 2.5; b.children.forEach((sh, k) => { sh.position.y = k * (0.85 + 0.15 * thin); }); });
   }
 
@@ -1199,6 +1199,10 @@ export class MeadowWorld {
     this.vegetation.update(cam, dt, t);
     this.vegetation.windUniforms.uTime.value = this.windTime;
     for (const l of this.lodSets || []) l.update(cam, dt);
+    // Ground mist is a thin layer seen edge-on from eye height; from high up its
+    // flat sheets read as white panels, so it fades out between 8 m and 30 m up.
+    const up = cam.position.y - groundY(cam.position.x, cam.position.z);
+    this.mistMat.opacity = (this._mistOpacity ?? 0.55) * (1 - THREE.MathUtils.smoothstep(up, 8, 30));
     // Small life is not drawn where it would be under a pixel or two (overhead views).
     for (const b of this.bees || []) b.visible = b.position.distanceToSquared(cam.position) < 35 * 35;
     for (const b of this.butterflies || []) b.visible = b.position.distanceToSquared(cam.position) < 90 * 90;

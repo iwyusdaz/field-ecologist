@@ -231,3 +231,8 @@
 .v3 caption { text-align: left; color: var(--v3-muted); padding-bottom: 4px; }
 .v3 .feedback { margin: 8px 0; padding: 8px 12px; border-left: 3px solid var(--v3-accent); background: rgba(47, 106, 42, 0.08); }
 .v3-textmode { background: var(--fe-paper); color: var(--v3-text); }
+
+/* Title screen: light type over the template's dark gradient (the paper tokens are dark ink). */
+.v3-title { color: #f5efdc; --v3-text: #f5efdc; --v3-muted: #e4dfcf; }
+.v3-title .v3-btn:not(.v3-primary) { background: rgba(20, 24, 14, 0.6); color: #f5efdc; border-color: rgba(245, 239, 220, 0.55); }
+.v3-title .v3-primary { background: #f2c230; color: #1f291a; }

@@ -33,6 +33,7 @@ import { dataTable } from '../a11y/text-mode.js';
 import { registerTextModules } from '../a11y/textmode-modules.js';
 import { announce } from '../a11y/announcer.js';
 import { STATION } from './world.js';
+import { groundY } from './ground.js';
 
 const el = (tag, props = {}, ...kids) => { const e = Object.assign(document.createElement(tag), props); for (const k of kids) e.append(k); return e; };
 const btn = (label, onClick, cls = 'v3-btn') => { const b = el('button', { type: 'button', className: cls, textContent: label }); b.addEventListener('click', onClick); return b; };
@@ -44,12 +45,15 @@ const MODULE_IDS = ['m1', 'm2', 'm3', 'm4', 'm5'];
 export const MODULE_LABELS = ['Question', 'Species', 'Fieldwork', 'Reveal', 'Report'];
 
 /** Rig views (target, radius, theta, phi). theta π = from the south (the station side). */
+// Target heights are above the local ground (the meadow sits 1.5-2 m above datum).
+const gy = (x, z, h) => groundY(x, z) + h;
 export const VIEWS = {
-  m1: { target: [47, 1.0, 20], radius: 15, theta: Math.PI + 0.2, phi: 1.36 },
-  m2: { target: [STATION.x + 1, 0.4, 8], radius: 4.2, theta: Math.PI + 0.15, phi: 1.12 },
-  m3: { target: [50, 0, 42], radius: 64, theta: Math.PI, phi: 0.98 },
-  m4: { target: [50, 0, 50], radius: 120, theta: Math.PI, phi: 0.3 },
-  m5: { target: [STATION.x - 0.2, 0.9, STATION.z + 0.1], radius: 2.4, theta: Math.PI + 0.35, phi: 1.02 },
+  m1: { target: [47, gy(47, 20, 1.0), 20], radius: 15, theta: Math.PI + 0.2, phi: 1.36 },
+  m2: { target: [STATION.x + 1, gy(STATION.x + 1, 8, 0.4), 8], radius: 4.2, theta: Math.PI + 0.15, phi: 1.12 },
+  m3: { target: [50, gy(50, 42, 0), 42], radius: 64, theta: Math.PI, phi: 0.98 },
+  m4: { target: [50, gy(50, 50, 0), 50], radius: 120, theta: Math.PI, phi: 0.3 },
+  // Module 5: looking down at the clipboard on the station table (top about 0.8 m up).
+  m5: { target: [STATION.x - 0.2, gy(STATION.x, STATION.z, 0.8), STATION.z + 0.1], radius: 2.4, theta: Math.PI + 0.35, phi: 0.95 },
 };
 
 export class Lessons {

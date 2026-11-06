@@ -1,5 +1,5 @@
 {
-  "_note": "Field Ecologist v3 (plan 10 \u00a76.3). navBar: the field-notebook rail is on the left on desktop and becomes a bottom tab strip on phones (owner direction 2026-11-06; ui-audit 1.1.6). Module states m1-m5 come from the rail tabs. Extra states are views (look-sunrise: the view after dragging to face the sunrise) a learner reaches from the Now card: the survey stakes after choosing a design, the kneeling counting view at quadrat 1, the hand-lens close-up, and the field guide and data sheet drawers.",
+  "_note": "Field Ecologist v3 (plan 10 \u00a76.3). navBar: the field-notebook rail is on the left on desktop and becomes a bottom tab strip on phones (owner direction 2026-11-06; ui-audit 1.1.6). Module states m1-m5 come from the rail tabs. Extra states are views (look-sunrise: the view after dragging to face the sunrise) a learner reaches from the Now card: the survey stakes after choosing a design, the kneeling counting view at quadrat 1, the hand-lens close-up, and the field guide and data sheet drawers. walk-* states: places a learner reaches by walking (WASD or double-click) from the station.",
   "navBar": {
     "desktop": "left",
     "phone": "bottom"
@@ -88,6 +88,42 @@
         },
         {
           "wait": 2500
+        }
+      ]
+    },
+    {
+      "name": "walk-south-margin",
+      "label": "Walk to the south wall by the station and look at the margin flowers",
+      "steps": [
+        {
+          "eval": "(() => { const T = window.__TEST__; T.app.goModule(0); setTimeout(() => { const [x, h, z] = [50, 0.4, -6.8]; T.rig.flyTo({ target: [x, T.world.groundY(x, z) + h, z], radius: 6, theta: 0, phi: 1.25 }, 0.05); }, 2500); })()"
+        },
+        {
+          "wait": 6000
+        }
+      ]
+    },
+    {
+      "name": "walk-stream-bank",
+      "label": "Walk down the stream south of the field to the cut bank",
+      "steps": [
+        {
+          "eval": "(() => { const T = window.__TEST__; T.app.goModule(0); setTimeout(() => { const v = T.inspect.items.get('soil')?.frame?.view; if (v) T.rig.flyTo(T.rig.viewFrom(v.eye, v.center, { fov: v.fov }), 0.05); }, 2500); })()"
+        },
+        {
+          "wait": 6000
+        }
+      ]
+    },
+    {
+      "name": "walk-north-hedge",
+      "label": "Walk to the north edge of the field and look at the hedgerow",
+      "steps": [
+        {
+          "eval": "(() => { const T = window.__TEST__; T.app.goModule(0); setTimeout(() => { const [x, h, z] = [44, 1.2, 103]; T.rig.flyTo({ target: [x, T.world.groundY(x, z) + h, z], radius: 9, theta: Math.PI, phi: 1.4 }, 0.05); }, 2500); })()"
+        },
+        {
+          "wait": 6000
         }
       ]
     }
