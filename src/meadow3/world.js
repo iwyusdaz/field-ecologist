@@ -38,6 +38,8 @@ export const HOME_VIEW = { target: [50, groundY(50, 15) + 1.1, 15], radius: 13, 
 
 function seeded(seed) { let s = seed >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
 const up = new THREE.Vector3(0, 1, 0);
+/** Trees and hedge shrubs: full-detail LOD0 (and its shadow) within 30 m, LOD1 beyond (60 m cost 2 M triangles at the hedge). */
+const LOD0_NEAR = 30;
 /**
  * One variant per scanned plant: LOD1 where the scan has it (they sit at the
  * field margins, seen from a few metres or more), else LOD0, else the first.
@@ -521,11 +523,11 @@ export class MeadowWorld {
     const hedge = new THREE.Group();
     hedge.name = 'hedgerow';
     this.group.add(hedge);
-    this.hedgeShrubs = new LodSet(hedge, { name: 'hedge-shrubs', levels: [node('hedge-shrub-LOD0'), node('hedge-shrub-LOD1')], near: [60], far: Infinity, impostor: null, placements: hedgePl, castShadow: true });
+    this.hedgeShrubs = new LodSet(hedge, { name: 'hedge-shrubs', levels: [node('hedge-shrub-LOD0'), node('hedge-shrub-LOD1')], near: [LOD0_NEAR], far: Infinity, impostor: null, placements: hedgePl, castShadow: true });
     const tLevels = [node('tree-small-LOD0'), node('tree-small-LOD1')];
     const impSmall = bakeImpostor(this.engine.renderer, node('tree-small-LOD0'));
     const impTall = bakeImpostor(this.engine.renderer, node('tree-tall-LOD0'));
-    this.hedgeTrees = new LodSet(hedge, { name: 'hedge-trees', levels: tLevels, near: [60], far, impostor: impSmall, placements: hedgeTrees, castShadow: true });
+    this.hedgeTrees = new LodSet(hedge, { name: 'hedge-trees', levels: tLevels, near: [LOD0_NEAR], far, impostor: impSmall, placements: hedgeTrees, castShadow: true });
     this.add('hedgerow', hedge);
     this.hedgeGroup = hedge;
     // Woodland edge: groves (clusters) of tall and small trees beyond the hedge.
@@ -542,8 +544,8 @@ export class MeadowWorld {
     }
     // Single trees between the groves.
     for (let k = 0; k < 10; k++) { const x = -20 + rnd() * 140, z = 114 + rnd() * 36; small.push({ x, z, y: groundY(x, z) - 0.1, rot: rnd() * 6.28, scale: 0.8 + rnd() * 0.3 }); }
-    this.woodTall = new LodSet(wood, { name: 'woodland-tall', levels: [node('tree-tall-LOD0'), node('tree-tall-LOD1')], near: [60], far, impostor: impTall, placements: tall, castShadow: true });
-    this.woodSmall = new LodSet(wood, { name: 'woodland-small', levels: tLevels, near: [60], far, impostor: impSmall, placements: small, castShadow: true });
+    this.woodTall = new LodSet(wood, { name: 'woodland-tall', levels: [node('tree-tall-LOD0'), node('tree-tall-LOD1')], near: [LOD0_NEAR], far, impostor: impTall, placements: tall, castShadow: true });
+    this.woodSmall = new LodSet(wood, { name: 'woodland-small', levels: tLevels, near: [LOD0_NEAR], far, impostor: impSmall, placements: small, castShadow: true });
     // Groves on the hills (seen as impostors from the meadow).
     const hillTrees = [];
     for (let k = 0; k < 26; k++) {
@@ -555,7 +557,7 @@ export class MeadowWorld {
         hillTrees.push({ x, z, y: this.hills.userData.heightAt(x, z) - 0.3, rot: rnd() * 6.28, scale: 0.8 + rnd() * 0.4 });
       }
     }
-    this.hillGroves = new LodSet(wood, { name: 'hill-groves', levels: [node('tree-tall-LOD0'), node('tree-tall-LOD1')], near: [60], far, impostor: impTall, placements: hillTrees, castShadow: false });
+    this.hillGroves = new LodSet(wood, { name: 'hill-groves', levels: [node('tree-tall-LOD0'), node('tree-tall-LOD1')], near: [LOD0_NEAR], far, impostor: impTall, placements: hillTrees, castShadow: false });
     this.add('woodland-edge', wood);
     this.woodGroup = wood;
     this.lodSets = [this.hedgeShrubs, this.hedgeTrees, this.woodTall, this.woodSmall, this.hillGroves];

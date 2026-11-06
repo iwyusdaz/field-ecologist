@@ -104,18 +104,6 @@
       ]
     },
     {
-      "name": "walk-stream-bank",
-      "label": "Walk down the stream south of the field to the cut bank",
-      "steps": [
-        {
-          "eval": "(() => { const T = window.__TEST__; T.app.goModule(0); setTimeout(() => { const v = T.inspect.items.get('soil')?.frame?.view; if (v) T.rig.flyTo(T.rig.viewFrom(v.eye, v.center, { fov: v.fov }), 0.05); }, 2500); })()"
-        },
-        {
-          "wait": 6000
-        }
-      ]
-    },
-    {
       "name": "walk-north-hedge",
       "label": "Walk to the north edge of the field and look at the hedgerow",
       "steps": [
