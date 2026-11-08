@@ -71,7 +71,7 @@ ${CLOUD_GLSL}
   diffuseColor.rgb *= cloudShade;
   // A gust flattens the grass and turns the paler blade sides and seed heads to the
   // light: a lighter band that rolls across the field (same band as the plant sway).
-  float gustBand = smoothstep(0.55, 1.0, sin(vGroundW.x * 0.09 + vGroundW.y * 0.035 - uWindT * 0.55));
+  float gustBand = smoothstep(0.6, 1.0, sin(vGroundW.x * 0.09 + vGroundW.y * 0.035 - uWindT * 0.55));
   diffuseColor.rgb *= 1.0 + uGustSheen * gustBand;`);
   };
   mat.customProgramCacheKey = () => 'meadow-sward-v3-gust';

@@ -38,7 +38,7 @@ export class VegetationRenderer {
     this.scene = scene;
     this.renderer = renderer;
     this.population = population;
-    this.windUniforms = { uTime: { value: 0 }, uWind: { value: 1 }, uGust: { value: 0 } };
+    this.windUniforms = { uTime: { value: 0 }, uWind: { value: 1 }, uGust: { value: 0 }, uSheen: { value: 0 } };
     this.nearDist = 24;
     this.lastBuildPos = new THREE.Vector3(1e9, 0, 0);
     this.lastBuildTime = 0;
@@ -101,6 +101,7 @@ export class VegetationRenderer {
       // and the plant sits on the ground inside it.
       const baked = bakeImposter(renderer, geometry);
       const impMat = new THREE.MeshBasicMaterial({ map: baked.texture, alphaTest: 0.2, side: THREE.DoubleSide });
+      addGustSheen(impMat, this.windUniforms);
       const quad = new THREE.PlaneGeometry(1, 1).translate(0, 0.5, 0);
       const impCap = Math.max(64, totalCount);
       const impMesh = new THREE.InstancedMesh(quad, impMat, impCap);
@@ -312,6 +313,26 @@ export class VegetationRenderer {
 }
 
 const UP = new THREE.Vector3(0, 1, 0);
+
+/**
+ * Far plants (impostors) do not sway, so from far or high up a gust shows the way
+ * it does in a real meadow: the bent plants turn their paler sides to the light,
+ * a lighter band rolling across the field. Same band as the near-plant sway
+ * (systems/wind.js) and the sward (meadow3/ground.js); uSheen 0 = off.
+ */
+function addGustSheen(mat, wind) {
+  mat.onBeforeCompile = (sh) => {
+    sh.uniforms.uTime = wind.uTime;
+    sh.uniforms.uSheen = wind.uSheen;
+    sh.vertexShader = sh.vertexShader
+      .replace('#include <common>', '#include <common>\nvarying vec2 vGustO;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\n#ifdef USE_INSTANCING\n  vGustO = vec2(instanceMatrix[3][0], instanceMatrix[3][2]);\n#else\n  vGustO = vec2(0.0);\n#endif');
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <common>', '#include <common>\nvarying vec2 vGustO;\nuniform float uTime;\nuniform float uSheen;')
+      .replace('#include <map_fragment>', '#include <map_fragment>\n  diffuseColor.rgb *= 1.0 + uSheen * smoothstep(0.6, 1.0, sin(vGustO.x * 0.09 + vGustO.y * 0.035 - uTime * 0.55));');
+  };
+  mat.customProgramCacheKey = () => 'meadow-impostor-gust';
+}
 const _q = new THREE.Quaternion();
 const _s = new THREE.Vector3();
 const _p = new THREE.Vector3();

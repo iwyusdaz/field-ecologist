@@ -1082,7 +1082,8 @@ export class MeadowWorld {
       case 'wet-ground': return g([26, y(26, 22, 1.7), 22], [14, y(14, 30, 0), 30], 55);
       case 'dry-ground': return g([72, y(72, 32, 1.7), 32], [84, y(84, 40, 0), 40], 55);
       case 'wind': return g([60, y(60, 112, 1.5) - 7, 98], [60, y(60, 104, 0.3), 104], 50);
-      case 'soil': return g([streamX(-7.5) - 0.6, y(streamX(-7.5) - 0.6, -7.5, 1.3), -7.5], [streamX(-7.5) + 1.2, y(streamX(-7.5) + 1.2, -7.5, -0.2), -7.5], 40);
+      // From the far (west) bank across the water: the stream in front, the soil face on the east bank.
+      case 'soil': return g([streamX(-7.5) - 2.6, y(streamX(-7.5) - 2.6, -7.5, 1.5), -8.2], [streamX(-7.5) + 1.1, y(streamX(-7.5) + 1.1, -7.5, 0.05), -7.5], 45);
       case 'mist': return g([30, y(30, 30, 2.2), 26], [streamX(46), 1.4, 46], 60);
       case 'field-worker': return { look: true, fitFov: true, heightFrac: 0.4 };
       case 'birds': return { look: true, fitFov: true, heightFrac: 0.3, minFov: 2 };
@@ -1116,7 +1117,7 @@ export class MeadowWorld {
     motion.add({ id: 'wind', layer: 'environment', label: 'illustrative', objects: ['wind'], description: 'GPU wind: sway and gust bands across the sward and the margin grass (seen from above as lighter bands rolling across the field); 12% while counting.',
       update: (dt) => {
         this.windTime += dt; wind.uTime.value = this.windTime; wind.uWind.value = this.counting ? 0.12 : 1; wind.uGust.value = this.counting ? 0 : 1;
-        this.cloud.uWindT.value = this.windTime; this.cloud.uGustSheen.value = this.counting ? 0 : 0.16;
+        this.cloud.uWindT.value = this.windTime; this.cloud.uGustSheen.value = this.counting ? 0 : 0.3; wind.uSheen.value = this.counting ? 0 : 0.3;
       } });
     motion.add({ id: 'mist', layer: 'environment', label: 'time-lapse', objects: ['mist'], description: 'Mist banks over the stream drift and thin as the Sun climbs (time-lapse).',
       update: (dt, t) => this._updateMist(t) });
