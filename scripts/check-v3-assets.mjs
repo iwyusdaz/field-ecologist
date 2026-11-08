@@ -24,7 +24,7 @@ import { MANIFEST, OUT, ROOT } from './lib/v3-asset-lib.mjs';
 const MAX_FILE = 20 * 1024 * 1024;
 const FIRST_LOAD_ASSET_CEILING = 8 * 1024 * 1024; // mobile first-load budget; the whole page is measured by ui-audit
 const FIELDS = ['id', 'name', 'short', 'more', 'whyItMatters', 'realSize', 'honesty', 'source', 'role'];
-const OPTIONAL_FIELDS = ['realSizeNote', 'realDistance'];
+const OPTIONAL_FIELDS = ['objective', 'realSizeNote', 'realDistance'];
 const HONESTY = ['real', 'reconstructed', 'fictional', 'illustrative', 'time-lapse'];
 const fails = [];
 const fail = (m) => fails.push(m);
@@ -95,7 +95,10 @@ for (const o of objects) {
   if (words(o.short) < 1 || words(o.short) > 25) fail(`${where}: short has ${words(o.short)} words (1-25)`);
   if (words(o.more) < 1 || words(o.more) > 120) fail(`${where}: more has ${words(o.more)} words (1-120)`);
   if (typeof o.whyItMatters !== 'string') fail(`${where}: whyItMatters must be a string`);
-  if (o.role === 'task' && !o.whyItMatters.trim()) fail(`${where}: task object without whyItMatters`);
+  // Roles (owner decision 2026-11-07, template T-29): task and learn objects are course-relevant
+  // and need whyItMatters and objective; decorative objects are scenery, not inspectable.
+  if (['task', 'learn'].includes(o.role) && !o.whyItMatters.trim()) fail(`${where}: ${o.role} object without whyItMatters`);
+  if (['task', 'learn'].includes(o.role) && !String(o.objective || '').trim()) fail(`${where}: ${o.role} object without objective`);
   const rs = o.realSize;
   // v3 template catalog rules (src/v3/catalog.js): realSize null needs a realSizeNote
   // (a line, a layer or an area whose box measures the terrain), realDistance an
@@ -106,7 +109,7 @@ for (const o of objects) {
   else if (!cat.realSizeBasis?.[o.id]) fail(`${where}: no realSizeBasis note`);
   if (o.realDistance !== undefined && !(typeof o.realDistance === 'number' && o.realDistance > 0 && typeof rs === 'number')) fail(`${where}: realDistance needs a single-number realSize`);
   if (!HONESTY.includes(o.honesty)) fail(`${where}: honesty "${o.honesty}"`);
-  if (!['task', 'explore'].includes(o.role)) fail(`${where}: role "${o.role}"`);
+  if (!['task', 'learn', 'decorative'].includes(o.role)) fail(`${where}: role "${o.role}" (task, learn or decorative)`);
   if (typeof o.source !== 'string' || !o.source) fail(`${where}: empty source`);
   else if (o.source.startsWith('research/')) { if (!existsSync(join(ROOT, o.source.split('#')[0]))) fail(`${where}: ${o.source} does not exist`); }
   else if (!/^https:\/\//.test(o.source) || !sourcesMd.includes(o.source)) fail(`${where}: source ${o.source} is not listed in research/sources.md`);
@@ -115,7 +118,7 @@ for (const o of objects) {
   if (o.honesty === 'time-lapse' && MOTION[o.id] !== 'time-lapse') fail(`${where}: time-lapse honesty without a MOTION entry`);
   maxGrade = Math.max(maxGrade, grade(o.short), grade(o.more));
 }
-if (objects.length < 20) fail(`catalog has ${objects.length} objects (min 20)`);
+if (!objects.some((o) => ['task', 'learn'].includes(o.role))) fail('catalog has no task or learn object');
 const mapped = new Set([...entries.flatMap(([, e]) => e.catalog || []), ...Object.keys(CODE_ONLY)]);
 for (const id of ids) if (!mapped.has(id)) fail(`catalog ${id} has no asset or code mapping`);
 for (const [key, e] of entries) for (const id of e.catalog || []) if (!ids.has(id)) fail(`${key}: catalog id ${id} not in objects.json`);
@@ -132,7 +135,8 @@ console.log(JSON.stringify({
   attributionRows: mdRows.length,
   catalogObjects: objects.length,
   task: objects.filter((o) => o.role === 'task').length,
-  explore: objects.filter((o) => o.role === 'explore').length,
+  learn: objects.filter((o) => o.role === 'learn').length,
+  decorative: objects.filter((o) => o.role === 'decorative').length,
   honesty: Object.fromEntries(HONESTY.map((h) => [h, objects.filter((o) => o.honesty === h).length])),
   maxCardFleschKincaid: +maxGrade.toFixed(1),
 }, null, 2));

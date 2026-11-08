@@ -1,5 +1,5 @@
 {
-  "_about": "Object catalog for Ashcombe Meadow (plan 10 §4.1, v3). One entry per inspectable thing in the main scene, built from the owner-approved S0 draft (repos/immersive/_direction/field-ecologist/objects.draft.json, 2026-10-30) with every draft note resolved. Fields: id, name, short (<= 25 words), more (<= 120 words), whyItMatters (learning objective, or empty for pure exploration), realSize (metres, 1 unit = 1 m), honesty (real / reconstructed / fictional / illustrative / time-lapse), source (a URL listed in research/sources.md, or research/meadow-model-notes.md for things this project made up), role (task / explore). The meadow, its five species and the station are fictional teaching models. realSizeBasis says what each realSize measures; the assets behind each entry are mapped in public/assets/v3/manifest.json (catalog ids). Checked by scripts/check-v3-assets.mjs.",
+  "_about": "Object catalog for Ashcombe Meadow (plan 10 §4.1, v3). One entry per inspectable thing in the main scene, built from the owner-approved S0 draft (repos/immersive/_direction/field-ecologist/objects.draft.json, 2026-10-30) with every draft note resolved. Fields: id, name, short (<= 25 words), more (<= 120 words), whyItMatters (learning objective, or empty for pure exploration), realSize (metres, 1 unit = 1 m), honesty (real / reconstructed / fictional / illustrative / time-lapse), source (a URL listed in research/sources.md, or research/meadow-model-notes.md for things this project made up), role (task / learn: course-relevant, inspectable, with whyItMatters and objective; decorative: scenery and ambient life, not inspectable; owner decision 2026-11-07, recorded in DECISIONS.md). The meadow, its five species and the station are fictional teaching models. realSizeBasis says what each realSize measures; the assets behind each entry are mapped in public/assets/v3/manifest.json (catalog ids). Checked by scripts/check-v3-assets.mjs.",
   "scene": {
     "id": "meadow",
     "name": "Ashcombe Meadow at dawn"
@@ -41,7 +41,8 @@
       ],
       "honesty": "fictional",
       "source": "research/meadow-model-notes.md#species",
-      "role": "task"
+      "role": "task",
+      "objective": "m1 and m3: the research-question species; count it in every quadrat"
     },
     {
       "id": "daisyleaf",
@@ -56,7 +57,8 @@
       ],
       "honesty": "fictional",
       "source": "research/meadow-model-notes.md#species",
-      "role": "task"
+      "role": "task",
+      "objective": "m2: identify it by its field marks; m3: count it in each quadrat"
     },
     {
       "id": "blue-sedge",
@@ -71,7 +73,8 @@
       ],
       "honesty": "fictional",
       "source": "research/meadow-model-notes.md#species",
-      "role": "task"
+      "role": "task",
+      "objective": "m2: identify it; m3: count it, and see why a moisture gradient favours a stratified design"
     },
     {
       "id": "bunchgrass",
@@ -86,7 +89,8 @@
       ],
       "honesty": "fictional",
       "source": "research/meadow-model-notes.md#species",
-      "role": "task"
+      "role": "task",
+      "objective": "m2: identify it; m3: estimate its cover band in each quadrat"
     },
     {
       "id": "fen-orchid",
@@ -101,7 +105,8 @@
       ],
       "honesty": "fictional",
       "source": "research/meadow-model-notes.md#species",
-      "role": "task"
+      "role": "task",
+      "objective": "m2: identify it; m3: count it, and m4: see the limits of a small sample for a rare species"
     },
     {
       "id": "quadrat",
@@ -116,7 +121,8 @@
       ],
       "honesty": "real",
       "source": "https://openstax.org/books/biology-2e/pages/45-1-population-demography",
-      "role": "task"
+      "role": "task",
+      "objective": "m3: place, walk to and count each quadrat"
     },
     {
       "id": "clipboard",
@@ -131,7 +137,8 @@
       ],
       "honesty": "illustrative",
       "source": "research/meadow-model-notes.md#data-sheet",
-      "role": "task"
+      "role": "task",
+      "objective": "m3: record each count; m4 and m5: the data you analyse and report"
     },
     {
       "id": "hand-lens",
@@ -146,7 +153,8 @@
       ],
       "honesty": "illustrative",
       "source": "research/meadow-model-notes.md#hand-lens",
-      "role": "task"
+      "role": "task",
+      "objective": "m2 and m3: check a plant's field marks before you count it"
     },
     {
       "id": "random-sampling",
@@ -161,14 +169,15 @@
       ],
       "honesty": "illustrative",
       "source": "https://openstax.org/books/introductory-statistics-2e/pages/1-2-data-sampling-and-variation-in-data-and-sampling",
-      "role": "task"
+      "role": "task",
+      "objective": "m3: see where the design put each quadrat (fair versus convenient placement)"
     },
     {
       "id": "field-station",
       "name": "Field station table",
       "short": "A wooden table by the gate with the field guide, a flask and pencils, and a folding stool beside it.",
       "more": "The survey starts here, and you come back here between modules. The field guide on the table lists the five teaching species and their field marks. Open it at any time to check a plant.",
-      "whyItMatters": "Opens the field guide.",
+      "whyItMatters": "Opens the field guide: the five species and the field marks you identify them by.",
       "realSize": [
         1.134,
         0.8,
@@ -176,19 +185,21 @@
       ],
       "honesty": "fictional",
       "source": "research/meadow-model-notes.md#field-station",
-      "role": "explore"
+      "role": "learn",
+      "objective": "m2: open the field guide to the five species and their field marks"
     },
     {
       "id": "stream",
       "name": "Stream",
       "short": "A shallow stream along the west side of the meadow. The ground gets wetter the closer you get to it.",
       "more": "Water flowing past the field keeps the nearby soil damp. Plants that like wet ground, such as Blue Sedge here, grow more densely close to it. Inside the sampling area the stream line is damp ground, so no counted plant is ever under water. The water flows at a real-time pace.",
-      "whyItMatters": "Explains the moisture gradient.",
+      "whyItMatters": "Explains the moisture gradient: wet ground by the stream, dry ground on the rise.",
       "realSize": null,
       "honesty": "fictional",
       "source": "research/meadow-model-notes.md#stream",
-      "role": "explore",
-      "realSizeNote": "A line, not an object: the channel is 1.9 m wide and 0.3 m deep along a 220 m course (z -60 to 160 m), and it follows the ground, so its bounding box measures the terrain it crosses."
+      "role": "learn",
+      "realSizeNote": "A line, not an object: the channel is 1.9 m wide and 0.3 m deep along a 220 m course (z -60 to 160 m), and it follows the ground, so its bounding box measures the terrain it crosses.",
+      "objective": "m1 and m3: the source of the wet-to-dry gradient that the stratified design follows"
     },
     {
       "id": "wet-ground",
@@ -200,7 +211,8 @@
       "honesty": "fictional",
       "source": "https://openstax.org/books/introductory-statistics-2e/pages/1-2-data-sampling-and-variation-in-data-and-sampling",
       "role": "task",
-      "realSizeNote": "A stratum (a layer of ground), not an object: x 0 to 33.3 m by z 0 to 100 m, sward 0.3 m deep. The clickable patch by the stream is one part of it."
+      "realSizeNote": "A stratum (a layer of ground), not an object: x 0 to 33.3 m by z 0 to 100 m, sward 0.3 m deep. The clickable patch by the stream is one part of it.",
+      "objective": "m3: the wet stratum of the stratified design; m4: compare strata"
     },
     {
       "id": "dry-ground",
@@ -212,19 +224,21 @@
       "honesty": "fictional",
       "source": "https://openstax.org/books/introductory-statistics-2e/pages/1-2-data-sampling-and-variation-in-data-and-sampling",
       "role": "task",
-      "realSizeNote": "A stratum (a layer of ground), not an object: x 66.7 to 100 m by z 0 to 100 m, sward 0.3 m deep. The clickable patch on the rise is one part of it."
+      "realSizeNote": "A stratum (a layer of ground), not an object: x 66.7 to 100 m by z 0 to 100 m, sward 0.3 m deep. The clickable patch on the rise is one part of it.",
+      "objective": "m3: the dry stratum of the stratified design; m4: compare strata"
     },
     {
       "id": "soil",
       "name": "Soil",
       "short": "Dark topsoil with roots and small stones, seen where the stream has cut into its bank.",
       "more": "Topsoil is the dark top layer of the soil. It is rich in humus, the decaying remains of plants and animals, which helps the soil hold water and gives plants minerals. How much water the soil holds is the main thing that changes across this meadow.",
-      "whyItMatters": "",
+      "whyItMatters": "Soil water is the gradient itself: wet, dark soil by the stream holds more water than the dry rise, which is why Blue Sedge thins out eastward and why the stratified design samples the wet and dry zones separately.",
       "realSize": null,
       "honesty": "illustrative",
       "source": "https://openstax.org/books/biology-2e/pages/31-2-the-soil",
-      "role": "explore",
-      "realSizeNote": "A face along a curving bank: a 3 m run of the stream bank with a 0.4 m soil profile. It follows the stream bend, so its bounding box also measures the curve (about 1.5 m across)."
+      "role": "learn",
+      "realSizeNote": "A face along a curving bank: a 3 m run of the stream bank with a 0.4 m soil profile. It follows the stream bend, so its bounding box also measures the curve (about 1.5 m across).",
+      "objective": "m3: soil water is what changes from the wet stream side to the dry rise (the strata)"
     },
     {
       "id": "hedgerow",
@@ -235,7 +249,7 @@
       "realSize": null,
       "honesty": "illustrative",
       "source": "https://www.gov.uk/guidance/countryside-hedgerows-regulation-and-management",
-      "role": "explore",
+      "role": "decorative",
       "realSizeNote": "A line: 110 m long (x -6 to 104 m), shrubs 2.9 m tall and 3.1 m deep (own-work hedge-shrub LOD0). It follows the ground, so its bounding box also measures the slope it crosses."
     },
     {
@@ -247,7 +261,7 @@
       "realSize": null,
       "honesty": "illustrative",
       "source": "https://www.woodlandtrust.org.uk/trees-woods-and-wildlife/habitats/deadwood/",
-      "role": "explore",
+      "role": "decorative",
       "realSizeNote": "An area: a woodland block about 150 m by 40 m, trees up to 15.9 m tall (own-work tree-tall LOD0), on rising ground."
     },
     {
@@ -263,7 +277,7 @@
       ],
       "honesty": "fictional",
       "source": "https://spaceplace.nasa.gov/blue-sky/en/",
-      "role": "explore"
+      "role": "decorative"
     },
     {
       "id": "stone-wall",
@@ -274,7 +288,7 @@
       "realSize": null,
       "honesty": "fictional",
       "source": "https://www.smithsonianmag.com/arts-culture/ancient-craft-dry-stone-walling-still-holds-appeal-21st-century-180986807/",
-      "role": "explore",
+      "role": "decorative",
       "realSizeNote": "A line: 128 m long (x -14 to 114 m), 1.1 m high and 0.55 m wide. It follows the ground, so its bounding box also measures the slope it crosses."
     },
     {
@@ -290,7 +304,7 @@
       ],
       "honesty": "illustrative",
       "source": "https://www.woodlandtrust.org.uk/trees-woods-and-wildlife/habitats/deadwood/",
-      "role": "explore"
+      "role": "decorative"
     },
     {
       "id": "margin-flowers",
@@ -305,7 +319,7 @@
       ],
       "honesty": "illustrative",
       "source": "https://www.polyhaven.com/license",
-      "role": "explore"
+      "role": "decorative"
     },
     {
       "id": "mist",
@@ -320,7 +334,7 @@
       ],
       "honesty": "time-lapse",
       "source": "https://weather.metoffice.gov.uk/learn-about/weather/types-of-weather/fog",
-      "role": "explore"
+      "role": "decorative"
     },
     {
       "id": "sun-dawn",
@@ -331,7 +345,7 @@
       "realSize": 1392700000,
       "honesty": "time-lapse",
       "source": "https://spaceplace.nasa.gov/blue-sky/en/",
-      "role": "explore",
+      "role": "decorative",
       "realDistance": 149597870700
     },
     {
@@ -343,7 +357,7 @@
       "realSize": 1000,
       "honesty": "illustrative",
       "source": "research/meadow-model-notes.md#clouds",
-      "role": "explore"
+      "role": "decorative"
     },
     {
       "id": "butterflies",
@@ -358,7 +372,7 @@
       ],
       "honesty": "illustrative",
       "source": "https://www.nps.gov/subjects/pollinators/what-is-a-pollinator.htm",
-      "role": "explore"
+      "role": "decorative"
     },
     {
       "id": "bees",
@@ -373,7 +387,7 @@
       ],
       "honesty": "illustrative",
       "source": "https://www.nps.gov/subjects/pollinators/what-is-a-pollinator.htm",
-      "role": "explore"
+      "role": "decorative"
     },
     {
       "id": "birds",
@@ -388,7 +402,7 @@
       ],
       "honesty": "illustrative",
       "source": "https://www.gov.uk/guidance/countryside-hedgerows-regulation-and-management",
-      "role": "explore"
+      "role": "decorative"
     },
     {
       "id": "field-worker",
@@ -403,7 +417,7 @@
       ],
       "honesty": "fictional",
       "source": "research/meadow-model-notes.md#field-worker",
-      "role": "explore"
+      "role": "decorative"
     },
     {
       "id": "wind",
@@ -414,7 +428,7 @@
       "realSize": null,
       "honesty": "illustrative",
       "source": "research/meadow-model-notes.md#wind",
-      "role": "explore",
+      "role": "decorative",
       "realSizeNote": "A motion of the sward, not an object: it moves the 100 m x 100 m meadow and the long grass at its margins."
     }
   ]
