@@ -725,6 +725,9 @@ export class MeadowWorld {
         sheet.position.y = k;
         sheet.rotation.y = k * 0.0;
         sheet.renderOrder = 3;
+        // Haze, not a surface: clicks and taps pass through to the stream and the soil
+        // under it (G2: the sheets caught every pick over the stream, so neither was reachable).
+        sheet.raycast = () => {};
         bank.add(sheet);
       }
       bank.position.set(streamX(z) + 2, Math.min(terrainHeight(streamX(z), z), 7) + 0.25, z);
@@ -1245,7 +1248,11 @@ export class MeadowWorld {
     // haze thins as ~30 m / height (the overhead views of Modules 3 and 4 were
     // washed grey by a fog meant for eye-height views).
     this.engine.scene.fog.density = this.sky.fogDensity * Math.min(1, HAZE_DEPTH / Math.max(1, up));
-    this.mistMat.opacity = (this._mistOpacity ?? 0.55) * (1 - THREE.MathUtils.smoothstep(up, 8, 30));
+    // From inside or beside a bank, the flat sheets read as grey panels, not haze: fade them
+    // out within 16 m of a bank's footprint (26 m x 20 m around its centre).
+    let near = Infinity;
+    for (const b of this.mistBanks) near = Math.min(near, Math.hypot(Math.max(0, Math.abs(cam.position.x - b.position.x) - 13), Math.max(0, Math.abs(cam.position.z - b.position.z) - 10)));
+    this.mistMat.opacity = (this._mistOpacity ?? 0.55) * (1 - THREE.MathUtils.smoothstep(up, 8, 30)) * THREE.MathUtils.smoothstep(near, 4, 16);
     // Small life is not drawn where it would be under a pixel or two (overhead views).
     for (const b of this.bees || []) b.visible = b.position.distanceToSquared(cam.position) < 35 * 35;
     for (const b of this.butterflies || []) b.visible = b.position.distanceToSquared(cam.position) < 90 * 90;
