@@ -22,6 +22,37 @@
 /** Where the navigation bar sits for a shell layout name. */
 export function navEdge(layout) { return layout === 'desktop' ? 'left' : 'bottom'; }
 
+/** The desktop rail's width at rest (CSS --fe-nav). */
+export const RAIL_REST_PX = 56;
+
+/**
+ * Desktop rail: open (data-open="true", 196 px, horizontal tab names) while the
+ * pointer is over it or keyboard focus is inside it; closed (56 px, numbers and
+ * ticks) otherwise. Esc closes it and keeps focus where it is. Phones keep the
+ * bottom strip and never open.
+ */
+export function bindRailOpen(shell, bar) {
+  let hover = false, timer = 0, quiet = false; // quiet: after a click or touch, until the mouse leaves
+  const set = () => {
+    clearTimeout(timer);
+    const want = shell.layout === 'desktop' && (hover || Boolean(bar.querySelector(':focus-visible')));
+    if (want) { bar.dataset.open = 'true'; return; }
+    // A short grace period, so a pointer that slips off the edge does not flicker it.
+    timer = setTimeout(() => { delete bar.dataset.open; }, hover ? 0 : 180);
+  };
+  // Mouse only (a touch on a desktop-sized tablet just presses the tab). mouseover
+  // repeats while the pointer moves over the rail, so a missed enter still opens it.
+  bar.addEventListener('mouseover', () => { if (!hover && !quiet) { hover = true; set(); } });
+  bar.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') { hover = false; quiet = false; set(); } });
+  bar.addEventListener('touchstart', () => { quiet = true; }, { passive: true });
+  bar.addEventListener('focusin', set);
+  bar.addEventListener('focusout', () => requestAnimationFrame(set));
+  bar.addEventListener('keydown', (e) => { if (e.key === 'Escape' && bar.dataset.open) { hover = false; delete bar.dataset.open; } });
+  // A click on a tab or the Menu closes it (the chosen module or the menu takes over).
+  bar.addEventListener('click', () => { hover = false; quiet = true; delete bar.dataset.open; });
+  shell.on('layout', set);
+}
+
 /**
  * @param {object} app  the v3 app (createSceneApp)
  */
@@ -46,10 +77,13 @@ export function applyNotebookLayout(app) {
     const out = reserved(o);
     if (bar.offsetParent) {
       const r = bar.getBoundingClientRect();
-      if (r.width > 0 && r.height > 0) out.push({ left: r.left - 8, top: r.top - 8, right: r.right + 8, bottom: r.bottom + 8 });
+      // The rail's resting width: it opens over the scene only while in use.
+      const right = shell.layout === 'desktop' ? r.left + RAIL_REST_PX : r.right;
+      if (r.width > 0 && r.height > 0) out.push({ left: r.left - 8, top: r.top - 8, right: right + 8, bottom: r.bottom + 8 });
     }
     return out;
   };
+  bindRailOpen(shell, bar);
   // Re-place an open card once the layout has its final geometry.
   shell.on('layout', () => app.inspect?._placeCard(true));
 }
