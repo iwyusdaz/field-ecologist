@@ -91,7 +91,49 @@ export class Lessons {
     if (!app.engine) return;
     app.rig.on('tap', (x, y) => this._onTap(x, y));
     app.shell.canvas.addEventListener('pointermove', (e) => this._onPointerMove(e));
-    app.shell.canvas.addEventListener('pointerleave', () => world.setPreview(null));
+    app.shell.canvas.addEventListener('pointerleave', () => { if (!this._drag) world.setPreview(null); });
+    this._bindQuadratDrag(app.shell.canvas);
+  }
+
+  /** Placing quadrats by hand (the convenience design) is the current task. */
+  _placingByHand() {
+    return this._active?.id === 'm3-place' && this.session?.design === 'convenience' && !this.session.placementDone() && this.app.shell.phase !== 'cinematic';
+  }
+
+  /**
+   * Quadrat drag (plan §6.3, G2 owner feedback): press on the meadow to pick
+   * up a frame, drag it (the frame follows, lifted a little off the grass),
+   * release to drop it there. Mouse, pen and touch (pointer events). A press
+   * off the field still turns the camera. The listener runs in the capture
+   * phase on the stage, before the camera rig, so this drag never also
+   * orbits the view. Keyboard alternative: Place by map (typed x and z).
+   */
+  _bindQuadratDrag(canvas) {
+    const host = canvas.parentElement;
+    host.addEventListener('pointerdown', (e) => {
+      if (e.target !== canvas || e.button !== 0 || this._drag || !e.isPrimary || !this._placingByHand()) return;
+      const p = this.world.fieldPointAt(e.clientX, e.clientY);
+      if (!p) return;
+      e.stopPropagation();
+      canvas.setPointerCapture?.(e.pointerId);
+      this._drag = { id: e.pointerId, p, x0: e.clientX, y0: e.clientY };
+      this.world.setPreview(p, { lifted: true });
+    }, { capture: true });
+    canvas.addEventListener('pointermove', (e) => {
+      const d = this._drag;
+      if (!d || e.pointerId !== d.id) return;
+      const p = this.world.fieldPointAt(e.clientX, e.clientY);
+      if (p) { d.p = p; this.world.setPreview(p, { lifted: true }); }
+    });
+    const end = (e) => {
+      const d = this._drag;
+      if (!d || e.pointerId !== d.id) return;
+      this._drag = null;
+      this.world.setPreview(null);
+      if (e.type === 'pointerup' && this._placingByHand()) this.placeConvenience(d.p.x, d.p.z);
+    };
+    canvas.addEventListener('pointerup', end);
+    canvas.addEventListener('pointercancel', end);
   }
 
   /** Text-mode renderers (v2) registered against a small registry. */
@@ -175,6 +217,7 @@ export class Lessons {
       get view() { return VIEWS[MODULE_IDS[i]]; },
       calm: false,
       enter: () => L.enterModule(i),
+      back: () => L.backStep(i),
       now: () => L.nowFor(i),
       text: (body, app) => { if (!L.app && app) L.bind(app, null); L.textFor(i, body); }, // sceneless: bound on first render
     });
@@ -189,6 +232,25 @@ export class Lessons {
     if (k < 0) k = steps.length;
     this.step[i] = k;
     this._enterStep(i);
+  }
+
+  /**
+   * Back inside a module (app.back, T-28): the hand-lens close-up steps back
+   * first, then naming a plant or the cover band (back to counting), then
+   * the quadrat being counted (left unsaved, as leaving the step does), then
+   * the step before. False at the
+   * module's first step, so app.back() goes to the module visited before.
+   */
+  backStep(i) {
+    if (this.fw.zoomed) { this._lensOff(); return true; }
+    if (this.fw.active && (this.fw.phase === 'pick' || this.fw.phase === 'cover')) { this.fw.phase = 'tally'; this.fw.pending = null; this.refresh(); return true; }
+    if (this.fw.active) { this._leaveCounting({ save: false }); return true; }
+    const k = Math.min(this.step[i] ?? 0, this.steps[i].length);
+    if (!(k > 0)) return false;
+    this.step[i] = k - 1;
+    this._enterStep(i);
+    this.refresh();
+    return true;
   }
 
   _enterStep(i) {
@@ -302,7 +364,7 @@ export class Lessons {
         now: () => ({
           goal: 'Arrive at Ashcombe Meadow',
           action: 'Press Watch the dawn to see the meadow wake up, or press Next step to begin.',
-          hint: L.hint('Drag to look around. Click any plant or object to learn what it is.', 'Drag to look around. Tap any plant or object to learn what it is.'),
+          hint: L.hint('Drag to look around. Click a plant, the stream or the station table to learn about it.', 'Drag to look around. Tap a plant, the stream or the station table to learn about it.'),
           primary: { label: 'Next step', onClick: () => { L.complete('m1-arrive', 'Arrived at the meadow'); L.next(0); } },
           secondary: L.app.engine ? { label: 'Watch the dawn', play: true, onClick: () => L.playDawn() } : undefined,
           readMore: { label: 'About this survey', title: 'About this survey', render: (b) => { para(b, L.modules.modules.m1.intro); const ul = b.appendChild(el('ul')); for (const f of L.modules.researchQuestion.meadowFacts) ul.appendChild(el('li', { textContent: f })); } },
@@ -439,13 +501,27 @@ export class Lessons {
     const fr = this.freeRect();
     const x = (((fr.x0 + fr.x1) / 2 + 1) / 2) * innerWidth, y = ((1 - (fr.y0 + fr.y1) / 2) / 2) * innerHeight;
     const hit = this.world.plantAt(x, y, this.fw.active ? { quadrat: this.session.points[this.fw.active - 1] } : {});
-    const p = hit?.point || this.world.groundAt(x, y) || this.world.fieldPointAt(x, y) || new THREE.Vector3(...this._lensSpotView().target);
-    this._lensZoom(p);
+    const p = hit?.base || this.world.groundAt(x, y) || this.world.fieldPointAt(x, y) || new THREE.Vector3(...this._lensSpotView().target);
+    this._lensZoom(p, { maxD: 3, exact: Boolean(hit) });
   }
-  /** Zoom the camera onto a point like a hand lens (a narrow field of view from close by). */
-  _lensZoom(point) {
+  /**
+   * Zoom the camera onto the plant at or nearest a point, like a hand lens (a
+   * narrow field of view from close by). A point on bare ground snaps to the
+   * nearest drawn plant (inside the frame while counting); with none within
+   * reach the lens says so and stays where it is (G2 owner feedback: never
+   * a close-up of bare ground).
+   * @returns {boolean} whether it zoomed
+   */
+  _lensZoom(point, { maxD = 1.5, exact = false } = {}) {
     const a = this.app;
     const cam = a.engine.camera;
+    const q = this.fw.active ? this.session.points[this.fw.active - 1] : null;
+    const plant = (exact && this.world.plantNear(point, { exact: true })) || this.world.plantNear(point, { quadrat: q, maxD: q ? Infinity : maxD });
+    if (!plant) {
+      a.shell.toast(q ? 'No plant inside this frame to look at.' : 'No plant there. Click or tap a plant, or press Look at the centre.');
+      return false;
+    }
+    point = plant.point;
     this._lensBack ||= a.rig.view();
     const flat = new THREE.Vector3(cam.position.x - point.x, 0, cam.position.z - point.z).normalize();
     const eye = point.clone().addScaledVector(flat, 0.38).add(new THREE.Vector3(0, 0.42, 0));
@@ -456,6 +532,7 @@ export class Lessons {
     this.record.log('experienced', { id: 'hand-lens-look', name: 'Looked through the hand lens' });
     announce('Hand lens close-up. Press Lens off to step back.');
     this.refresh();
+    return true;
   }
 
   // ------------------------------------------------------------ Module 3: fieldwork
@@ -490,7 +567,7 @@ export class Lessons {
           if (s.design === 'convenience' && !s.placementDone()) {
             return {
               goal: 'Place your quadrats by hand',
-              action: L.hint(`Click the meadow where you want each quadrat. A pale frame shows the spot.`, `Tap the meadow where you want each quadrat.`),
+              action: L.hint('Press on the meadow, drag the pale frame to a spot, then let go to drop it.', 'Touch the meadow, drag the pale frame to a spot, then lift your finger to drop it.'),
               result: `${s.points.length} of ${s.maxQuadrats} placed`,
               hint: 'Keyboard: Place by map lets you type the spot.',
               primary: { label: 'Place by map', onClick: () => L._placementDrawer() },
@@ -938,8 +1015,8 @@ export class Lessons {
     // Hand lens: the next tap zooms there.
     if (fw.lens && !fw.zoomed) {
       const hit = this.world.plantAt(x, y, fw.active ? { quadrat: this.session.points[fw.active - 1] } : {});
-      const p = hit?.point || this.world.groundAt(x, y) || this.world.fieldPointAt(x, y);
-      if (p) this._lensZoom(p);
+      const p = hit?.base || this.world.groundAt(x, y) || this.world.fieldPointAt(x, y);
+      if (p) this._lensZoom(p, { exact: Boolean(hit) }); else a.shell.toast('No plant there. Click or tap a plant near you.');
       return;
     }
     if (fw.active && (fw.phase === 'tally' || fw.phase === 'pick')) {
@@ -960,7 +1037,7 @@ export class Lessons {
   }
 
   _onPointerMove(e) {
-    if (this._active?.id !== 'm3-place' || this.session?.design !== 'convenience' || this.session.placementDone()) return;
+    if (this._drag || e.pointerType !== 'mouse' || !this._placingByHand()) return;
     this.world.setPreview(this.world.fieldPointAt(e.clientX, e.clientY));
   }
 

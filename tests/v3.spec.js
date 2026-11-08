@@ -34,21 +34,135 @@ test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => { if (!sessionStorage.getItem('kept')) { localStorage.clear(); sessionStorage.setItem('kept', '1'); } });
 });
 
-test('notebook rail on desktop: one 56 px left rail with module tabs and the menu at its foot', async ({ page }) => {
+test('notebook rail on desktop: a 56 px left rail at rest that opens with horizontal tab names on hover and focus', async ({ page }) => {
   await ready(page);
   await T(page, () => window.__TEST__.app.goModule(0));
   await page.waitForTimeout(1500);
-  const r = await T(page, () => {
-    const bar = document.querySelector('[data-ui="top-bar"]').getBoundingClientRect();
+  const read = () => T(page, () => {
+    const barEl = document.querySelector('[data-ui="top-bar"]');
+    const bar = barEl.getBoundingClientRect();
     const tabs = [...document.querySelectorAll('[data-ui="module-step"]')].map((b) => b.getBoundingClientRect());
+    const labels = [...document.querySelectorAll('.v3-step-label')].map((l) => { const r = l.getBoundingClientRect(); const cs = getComputedStyle(l); return { w: r.width, h: r.height, mode: cs.writingMode, tf: cs.transform }; });
     const menu = document.querySelector('[data-action="menu"]').getBoundingClientRect();
-    return { bar: [bar.left, bar.top, bar.width, bar.height], tabsStacked: tabs.every((t, i) => !i || t.top >= tabs[i - 1].bottom - 1), menuBelow: menu.top > tabs.at(-1).bottom, vh: innerHeight };
+    return { open: barEl.dataset.open === 'true', bar: [bar.left, bar.top, bar.width, bar.height], tabsStacked: tabs.every((t, i) => !i || t.top >= tabs[i - 1].bottom - 1), menuBelow: menu.top > tabs.at(-1).bottom, vh: innerHeight, labels };
   });
-  expect(r.bar[0]).toBe(0);
-  expect(r.bar[2]).toBeLessThanOrEqual(56);
-  expect(r.bar[3]).toBe(r.vh);
-  expect(r.tabsStacked).toBe(true);
-  expect(r.menuBelow).toBe(true);
+  const rest = await read();
+  expect(rest.open).toBe(false);
+  expect(rest.bar[0]).toBe(0);
+  expect(rest.bar[2]).toBeLessThanOrEqual(56);
+  expect(rest.bar[3]).toBe(rest.vh);
+  expect(rest.tabsStacked).toBe(true);
+  expect(rest.menuBelow).toBe(true);
+  // Nothing on the rail is rotated (G2 owner feedback: no bottom-to-top text).
+  for (const l of rest.labels) { expect(l.mode).toBe('horizontal-tb'); expect(l.tf).toBe('none'); }
+  // Hover: the rail opens over the scene and every tab name reads left to right.
+  const tab = await page.locator('[data-ui="module-step"]').nth(2).boundingBox();
+  await page.mouse.move(tab.x + tab.width / 2, tab.y + tab.height / 2);
+  await page.waitForTimeout(400);
+  const open = await read();
+  expect(open.open).toBe(true);
+  expect(open.bar[2]).toBeGreaterThanOrEqual(160);
+  for (const l of open.labels) { expect(l.mode).toBe('horizontal-tb'); expect(l.w).toBeGreaterThan(30); expect(l.h).toBeLessThan(30); }
+  await page.mouse.move(900, 300);
+  await page.waitForTimeout(500);
+  expect((await read()).open).toBe(false);
+  // Keyboard focus opens it too.
+  await page.locator('[data-ui="module-step"]').first().focus();
+  await page.keyboard.press('Tab');
+  await page.waitForTimeout(300);
+  expect((await read()).open).toBe(true);
+});
+
+/** Screen point of a meadow ground point (x, z). */
+const screenOf = (page, x, z) => T(page, ([px, pz]) => {
+  const T2 = window.__TEST__, cam = T2.engine.camera;
+  const v = cam.position.clone().set(px, T2.world.groundY(px, pz), pz).project(cam);
+  const r = T2.engine.renderer.domElement.getBoundingClientRect();
+  return { x: r.left + ((v.x + 1) / 2) * r.width, y: r.top + ((1 - v.y) / 2) * r.height };
+}, [x, z]);
+const PLACE_BY_HAND = () => {
+  const L = window.__TEST__.lessons;
+  L.app.goModule(2); L.chooseDesign('convenience'); L.step[2] = 1; L._enterStep(2); L.refresh();
+};
+const viewOf = (page) => T(page, () => window.__TEST__.rig.view());
+
+test('quadrat drag with the mouse: press on the meadow, drag the frame, release to drop it there', async ({ page }) => {
+  await ready(page);
+  await T(page, PLACE_BY_HAND);
+  await page.waitForTimeout(3000);
+  await expect(page.locator('[data-ui="now-card"]')).toContainText('drag the pale frame');
+  const a = await screenOf(page, 42, 35), b = await screenOf(page, 58, 48);
+  const before = await viewOf(page);
+  await page.mouse.move(a.x, a.y);
+  await page.mouse.down();
+  for (let k = 1; k <= 8; k++) await page.mouse.move(a.x + ((b.x - a.x) * k) / 8, a.y + ((b.y - a.y) * k) / 8);
+  const mid = await T(page, () => { const p = window.__TEST__.world.preview; return { visible: p.visible, x: p.position.x, z: p.position.z }; });
+  expect(mid.visible).toBe(true);
+  expect(Math.hypot(mid.x - 58, mid.z - 48)).toBeLessThan(2);
+  expect(await T(page, () => window.__TEST__.lessons.session.points.length)).toBe(0); // nothing dropped yet
+  await page.mouse.up();
+  const pts = await T(page, () => window.__TEST__.lessons.session.points.map((p) => [p.x, p.z]));
+  expect(pts.length).toBe(1);
+  expect(Math.hypot(pts[0][0] - 58, pts[0][1] - 48)).toBeLessThan(2); // where it was released, not where it was picked up
+  const after = await viewOf(page);
+  expect(after.theta).toBeCloseTo(before.theta, 5); // the drag did not also turn the camera
+  expect(after.phi).toBeCloseTo(before.phi, 5);
+  // A drag that starts off the field still turns the camera.
+  await page.mouse.move(700, 40); await page.mouse.down(); await page.mouse.move(820, 60, { steps: 6 }); await page.mouse.up();
+  expect((await viewOf(page)).theta).not.toBeCloseTo(before.theta, 3);
+  expect(await T(page, () => window.__TEST__.lessons.session.points.length)).toBe(1);
+});
+
+test('quadrat placement by keyboard: Place by map takes typed x and z', async ({ page }) => {
+  await ready(page);
+  await T(page, PLACE_BY_HAND);
+  await page.waitForTimeout(2500);
+  await kb(page, now(page, /Place by map/));
+  await kb(page, drawer(page).locator('#place-x'), 'Digit3');
+  await page.keyboard.type('0');
+  await page.keyboard.press('Tab');
+  await page.keyboard.type('70');
+  await kb(page, drawer(page).getByRole('button', { name: /Place quadrat here/ }));
+  const pts = await T(page, () => window.__TEST__.lessons.session.points.map((p) => [p.x, p.z]));
+  expect(pts).toEqual([[30, 70]]);
+});
+
+test('hand lens: a point on bare ground zooms onto the nearest plant, inside the frame while counting', async ({ page }) => {
+  await ready(page);
+  await T(page, () => { const L = window.__TEST__.lessons; L.app.goModule(2); L.chooseDesign('random'); L.step[2] = 2; L._enterStep(2); L.refresh(); L.enterQuadrat(1); });
+  await page.waitForTimeout(2500);
+  const r = await T(page, () => {
+    const L = window.__TEST__.lessons, w = L.world;
+    const q = L.session.points[0];
+    L._lensOn();
+    const ok = L._lensZoom(w.quadratFrames[0].position.clone());
+    return { ok, zoomed: L.fw.zoomed, q: [q.x, q.z], plant: w.plantNear(w.quadratFrames[0].position, { quadrat: q, maxD: Infinity }) };
+  });
+  expect(r.ok).toBe(true);
+  expect(r.zoomed).toBe(true);
+  expect(r.plant).not.toBeNull();
+  await page.waitForTimeout(1500);
+  const look = await T(page, () => window.__TEST__.rig.view().target);
+  // The lens looks at a plant whose base is inside the frame, not at the bare frame centre.
+  const near = await T(page, (p) => window.__TEST__.world.plantNear({ x: p[0], z: p[2] }, { exact: true }), look);
+  expect(near).not.toBeNull();
+  expect(Math.abs(near.base.x - r.q[0])).toBeLessThanOrEqual(1);
+  expect(Math.abs(near.base.z - r.q[1])).toBeLessThanOrEqual(1);
+});
+
+test('Back steps back inside a module, then to the module before; Back to start shows the title', async ({ page }) => {
+  await ready(page);
+  await T(page, () => { const L = window.__TEST__.lessons; L.app.goModule(1); L.step[1] = 2; L._enterStep(1); L.refresh(); });
+  await page.waitForTimeout(1500);
+  await expect(page.locator('[data-ui="now-card"]')).toContainText('Name the species');
+  await page.locator('[data-ui="back"]').click();
+  await expect(page.locator('[data-ui="now-card"]')).toContainText('Look closely with the hand lens');
+  await page.locator('[data-ui="back"]').click();
+  await expect(page.locator('[data-ui="now-card"]')).toContainText('Meet the five species');
+  await expect(page.getByRole('link', { name: /all projects/i })).toHaveCount(0);
+  await page.getByRole('button', { name: /^menu$/i }).click();
+  await page.locator('[data-ui="back-to-start"]').click();
+  await expect(page.locator('[data-ui="title-screen"]')).toBeVisible();
 });
 
 test('title, practice, then Module 1 with the station cue', async ({ page }) => {
@@ -58,8 +172,8 @@ test('title, practice, then Module 1 with the station cue', async ({ page }) => 
   await expect(page.locator('[data-ui="now-card"]')).toContainText(/Practice 1 of/);
   await page.getByRole('button', { name: /skip practice/i }).click();
   await expect(page.locator('[data-ui="now-card"]')).toContainText('Arrive at Ashcombe Meadow');
-  const ids = await T(page, () => window.__TEST__.inspect.ids());
-  expect(ids.length).toBeGreaterThanOrEqual(20);
+  const r = await T(page, () => ({ ids: window.__TEST__.inspect.ids(), course: window.__TEST__.catalog.inspectable.map((o) => o.id) }));
+  expect(r.ids.sort()).toEqual(r.course.sort());
 });
 
 test('labels are hidden at rest; hover shows one; a click opens the card beside the object', async ({ page }) => {
@@ -79,13 +193,16 @@ test('labels are hidden at rest; hover shows one; a click opens the card beside 
   await expect(page.locator('[data-ui="info-card"]')).toBeHidden();
 });
 
-test('every catalog object is in the keyboard list after streaming and opens by Enter', async ({ page }) => {
+test('every course object (task, learn) is in the keyboard list after streaming and opens by Enter; scenery is not', async ({ page }) => {
   await ready(page);
   await T(page, async () => { await window.__TEST__.world.startStreaming(); window.__TEST__.app.goModule(0); });
   await page.waitForTimeout(1500);
-  const all = await T(page, () => window.__TEST__.catalog.objects.map((o) => o.id));
+  const course = await T(page, () => window.__TEST__.catalog.inspectable.map((o) => o.id));
+  const decor = await T(page, () => window.__TEST__.catalog.objects.filter((o) => o.role === 'decorative').map((o) => o.id));
   const listed = await T(page, () => window.__TEST__.inspect.ids());
-  for (const id of all) expect(listed).toContain(id);
+  for (const id of course) expect(listed).toContain(id);
+  for (const id of decor) expect(listed).not.toContain(id);
+  expect(decor).toEqual(expect.arrayContaining(['clouds', 'butterflies', 'bees']));
   await T(page, () => window.__TEST__.app.openObjects());
   await kb(page, drawer(page).locator('[data-object-id="clipboard"]'));
   await expect(page.locator('[data-ui="info-card"][data-object-id="clipboard"]')).toBeVisible();
@@ -155,13 +272,23 @@ test.describe('keyboard-only completion', () => {
     await countByKeyboard(page, 4);
     expect(await T(page, () => window.__TEST__.lessons.session.sheet.visitedCount())).toBe(4);
   });
-  test('Module 3 (part 2): quadrats 5-10 by the count sheet, then submit', async ({ page }) => {
+  // Parts 2 and 3 (G2): one six-quadrat keyboard run did not fit the 5-minute test cap
+  // under software WebGL (it reached quadrat 10). Every quadrat is still counted by keyboard.
+  const SAVED = (n) => {
+    const L = window.__TEST__.lessons;
+    L.app.goModule(2); L.chooseDesign('random'); L.step[2] = 2; L._enterStep(2);
+    for (let i = 1; i <= n; i++) { L.enterQuadrat(i); L.fw.draft.cover = '5-25'; L._saveQuadrat(); }
+  };
+  test('Module 3 (part 2): quadrats 5-7 by the count sheet', async ({ page }) => {
     await ready(page);
-    await T(page, () => {
-      const L = window.__TEST__.lessons;
-      L.app.goModule(2); L.chooseDesign('random'); L.step[2] = 2; L._enterStep(2);
-      for (let i = 1; i <= 4; i++) { L.enterQuadrat(i); L.fw.draft.cover = '5-25'; L._saveQuadrat(); }
-    });
+    await T(page, SAVED, 4);
+    await page.waitForTimeout(2000);
+    await countByKeyboard(page, 3);
+    expect(await T(page, () => window.__TEST__.lessons.session.sheet.visitedCount())).toBe(7);
+  });
+  test('Module 3 (part 3): quadrats 8-10 by the count sheet, then submit', async ({ page }) => {
+    await ready(page);
+    await T(page, SAVED, 7);
     await page.waitForTimeout(2000);
     await countByKeyboard(page, 8);
     await kb(page, now(page, /^Next step$/));
@@ -206,14 +333,14 @@ test.describe('keyboard-only completion', () => {
   });
 });
 
-test('text mode: every module renders, every catalog object is listed, decisions write the same state', async ({ page }) => {
+test('text mode: every module renders, every course object is listed, decisions write the same state', async ({ page }) => {
   await ready(page);
   await T(page, () => window.__TEST__.app.goModule(0));
   await page.waitForTimeout(1200);
   await T(page, () => window.__TEST__.ui.toggleTextMode());
   const tm = page.locator('#textmode');
   await expect(tm).toContainText('Your hypothesis');
-  const names = await T(page, () => window.__TEST__.catalog.objects.map((o) => o.name));
+  const names = await T(page, () => window.__TEST__.catalog.inspectable.map((o) => o.name));
   const text = await tm.innerText();
   for (const n of names) expect(text).toContain(n);
   const fs = tm.locator('fieldset').first();
@@ -266,6 +393,31 @@ test.describe('touch', () => {
     await expect(card).toBeVisible();
     const cb = await card.boundingBox();
     expect(cb.y + cb.height).toBeLessThanOrEqual(bar[0]);
+  });
+});
+
+test.describe('touch drag', () => {
+  test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+  test('quadrat drag by touch: touch the meadow, drag the frame, lift to drop it', async ({ page }) => {
+    await ready(page);
+    await T(page, PLACE_BY_HAND);
+    await page.waitForTimeout(3000);
+    // Collapse the Now sheet so the meadow is free to touch.
+    await T(page, () => window.__TEST__.shell.setNowExpanded?.(false));
+    await page.waitForTimeout(400);
+    let a = await screenOf(page, 45, 40), b = await screenOf(page, 55, 55);
+    const free = (p) => T(page, (q) => document.elementFromPoint(q.x, q.y)?.id === 'app', p);
+    expect(await free(a)).toBe(true);
+    expect(await free(b)).toBe(true);
+    const cdp = await page.context().newCDPSession(page);
+    const touch = (type, p) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: p ? [{ x: p.x, y: p.y, id: 1 }] : [] });
+    await touch('touchStart', a);
+    for (let k = 1; k <= 8; k++) await touch('touchMove', { x: a.x + ((b.x - a.x) * k) / 8, y: a.y + ((b.y - a.y) * k) / 8 });
+    await touch('touchEnd');
+    await page.waitForTimeout(200);
+    const pts = await T(page, () => window.__TEST__.lessons.session.points.map((p) => [p.x, p.z]));
+    expect(pts.length).toBe(1);
+    expect(Math.hypot(pts[0][0] - 55, pts[0][1] - 55)).toBeLessThan(2.5);
   });
 });
 

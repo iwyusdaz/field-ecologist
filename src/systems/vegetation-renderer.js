@@ -142,6 +142,32 @@ export class VegetationRenderer {
     return null;
   }
 
+  /**
+   * The drawn plant nearest (x, z): the same thinning as update() (the preset
+   * density, nothing thinned inside the active quadrat), hidden instances
+   * skipped (their specimens are separate meshes). Optional `inside(px, pz)`
+   * limits the search (the active quadrat); `skip` is a set of species ids left out.
+   * @returns {{ id: string, x: number, y: number, z: number, height: number, d: number }|null}
+   */
+  nearestDrawn(x, z, maxD = Infinity, inside = null, skip = null) {
+    let best = null;
+    const focus = this._focus;
+    for (const sp of this.species.values()) {
+      if (skip?.has(sp.id)) continue;
+      sp.matrices.forEach((m, instIdx) => {
+        const px = m.elements[12], pz = m.elements[14];
+        const d = Math.hypot(px - x, pz - z);
+        if (d >= maxD || (best && d >= best.d)) return;
+        if (m.elements[0] === 0 && m.elements[5] === 0 && m.elements[10] === 0) return;
+        const inFocus = focus != null && Math.hypot(px - focus.x, pz - focus.z) < focus.r;
+        if (!inFocus && frac(instIdx * 7 + 3) >= this.densityFactor) return;
+        if (inside && !inside(px, pz)) return;
+        best = { id: sp.id, x: px, y: m.elements[13], z: pz, height: Math.max(0.1, sp.geometry.boundingBox?.max.y ?? 0.3) * m.elements[5], d };
+      });
+    }
+    return best;
+  }
+
   /** Set wind level: 1 ambient, 0.12 quadrat counting, 0 reduced motion. */
   setWindLevel(v) { this.windUniforms.uWind.value = v; }
 
@@ -185,10 +211,17 @@ export class VegetationRenderer {
    */
   update(camera, dt, elapsed) {
     this.windUniforms.uTime.value = elapsed;
+    // Rebuild when the camera has moved 1.5 m or turned about 2° (the frustum
+    // changed), or a rebuild was forced (lastBuildPos reset). G2: a rebuild
+    // every 0.15 s even with a still camera re-uploaded every instance matrix
+    // ~7 times a second; those upload frames were the north-hedge view's GPU
+    // p95 spikes (median 8 ms, p95 14.7 ms on the M1).
     const moved = camera.position.distanceTo(this.lastBuildPos) > 1.5;
-    const stale = elapsed - this.lastBuildTime > 0.15;
-    if (!moved && !stale) return;
+    this._lastQ ||= new THREE.Quaternion(0, 0, 0, 0);
+    const turned = Math.abs(camera.quaternion.dot(this._lastQ)) < 0.99985; // ~2°
+    if (!moved && !turned) return;
     this.lastBuildPos.copy(camera.position);
+    this._lastQ.copy(camera.quaternion);
     this.lastBuildTime = elapsed;
 
     const projScreen = new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
@@ -255,8 +288,13 @@ export class VegetationRenderer {
       }
       nearMesh.count = nearCount;
       impMesh.count = impCount;
-      nearMesh.instanceMatrix.needsUpdate = true;
-      impMesh.instanceMatrix.needsUpdate = true;
+      // Upload only the instances in use, not the whole capacity.
+      for (const [mesh, n] of [[nearMesh, nearCount], [impMesh, impCount]]) {
+        const a = mesh.instanceMatrix;
+        a.clearUpdateRanges();
+        if (n) a.addUpdateRange(0, n * 16);
+        a.needsUpdate = n > 0;
+      }
     }
   }
 

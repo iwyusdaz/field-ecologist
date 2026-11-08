@@ -35,7 +35,9 @@ export function groundY(x, z) {
 
 /** Shared uniforms for cloud shadows on every ground-like material. */
 export function makeCloudUniforms() {
-  return { uCloudT: { value: 0 }, uCloudK: { value: 0.2 }, uCloudWind: { value: new THREE.Vector2(5.5, 2.0) } };
+  // uWindT / uGustSheen: the gust bands of the GPU wind (systems/wind.js) seen on the sward
+  // from above, where single blades are under a pixel (set by MeadowWorld.addMotion).
+  return { uCloudT: { value: 0 }, uCloudK: { value: 0.2 }, uCloudWind: { value: new THREE.Vector2(5.5, 2.0) }, uWindT: { value: 0 }, uGustSheen: { value: 0 } };
 }
 
 const CLOUD_GLSL = /* glsl */`
@@ -59,16 +61,20 @@ export function swardMaterial(cloud) {
       .replace('#include <common>', '#include <common>\nattribute float aMoist;\nvarying float vMoist;\nvarying vec2 vGroundW;')
       .replace('#include <begin_vertex>', '#include <begin_vertex>\nvMoist = aMoist;\nvGroundW = (modelMatrix * vec4(transformed, 1.0)).xz;');
     sh.fragmentShader = sh.fragmentShader
-      .replace('#include <common>', '#include <common>\nvarying float vMoist;\nvarying vec2 vGroundW;\nuniform sampler2D uWetMap;\nuniform float uCloudT;\nuniform float uCloudK;\nuniform vec2 uCloudWind;')
+      .replace('#include <common>', '#include <common>\nvarying float vMoist;\nvarying vec2 vGroundW;\nuniform sampler2D uWetMap;\nuniform float uCloudT;\nuniform float uCloudK;\nuniform vec2 uCloudWind;\nuniform float uWindT;\nuniform float uGustSheen;')
       .replace('#include <map_fragment>', `#ifdef USE_MAP
   vec4 dryC = texture2D(map, vMapUv);
   vec4 wetC = texture2D(uWetMap, vMapUv * 0.83);
   diffuseColor *= mix(dryC, wetC, smoothstep(0.3, 0.8, vMoist));
 #endif
 ${CLOUD_GLSL}
-  diffuseColor.rgb *= cloudShade;`);
+  diffuseColor.rgb *= cloudShade;
+  // A gust flattens the grass and turns the paler blade sides and seed heads to the
+  // light: a lighter band that rolls across the field (same band as the plant sway).
+  float gustBand = smoothstep(0.55, 1.0, sin(vGroundW.x * 0.09 + vGroundW.y * 0.035 - uWindT * 0.55));
+  diffuseColor.rgb *= 1.0 + uGustSheen * gustBand;`);
   };
-  mat.customProgramCacheKey = () => 'meadow-sward-v3';
+  mat.customProgramCacheKey = () => 'meadow-sward-v3-gust';
   return mat;
 }
 
@@ -350,7 +356,9 @@ export function buildSoilBank(parent) {
     for (let j = 0; j <= 4; j++) {
       const t = j / 4;
       const x = xEdge + 0.4 * t * t;
-      const y = top - 0.4 + 0.4 * t + 0.008 * Math.sin(k * 1.7 + j);
+      // Never under the bank's own surface (G2: the profile sat inside the carved
+      // channel wall, under the bank mesh, so nobody could see or click it).
+      const y = Math.max(top - 0.4 + 0.4 * t, groundY(x, z) + 0.03) + 0.008 * Math.sin(k * 1.7 + j);
       pos.push(x, y, z);
       uv.push(k / zs * 3, t * 0.6);
     }

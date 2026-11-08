@@ -122,7 +122,9 @@ export class LodSet {
   update(camera, dt) {
     this._t += dt;
     const p = camera.position;
-    if (p.distanceToSquared(this._last) < 9 && this._t < 0.4) return;
+    // Levels depend only on distance: rebuild after 3 m of camera travel (or a forced
+    // reset), not on a timer; a still camera re-uploaded every matrix 2.5 times a second.
+    if (p.distanceToSquared(this._last) < 9) return;
     this._t = 0;
     this._last.copy(p);
     const counts = this.levels.map(() => 0);

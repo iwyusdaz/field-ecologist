@@ -84,7 +84,8 @@ export class DawnSky {
     this.hemi = new THREE.HemisphereLight(0xcfe0f4, 0x5e6b3e, 0.35);
     parent.add(this.hemi);
 
-    this.scene.fog = new THREE.FogExp2(0xe8d6bc, 0.0021);
+    this.fogDensity = 0.0021; // at eye height; MeadowWorld.update() thins it for high cameras
+    this.scene.fog = new THREE.FogExp2(0xe8d6bc, this.fogDensity);
     this.elevation = SUN_START_DEG;
     this.t = 0;
     this.dir = new THREE.Vector3();

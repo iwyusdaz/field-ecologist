@@ -33,6 +33,8 @@ import { WALL_Z, GATE_X, HEDGE_Z, outsideField, DRESSING_MIN_OFFSET } from './st
 import * as tx from './textures.js';
 
 export const STATION = { x: 50, z: 2 };
+/** Depth of the dawn haze layer over the meadow (m). */
+const HAZE_DEPTH = 30;
 /** Where the learner first stands: by the station, looking north into the meadow. */
 export const HOME_VIEW = { target: [50, groundY(50, 15) + 1.1, 15], radius: 13, theta: Math.PI, phi: 1.4 };
 
@@ -295,6 +297,33 @@ export class MeadowWorld {
     };
     el.addEventListener('pointermove', (e) => move(e, false));
     el.addEventListener('pointerdown', (e) => move(e, true), { capture: true });
+  }
+
+  /**
+   * The drawn plant nearest a ground point (the hand lens never zooms on bare
+   * ground): near instances and the catalog specimens. With `quadrat` only
+   * plants whose base is inside that frame count.
+   * @returns {{ id: string, base: THREE.Vector3, point: THREE.Vector3 }|null} point: the leaves and flower head (upper part of the plant)
+   */
+  plantNear(p, { quadrat = null, maxD = 1.5, exact = false } = {}) {
+    if (exact) maxD = 0.05; // p is a plant's base (a plant the pointer hit)
+    const h = QUADRAT_SIZE / 2;
+    const inside = quadrat ? (x, z) => Math.abs(x - quadrat.x) <= h && Math.abs(z - quadrat.z) <= h : null;
+    // A counted species first (the lens is for identification); Bunchgrass, the dense cover
+    // species, only when no other plant is within reach.
+    const best = (!exact && this.vegetation.nearestDrawn(p.x, p.z, maxD, inside, new Set(['bunchgrass']))) || this.vegetation.nearestDrawn(p.x, p.z, maxD, inside);
+    let out = best ? { id: best.id, base: new THREE.Vector3(best.x, best.y, best.z), height: best.height, d: best.d } : null;
+    for (const [id, list] of this.specimens) for (const s of list) {
+      const m = s.mesh;
+      if (!m || (inside && !inside(m.position.x, m.position.z)) || (!exact && id === 'bunchgrass' && out)) continue;
+      const d = Math.hypot(m.position.x - p.x, m.position.z - p.z);
+      if (d < maxD && (!out || d < out.d)) {
+        m.geometry.boundingBox || m.geometry.computeBoundingBox();
+        out = { id, base: m.position.clone(), height: m.geometry.boundingBox.max.y * m.scale.y, d };
+      }
+    }
+    if (!out) return null;
+    return { id: out.id, base: out.base, point: out.base.clone().add(new THREE.Vector3(0, Math.max(0.05, out.height * 0.75), 0)) };
   }
 
   /** Raycast the near plants (and specimens) at a client point: { id, base, point } or null. */
@@ -876,8 +905,10 @@ export class MeadowWorld {
       { label: 'Numbered survey stake', text: 'A wooden stake with pink tape and a number plate at the corner of each quadrat. The number matches a row on your data sheet.' },
       { label: 'Quadrat frame', text: 'A 2 m square frame with red tape every 50 cm. Count the plants whose base is inside it.' },
       { label: 'Tally mark', text: 'A small yellow ring where you tallied a plant while counting a quadrat.' },
-      { label: 'Quadrat preview', text: 'A pale frame that follows the pointer while you place quadrats by hand. Click to drop it.' },
+      { label: 'Quadrat preview', text: 'A pale frame you drag over the meadow while you place quadrats by hand. Let go to drop it there.' },
       { label: 'Virtual quadrats (simulator)', text: 'Pale blue squares: the quadrats of the simulator’s virtual repeats in Module 4.' },
+      // Scenery has no info card (owner decision 2026-11-07), so its motion labels live here.
+      { label: 'Motion in the scene', text: 'Time-lapse: the Sun’s climb and the thinning mist. Illustrative: clouds, wind gusts, birds, butterflies, bees, pollen and the stake tape. Real pace: the stream and the colleague walking the north strip.' },
     ];
   }
 
@@ -992,9 +1023,10 @@ export class MeadowWorld {
     if (!on) { this.clearTally(); this.setActiveQuadrat(-1); }
   }
 
-  setPreview(p) {
+  /** The pale quadrat frame that follows the pointer; `lifted` while it is being dragged. */
+  setPreview(p, { lifted = false } = {}) {
     this.preview.visible = Boolean(p);
-    if (p) this.preview.position.set(p.x, terrainHeight(p.x, p.z) + 0.03, p.z);
+    if (p) this.preview.position.set(p.x, terrainHeight(p.x, p.z) + (lifted ? 0.18 : 0.03), p.z);
   }
 
   /** Ground point in the field under a client point (convenience placement). */
@@ -1081,8 +1113,11 @@ export class MeadowWorld {
       update: (dt) => { this.clouds.update(dt); this.cloud.uCloudT.value += dt; } });
     motion.add({ id: 'birds', layer: 'sky', label: 'illustrative', objects: ['birds'], description: 'Small birds fly between the hedgerow and the woodland, 6-14 m up.',
       update: (dt, t) => this._updateBirds(t) });
-    motion.add({ id: 'wind', layer: 'environment', label: 'illustrative', objects: ['wind'], description: 'GPU wind: sway and gust bands across the sward and the margin grass; 12% while counting.',
-      update: (dt) => { this.windTime += dt; wind.uTime.value = this.windTime; wind.uWind.value = this.counting ? 0.12 : 1; wind.uGust.value = this.counting ? 0 : 1; } });
+    motion.add({ id: 'wind', layer: 'environment', label: 'illustrative', objects: ['wind'], description: 'GPU wind: sway and gust bands across the sward and the margin grass (seen from above as lighter bands rolling across the field); 12% while counting.',
+      update: (dt) => {
+        this.windTime += dt; wind.uTime.value = this.windTime; wind.uWind.value = this.counting ? 0.12 : 1; wind.uGust.value = this.counting ? 0 : 1;
+        this.cloud.uWindT.value = this.windTime; this.cloud.uGustSheen.value = this.counting ? 0 : 0.16;
+      } });
     motion.add({ id: 'mist', layer: 'environment', label: 'time-lapse', objects: ['mist'], description: 'Mist banks over the stream drift and thin as the Sun climbs (time-lapse).',
       update: (dt, t) => this._updateMist(t) });
     motion.add({ id: 'stream', layer: 'environment', label: 'accurate', objects: ['stream'], description: 'The stream surface moves with the current at about 0.25 m/s.',
@@ -1204,6 +1239,11 @@ export class MeadowWorld {
     // Ground mist is a thin layer seen edge-on from eye height; from high up its
     // flat sheets read as white panels, so it fades out between 8 m and 30 m up.
     const up = cam.position.y - groundY(cam.position.x, cam.position.z);
+    // The dawn haze is a layer about 30 m deep over the cool ground, not a fog that
+    // fills the air. From above it, a sight line crosses only that layer, so the
+    // haze thins as ~30 m / height (the overhead views of Modules 3 and 4 were
+    // washed grey by a fog meant for eye-height views).
+    this.engine.scene.fog.density = this.sky.fogDensity * Math.min(1, HAZE_DEPTH / Math.max(1, up));
     this.mistMat.opacity = (this._mistOpacity ?? 0.55) * (1 - THREE.MathUtils.smoothstep(up, 8, 30));
     // Small life is not drawn where it would be under a pixel or two (overhead views).
     for (const b of this.bees || []) b.visible = b.position.distanceToSquared(cam.position) < 35 * 35;
