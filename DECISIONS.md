@@ -82,3 +82,6 @@ Other G2 decisions:
 - **Hand lens:** a point on bare ground snaps to the nearest drawn plant (in the frame while counting, a counted species before Bunchgrass); with no plant within 1.5 m (3 m for Look at the centre) it says so and does not zoom.
 - **Quadrat drag:** press, drag, release on the meadow for the convenience design (pointer events: mouse, pen, touch); Place by map (typed x, z) stays the keyboard and text path.
 - **Dawn haze:** modelled as a 30 m deep ground layer; fog density is scaled by min(1, 30 m / camera height above ground). Eye-height views unchanged.
+
+## Owner visual approval (G2), 2026-11-09
+Owner visual approval (G2), 2026-11-09, approved with known open issues listed in STATUS.md. Owner words: "approve all for now". This is owner visual approval, not user testing. Open issues: `.agents/tasks/immersive-v3/g2/fix-round-report.md`.
