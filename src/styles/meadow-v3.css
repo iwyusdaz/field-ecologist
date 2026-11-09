@@ -131,6 +131,11 @@
   padding: 0 8px;
 }
 [data-layout^="phone"] .v3-brand { display: none; }
+/* G2: with Back in the strip, five 44 px tabs, Back and Menu fit 360 px only without the
+   count; on narrow portrait phones the count stays in the menu (My progress). */
+[data-layout^="phone"] .v3-topbar { gap: 4px; }
+[data-layout^="phone"] .v3-menu-btn { padding: 0 10px; }
+@media (max-width: 419px) { [data-layout="phone-portrait"] .v3-discovered { display: none; } }
 [data-layout^="phone"] .v3-stepper ol { justify-content: space-around; }
 [data-layout="phone-landscape"] .v3-step-label { position: static; width: auto; height: auto; clip-path: none; overflow: visible; }
 [data-layout="phone-landscape"] .v3-step { padding: 0 8px 0 4px; }

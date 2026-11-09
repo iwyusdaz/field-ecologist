@@ -77,3 +77,11 @@ Build log: `.agents/tasks/immersive-v3/s6-field-ecologist/build-log.md` (workspa
 - **re-deferred**: Caveat on the sign board (no sign board in the v3 scene; Caveat stays self-hosted for the notebook accent).
 - Field-notebook layout (owner direction 2026-11-06): left spine rail on desktop, bottom tab strip on phones, ruled field-guide cards; ui-audit `navBar` left/bottom.
 - Open after the S6 run: see the build log (alive in two overhead views, one GPU-time cell at the hedge, catalog reach for soil, clouds, butterflies and bees, one keyboard test over the 5-minute cap).
+## v3 G2 fix round (owner feedback 2026-11-07), agent work
+Fix log: `.agents/tasks/immersive-v3/g2/fix-logs/field-ecologist.md` (workspace).
+- Rail: horizontal tab names (56 px spine at rest, 196 px with paper spine labels on hover or focus); Back and Back to start; no All projects link.
+- Object roles: 11 task, 3 learn, 14 decorative (DECISIONS.md, G2 section); insects, clouds, birds and scenery open nothing.
+- Hand lens always lands on a plant; quadrat placement by press, drag and release (mouse, pen, touch), Place by map for the keyboard; browser tests for both.
+- Overhead views: haze thinned with camera height, gust bands on the sward and far plants; vegetation and LOD buffers no longer re-uploaded on a timer.
+- Stream and soil reachable (mist sheets no longer catch clicks; the soil face no longer under the bank surface).
+- Open: see the fix log.
