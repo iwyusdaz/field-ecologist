@@ -1,8 +1,10 @@
 # Field Ecologist: Sampling the Meadow
 
-> **Evaluation status:** Automated functional, accessibility and performance testing plus agent-based design reviews are complete. No real learners have tested this yet. No physical phone testing has been done (mobile was checked with device emulation). See `evaluation/METHODS.md`. v2.0.0 has its own four agent reviews (revisions V2-0 to V2-10 in DECISIONS.md) and a headed GPU measurement: 60 fps on Medium, 141 draw calls, 8.6 MB before the first interaction (`evaluation/results/perf-2026-10-29.json`).
+> **Evaluation status (v3.0.0, 2026-11-09):** Automated functional, accessibility and performance testing is complete (headed GPU audit on an Apple M1, unit and browser tests). v3 had no agent design reviews (the owner chose a lean process); earlier versions' agent reviews are in `evaluation/reviews/`. The owner reviewed the v3 scene and approved it on 2026-11-09; that is owner visual approval, not user testing. No real learners have tested this yet. No physical phone testing has been done (mobile was checked with device emulation). Known open issues at v3.0.0 are listed in [STATUS.md](STATUS.md). See `evaluation/METHODS.md`.
 
 **Play:** https://immersive-learning-showcase.vercel.app/play/field-ecologist/
+
+![A green meadow scattered with wildflowers, with a line of woodland and low hills behind it.](public/poster-3.0.0.webp)
 
 ## The problem
 
@@ -24,9 +26,15 @@ Five modules around a field-sampling game on a seeded, 100 m × 100 m teaching m
 
 The meadow population is generated from one documented seed: a clumped (Thomas process) showy species, a random Poisson herb, a moisture-gradient sedge, a dense cover grass and a rare clumped orchid — the distribution patterns are what make sampling design matter.
 
+## v3.0.0: the field notebook
+- **Navigation:** a collapsible notebook rail on the left (56 px at rest, 196 px open, horizontal labels), with **Back** (the previous screen), **Back to start** (the intro) and the menu at its foot; on phones it becomes a bottom tab strip. Paper field-guide cards. Project pages don't link to other projects.
+- **Fieldwork in the scene:** press, drag and release to place a quadrat (mouse and touch; Place by map for the keyboard); the hand lens always lands on a drawn plant; a kneeling camera at each quadrat and a clipboard that fills as you count.
+- **Purposeful interaction:** only course objects (11 task, 3 learn, including the soil and the stream) open cards; insects, clouds, mist and the other 14 decorative objects open nothing.
+- **Performance (headed Chromium on an Apple M1 GPU, Medium, every module state at four viewports):** at most 12.95 ms GPU p95 (the north-hedge view at 1440×900, over the 12 ms budget; every other cell within it), 60 fps, at most 287 draw calls and 1.25 M triangles, 5.78 MB before the first interaction.
+
 ## v2.0.0: Ashcombe Meadow at dawn
 
-The 3D meadow is now a living place: a dry-stone wall and open gate, a flowing stream, a hedgerow and hills, gusts rolling across the grass, butterflies over the margins, pollen, thinning morning mist, cloud shadows and a field ecologist at the station. Click the glowing rings to glide between viewpoints, walk with WASD/arrows, drag to look, click the quadrat stack to start fieldwork or the green notebook to open the field guide. **Hide panel** gives you the whole scene; **Plain font** switches to system fonts. The five counted species are still fictional; the real Poly Haven plants are background only and sit outside the sampled field (see `design/art-bible.md`).
+The 3D meadow is now a living place: a dry-stone wall and open gate, a flowing stream, a hedgerow and hills, gusts rolling across the grass, butterflies over the margins, pollen, thinning morning mist, cloud shadows and a field ecologist at the station. The five counted species are still fictional; the real Poly Haven plants are background only and sit outside the sampled field (see `design/art-bible.md`).
 
 ## Key design decisions
 
@@ -39,9 +47,9 @@ The 3D meadow is now a living place: a dry-stone wall and open gate, a flowing s
 
 ## Evidence & evaluation
 
-- **96 unit tests** (vitest): generated populations match their parameters; unbiased designs converge on the truth; the modelled convenience design is biased (unit test asserts > +25 %; measured +369 % on Butterweed at n = 10, re-measured 2026-10-27); stratification reduces Sedge variance; the true Bunchgrass cover matches the drawn tussock size; no species' identifying geometry sits below the ground; the CSV is RFC 4180-correct.
-- **6 functional tests** (Playwright, scripted via test hooks): full playthrough — modules 1→5 including fieldwork execution, reveal, simulator run, report, transfer — plus a text-mode parity pass and CSV checks; 2 a11y specs (axe scans) run alongside.
-- **Agent-based design reviews are complete** (visual, realism/cinematics, cognitive walkthrough, multimedia, accessibility, heuristics, expert style — AI reviewers, not humans; reports in `evaluation/reviews/`). Their findings are fixed in code and logged with evidence as revisions R1–R7 in `DECISIONS.md`.
+- **176 unit tests** (vitest, v3.0.0): generated populations match their parameters; unbiased designs converge on the truth; the modelled convenience design is biased (unit test asserts > +25 %; measured +369 % on Butterweed at n = 10, re-measured 2026-10-27); stratification reduces Sedge variance; the true Bunchgrass cover matches the drawn tussock size; no species' identifying geometry sits below the ground; the CSV is RFC 4180-correct.
+- **Browser tests** (Playwright, v3.0.0): 23 of 24 pass, including the full playthrough, text-mode parity, CSV checks, axe scans, the rail, quadrat drag by mouse and touch, keyboard placement and the hand lens. The keyboard-only test for Module 3 part 1 hit its 5-minute cap (open, STATUS.md).
+- **Agent-based design reviews** (v1 and v2; v3 had none, by the owner's lean process) (visual, realism/cinematics, cognitive walkthrough, multimedia, accessibility, heuristics, expert style — AI reviewers, not humans; reports in `evaluation/reviews/`). Their findings are fixed in code and logged with evidence as revisions R1–R7 in `DECISIONS.md`.
 - **Accessibility**: axe scans (zero critical/serious) across the overlay, module panels, field guide dialog, settings/menu/progress dialogs and the text-mode grid; WCAG 2.1 AA targets; full keyboard operability; reduced-motion variants for every cinematic and the camera.
 - **Sub-path build test**: the built app is served at `/play/field-ecologist/` with zero failed requests and zero console errors (the re-sampling Web Worker included).
 - What testing can **not** show: learning gains, real-device performance on physical phones, and whether the fictional species read as plausible to domain experts — see `evaluation/METHODS.md` for the honest limitations.
@@ -66,4 +74,4 @@ Code MIT (`LICENSE`), content CC BY 4.0 (`LICENSE-CONTENT`), assets CC0 or origi
 
 ## Trailer
 
-**Trailer:** [docs/trailer.webm](docs/trailer.webm) (57 s, recorded from v2.0.0, captioned; WebVTT sidecar at [docs/trailer.vtt](docs/trailer.vtt)). Recorded from the real app on the Mac GPU; the caption text is also in the sidecar file.
+**Trailer:** [docs/trailer.webm](docs/trailer.webm) (57 s, recorded from v2.0.0, so it doesn't show the v3 scene; captioned; WebVTT sidecar at [docs/trailer.vtt](docs/trailer.vtt)). Recorded from the real app on the Mac GPU; the caption text is also in the sidecar file.

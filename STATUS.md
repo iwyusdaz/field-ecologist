@@ -1,4 +1,21 @@
-# Status — Field Ecologist: Sampling the Meadow (2.0.0)
+# Status — Field Ecologist: Sampling the Meadow
+
+## v3.0.0 release (2026-11-09)
+Released as v3.0.0 (plan 10 "scene-first revamp"). The code is the verified head `b641c94` plus docs: the owner visual approval record (`2fb3a39`, DECISIONS.md) and the release commit (version 3.0.0, v3 posters, these notes). The owner approved the v3 scene on 2026-11-09 ("approve all for now") with the issues below accepted as known limitations. That is owner visual approval, not user testing; no learners have used v3.
+
+Checks on the verified head (Apple M1, headed Chromium 143 on the GPU for ui-audit 1.2.1, headless for the test suites): vitest 176/176; e2e 23/24 (on `b641c94`, see below). Full results: `.agents/tasks/immersive-v3/g2/fix-round-report.md` in the portfolio workspace and `evaluation/results/ui-audit-g2-verify*.json` here.
+
+### Known open issues at v3.0.0
+- **Overhead animation:** the alive gate measured 0 changed regions in m3 at 1440×900 and 390×844, and 2 of 3 in m4 at 390×844. The cause of the fully still m3 frame is not found.
+- **North-hedge view:** 12.95 ms GPU p95 at 1440×900, over the 12 ms budget (60 fps).
+- **Keyboard e2e:** "Keyboard-only completion › Module 3 (part 1)" hit the 5-minute cap twice (once under load, once alone); it passed at 4.9 min in the fix step. e2e 23 of 24 on `b641c94`.
+- **Module 3 view:** a pink band at the top of the frame.
+- **Stream channel** south of the station shows mostly bare sward.
+- **Phone tab strip** shows module numbers only.
+- **Trailer** (`docs/trailer.webm`) still shows v2.
+- **Touch reach at 390×844:** 5 course objects are missed: `butterweed`, `bunchgrass`, `fen-orchid`, `quadrat`, `random-sampling`. Mouse, the keyboard "Objects in view" list and text mode reach every course object.
+- **Portrait zoom (template T-31 camera part)** is only in lunar-field-expedition. Syncing it here might improve phone framing and touch reach, but every phone view would need re-checking.
+
 
 Checklist from plan `implementation-plans/immersive/03-field-ecologist.md` §14 and
 the shared standards. Statuses: **done**, done(agent review pending), **not possible (reason)**.

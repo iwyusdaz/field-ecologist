@@ -4,6 +4,13 @@ All notable changes to this project are documented here. Format based on
 Keep a Changelog; versioning is semver (major for breaking changes, minor for
 new content, patch for fixes).
 
+## [3.0.0] — 2026-11-09 — scene-first revamp (plan 10 §6.3)
+- Field-notebook layout: collapsible left rail with horizontal labels (bottom tab strip on phones), paper field-guide cards, Fraunces + Nunito Sans.
+- Hand lens lands on the nearest drawn plant; quadrat press-drag-release with mouse and touch, Place by map by keyboard; kneeling camera; clipboard that fills as you count; case LUT; clustered woodland with impostors.
+- Object roles: 11 task, 3 learn, 14 decorative.
+- Owner visual approval (G2), 2026-11-09, with the known open issues in STATUS.md accepted. Not user testing.
+- Navigation: Back and Back to start; no "All projects" link on project pages. Only course objects open cards; decorative objects open nothing.
+- Posters re-taken from the v3 scene (`poster-3.0.0.webp/.jpg`, headed-GPU screenshots); the v2 posters are removed.
 ## [2.0.1] — 2026-10-29
 
 First published v2 release. The `v2.0.0` tag exists, but its release job failed twice: the a11y suite timed out on the 2-vCPU CI runner, so no 2.0.0 archive was ever published. The tag was left in place rather than rewritten.
