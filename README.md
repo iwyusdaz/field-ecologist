@@ -66,7 +66,7 @@ Text mode with full decision parity (the 20 × 20 grid map is a real data table)
 
 ## Tools
 
-Built with three.js 0.186.1 (instanced vegetation, custom wind shader, orthographic counting view), Vite 8, pmndrs postprocessing + N8AO, a Web Worker re-sampler, vitest and Playwright. One CC0 Poly Haven HDRI (`belfast_open_field`, recorded in `ATTRIBUTION.md`); everything else is procedural original work. Species are fictional and labeled as a teaching model in-app.
+Built with three.js 0.186.1 (instanced vegetation, custom wind shader, orthographic counting view), Vite 8, pmndrs postprocessing + N8AO, a Web Worker re-sampler, vitest and Playwright. One CC0 Poly Haven HDRI (`belfast_open_field`, recorded in `ATTRIBUTION.md`); everything else is procedural original work. Species are fictional and labeled as a teaching model in-app. AI assistance: an AI coding agent wrote the code, content and documents under my direction. Facts were checked against the sources in [research/sources.md](research/sources.md). Design reviews of earlier versions were done by a separate agent and are labeled as agent reviews in `evaluation/reviews/`; v3 had none.
 
 ## License
 
