@@ -1,6 +1,6 @@
 {
   "slug": "field-ecologist",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "title": "Field Ecologist: Sampling the Meadow",
   "format": "Hybrid",
   "niche": "Biology and research methods (ecology sampling, bias and uncertainty)",
@@ -11,8 +11,8 @@
   "contentNotes": [],
   "permissions": [],
   "poster": {
-    "webp": "poster-3.0.0.webp",
-    "jpg": "poster-3.0.0.jpg",
+    "webp": "poster-3.0.1.webp",
+    "jpg": "poster-3.0.1.jpg",
     "alt": "A green meadow scattered with wildflowers, with a line of woodland and low hills behind it."
   },
   "repoUrl": "https://github.com/iwyusdaz/field-ecologist",

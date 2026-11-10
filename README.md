@@ -4,7 +4,7 @@
 
 **Play:** https://immersive-learning-showcase.vercel.app/play/field-ecologist/
 
-![A green meadow scattered with wildflowers, with a line of woodland and low hills behind it.](public/poster-3.0.0.webp)
+![A green meadow scattered with wildflowers, with a line of woodland and low hills behind it.](public/poster-3.0.1.webp)
 
 ## The problem
 

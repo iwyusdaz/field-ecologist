@@ -4,6 +4,10 @@ All notable changes to this project are documented here. Format based on
 Keep a Changelog; versioning is semver (major for breaking changes, minor for
 new content, patch for fixes).
 
+## 3.0.1 (2026-11-10) — patch: usable without a GPU
+- On computers without a GPU (software WebGL, as on CI runners), the page no longer freezes behind slow frames: the scene updates without drawing while the title screen or text mode fills the screen, and a frame slower than 500 ms is followed by an equal pause, so clicks such as "Use text mode" respond (0.58 s instead of 20–26 s, measured on object-detective with the CPU throttled 4× and 8×). No change on a GPU.
+- The axe accessibility sweep is split into three tests (same states, same rule) so it fits the CI time limit.
+- Posters unchanged (same images, renamed `poster-3.0.1.*`).
 ## [3.0.0] — 2026-11-09 — scene-first revamp (plan 10 §6.3)
 - Field-notebook layout: collapsible left rail with horizontal labels (bottom tab strip on phones), paper field-guide cards, Fraunces + Nunito Sans.
 - Hand lens lands on the nearest drawn plant; quadrat press-drag-release with mouse and touch, Place by map by keyboard; kneeling camera; clipboard that fills as you count; case LUT; clustered woodland with impostors.
